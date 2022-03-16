@@ -3,13 +3,13 @@ package com.example.suwon_university_community.ui.login
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.suwon_university_community.R
 import com.example.suwon_university_community.databinding.ActivityAuthBinding
+import dagger.android.support.DaggerAppCompatActivity
 
-class AuthActivity : AppCompatActivity() {
+class AuthActivity : DaggerAppCompatActivity() {
 
 
     private lateinit var binding: ActivityAuthBinding

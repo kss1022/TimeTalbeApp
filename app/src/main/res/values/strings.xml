@@ -22,7 +22,10 @@
     <string name="please_input_suwon_web_email">수원대학교 웹메일 이메일을 입력해주세요\nsample@suwon.ac.kr</string>
     <string name="please_check_your_email">이메일로 링크가 전송되었습니다 확인해주세요😊</string>
     <string name="send_email_check_please">인증 메일이 전송 되었습니다. 확인해주세요😊</string>
-    <string name="email_send_failed_check_your_email">인증 메일이 전송되지 않았어요 이메일을 확인해주세요😭</string>
+
+    <string name="email_send_failed_click_button_please">인증 메일이 전송되지 않았어요\n다시 전송버튼을 눌러주세요😭</string>
+    <string name="signIn_fail_check_your_email">회원가입에 실패 했습니다.\n이메일과 비밀번호를 확인해주세요😭</string>
+
     <string name="web_mail_hint">sample@suwon.ac.kr</string>
     <string name="send">전송</string>
     <string name="next">다음</string>
@@ -31,4 +34,8 @@
     <string name="move_web_mail_link">수원대학교 웹메일로 이동하기(클릭하세요)</string>
 
 
+    <!--    로그인-->
+    <string name="login_fail">로그인에 실패 했습니다. 이메일과 비밀번호를 확인해주세요😭</string>
+    <string name="login_success">로그인에 성공했습니다😊</string>
+    <string name="email_is_not_verified">인증되지 않은 이메일 입니다😱.</string>
 </resources>
