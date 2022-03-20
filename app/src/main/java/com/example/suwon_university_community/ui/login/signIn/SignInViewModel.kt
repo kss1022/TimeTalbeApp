@@ -3,7 +3,7 @@ package com.example.suwon_university_community.ui.login.signIn
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.suwon_university_community.R
-import com.example.suwon_university_community.data.repository.UserRepository
+import com.example.suwon_university_community.data.repository.user.UserRepository
 import com.example.suwon_university_community.ui.base.BaseViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch

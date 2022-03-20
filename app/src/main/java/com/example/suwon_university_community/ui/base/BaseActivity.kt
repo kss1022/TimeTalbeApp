@@ -39,10 +39,10 @@ abstract class BaseActivity <VM : BaseViewModel, VB : ViewBinding> : DaggerAppCo
 
 
     open fun initState(){
-        initView()
+        initViews()
         fetchJob = viewModel.fetchData()
         observeData()
     }
 
-    open fun initView() = Unit
+    open fun initViews() = Unit
 }

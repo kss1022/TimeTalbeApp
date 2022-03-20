@@ -6,12 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.motion.widget.MotionLayout
-        android:id="@+id/motionLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layoutDescription="@xml/fragment_sign_in_scene">
-
 
         <!--    Input Information-->
         <LinearLayout
@@ -89,10 +83,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <!--    http://mail.suwon.ac.kr-->
-
+            android:layout_height="match_parent"
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/needWebMailTextView"
@@ -166,7 +158,6 @@
             android:gravity="center"
             android:padding="16dp"
             android:text="@string/next"
-            android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -179,13 +170,11 @@
             android:gravity="center"
             android:padding="16dp"
             android:text="@string/back"
-            android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/nextButton"
             app:layout_constraintEnd_toStartOf="@id/nextButton"
-            app:layout_constraintTop_toTopOf="@id/nextButton" />
-
-    </androidx.constraintlayout.motion.widget.MotionLayout>
+            app:layout_constraintTop_toTopOf="@id/nextButton"
+            android:visibility="gone"/>
 
 
     <ProgressBar

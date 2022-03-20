@@ -1,6 +1,9 @@
 package com.example.suwon_university_community.ui.login.signIn
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Activity
+import android.app.AlertDialog
 import android.net.Uri
 import android.view.KeyEvent
 import android.view.View
@@ -31,7 +34,7 @@ class SignInFragment : BaseFragment<SignInViewModel, FragmentSignInBinding>() {
         FragmentSignInBinding.inflate(layoutInflater)
 
 
-    private var isMotionAnimatingEnd: Boolean = false
+    private var isAnimatingEnd: Boolean = false
     private var isCompleteSignIn: Boolean = false
 
 
@@ -104,21 +107,17 @@ class SignInFragment : BaseFragment<SignInViewModel, FragmentSignInBinding>() {
         nextButton.apply {
             isEnabled = false
             setOnClickListener {
-                if (isMotionAnimatingEnd.not()) {
+                if (isAnimatingEnd.not()) {
                     moveNextScene()
                 } else if (isCompleteSignIn) {
-                    Toast.makeText(requireContext(), "회원 가입 완료", Toast.LENGTH_SHORT).show()
-                    viewModel.signOut()
-                    findNavController().popBackStack()
+                    completeSignIn()
                 }
             }
         }
 
 
         backButton.setOnClickListener {
-            motionLayout.transitionToEnd()
-            motionLayout.transitionToStart()
-            isMotionAnimatingEnd = false
+            moveBeforeScene()
         }
 
         emailEditText.addTextChangedListener {
@@ -133,7 +132,7 @@ class SignInFragment : BaseFragment<SignInViewModel, FragmentSignInBinding>() {
         passWordCheckEditText.apply {
             setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_GO && nextButton.isEnabled) {
-                    if (isMotionAnimatingEnd.not()) {
+                    if (isAnimatingEnd.not()) {
                         moveNextScene()
                     }
                     true
@@ -146,7 +145,7 @@ class SignInFragment : BaseFragment<SignInViewModel, FragmentSignInBinding>() {
                 if ((event.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)
                     && nextButton.isEnabled
                 ) {
-                    if (isMotionAnimatingEnd.not()) {
+                    if (isAnimatingEnd.not()) {
                         moveNextScene()
                     }
                     true
@@ -162,7 +161,7 @@ class SignInFragment : BaseFragment<SignInViewModel, FragmentSignInBinding>() {
 
 
         sendButton.setOnClickListener {
-                viewModel.sendEmail(emailTextView.text.toString(), passWordEditText.text.toString())
+            viewModel.sendEmail(emailTextView.text.toString(), passWordEditText.text.toString())
         }
 
         webMailLinkTextView.setOnClickListener {
@@ -170,19 +169,45 @@ class SignInFragment : BaseFragment<SignInViewModel, FragmentSignInBinding>() {
         }
     }
 
+    private fun completeSignIn() {
+        Toast.makeText(requireContext(), "회원 가입 완료", Toast.LENGTH_SHORT).show()
+        viewModel.signOut()
 
+        showAlertDialog()
 
+    }
+
+    //todo  YES: LoginFragment로 이동  NO : 이전 실행 창으로 이동
+    private fun showAlertDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("회원가입아 완료되었습니다.")
+            .setMessage("지금 로그인 하시겠어요?")
+            .setPositiveButton("네 지금 로그인 할게요!") { dialog, _ ->
+                findNavController().popBackStack()
+                dialog.dismiss()
+            }
+            .setNegativeButton("아니요 나중에 로그인 할게요!") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
 
     private fun checkEmailWithPassword() = with(binding) {
         if (emailEditText.length() > 15) {
             if (emailEditText.text.contains("@suwon.ac.kr")) {
-                emailErrorTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray))
+                emailErrorTextView.setTextColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.gray
+                    )
+                )
                 if (passWordEditText.length() > 7 && passWordEditText.text.toString() == passWordCheckEditText.text.toString()) {
                     nextButton.isEnabled = true
                     return
                 }
             } else {
-                emailErrorTextView.setTextColor(ContextCompat.getColor(requireContext(), R.color.red)
+                emailErrorTextView.setTextColor(
+                    ContextCompat.getColor(requireContext(), R.color.red)
                 )
             }
         }
@@ -216,12 +241,63 @@ class SignInFragment : BaseFragment<SignInViewModel, FragmentSignInBinding>() {
     }
 
     private fun moveNextScene() = with(binding) {
-        motionLayout.transitionToStart()
-        motionLayout.transitionToEnd()
+
+        linearLayout.animate().alpha(0f).setDuration(700L)
+            .setListener(object :
+                AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    linearLayout.isGone = true
+                }
+            })
+
+        constraintLayout.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+            animate().alpha(1f).setDuration(1800L).setListener(null)
+        }
+
+        backButton.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+            animate().alpha(1f).setDuration(1800L).setListener(null)
+        }
+
+
+
         emailTextView.text = emailEditText.text
-        isMotionAnimatingEnd = true
+        isAnimatingEnd = true
         hideKeyboard()
     }
+
+    private fun moveBeforeScene() = with(binding) {
+
+        linearLayout.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+            animate().alpha(1.0f).setDuration(1800L).setListener(null)
+        }
+
+
+        constraintLayout.animate().alpha(0.0f).setDuration(700L).setListener(object :
+            AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                constraintLayout.isGone = true
+            }
+        })
+
+
+        backButton.animate().alpha(0.0f).setDuration(700L).setListener(object :
+            AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator) {
+                backButton.isGone = true
+            }
+        })
+
+
+
+        isAnimatingEnd = false
+    }
+
 
     private fun hideKeyboard() {
         val inputManger =

@@ -1,4 +1,4 @@
-package com.example.suwon_university_community.data.repository
+package com.example.suwon_university_community.data.repository.user
 
 interface UserRepository {
 

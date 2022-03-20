@@ -1,4 +1,4 @@
-package com.example.suwon_university_community.data.repository
+package com.example.suwon_university_community.data.repository.user
 
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineDispatcher

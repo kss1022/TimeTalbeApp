@@ -1,0 +1,26 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.Suwon_University_Community" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+
+        <!--ToolBar-->
+        <item name="toolbarStyle">@style/Widget.Suwon_University_Community.Toolbar</item>
+        <item name="toolbarWithArrowButtonStyle">@style/Widget.Suwon_University_Community.Toolbar.WithArrow</item>
+        <item name="toolbarWithCloseButtonStyle">@style/Widget.Suwon_University_Community.Toolbar.WithClose</item>
+
+
+        <!--NavigationBarColor  60% BLACK-->
+        <item name="android:navigationBarColor">#99000000</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>

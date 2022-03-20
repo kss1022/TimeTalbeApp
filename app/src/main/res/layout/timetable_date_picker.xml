@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <NumberPicker
+        android:id="@+id/yearNumberPicker"
+        android:layout_width="63dp"
+        android:layout_height="124dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/semesterNumberPicker"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+
+    <NumberPicker
+        android:id="@+id/semesterNumberPicker"
+        android:layout_width="63dp"
+        android:layout_height="124dp"
+        android:layout_marginStart="30dp"
+        app:layout_constraintStart_toEndOf="@+id/yearNumberPicker"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
