@@ -1,8 +1,9 @@
-package com.example.suwon_university_community.ui.main.time_table.addTimeTable
+package com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
@@ -13,21 +14,24 @@ import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.suwon_university_community.data.entity.lecture.LectureEntity
 import com.example.suwon_university_community.data.entity.timetable.TimeTableCellEntity
-import com.example.suwon_university_community.databinding.ActivityAddTimeTableBinding
+import com.example.suwon_university_community.data.entity.timetable.TimeTableWithCell
+import com.example.suwon_university_community.databinding.ActivityAddTimeTableCellBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
 import com.example.suwon_university_community.ui.base.BaseActivity
 import javax.inject.Inject
 
-class AddTimeTableActivity : BaseActivity<AddTimeTableViewModel, ActivityAddTimeTableBinding>(){
+class AddTimeTableCellActivity : BaseActivity<AddTimeTableCellViewModel, ActivityAddTimeTableCellBinding>(){
+
 
     @Inject
     override lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    override val viewModel: AddTimeTableViewModel by viewModels<AddTimeTableViewModel> {
+
+
+    override val viewModel: AddTimeTableCellViewModel by viewModels<AddTimeTableCellViewModel> {
         viewModelFactory
     }
-
-    override fun getViewBinding(): ActivityAddTimeTableBinding = ActivityAddTimeTableBinding.inflate(layoutInflater)
+    override fun getViewBinding(): ActivityAddTimeTableCellBinding = ActivityAddTimeTableCellBinding.inflate(layoutInflater)
 
 
     private var addButtonList: ArrayList<Triple<Long, Int, Int>> =
@@ -44,13 +48,17 @@ class AddTimeTableActivity : BaseActivity<AddTimeTableViewModel, ActivityAddTime
             finish()
         }
 
+        val timetableWithCell = intent.getParcelableExtra<TimeTableWithCell>(EXTRA_TIME_TABLE)
+        Log.e("Intent", timetableWithCell.toString())
+
+
         bindViews()
     }
 
     private fun bindViews() = with(binding){
         binding.addButton.setOnClickListener {
 
-            addLecture( this@AddTimeTableActivity, LectureEntity(
+            addLecture( this@AddTimeTableCellActivity, LectureEntity(
                 id = 1,
                 name = "강의 추가",
                 distinguish = "ㅇㅁㄹ",
@@ -165,6 +173,10 @@ class AddTimeTableActivity : BaseActivity<AddTimeTableViewModel, ActivityAddTime
 
 
     companion object{
-        fun newIntent(context : Context ) = Intent( context, AddTimeTableActivity::class.java)
+        fun newIntent(context : Context , timeTableWithCell: TimeTableWithCell ) = Intent( context, AddTimeTableCellActivity::class.java).apply {
+            putExtra( EXTRA_TIME_TABLE, timeTableWithCell)
+        }
+
+         const val EXTRA_TIME_TABLE = "time_table"
     }
 }

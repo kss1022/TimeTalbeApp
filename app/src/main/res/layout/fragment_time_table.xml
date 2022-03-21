@@ -85,23 +85,42 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <View
+                        android:id="@+id/topMonGrid"
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="20dp"
+                        android:background="@color/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/topMon"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                     <TextView
                         android:id="@+id/topMon"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/table_left_stroke"
                         android:gravity="center"
                         android:text="월"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toStartOf="@id/topTue"
-                        app:layout_constraintStart_toEndOf="@id/emptyCell"
+                        app:layout_constraintStart_toEndOf="@id/topMonGrid"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/topTue"
+                        app:layout_constraintStart_toEndOf="@id/topMon"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/topTue"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/table_left_stroke"
                         android:gravity="center"
                         android:text="화"
                         android:textStyle="bold"
@@ -109,11 +128,19 @@
                         app:layout_constraintStart_toEndOf="@id/topMon"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/topWed"
+                        app:layout_constraintStart_toEndOf="@id/topTue"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                     <TextView
                         android:id="@+id/topWed"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/table_left_stroke"
                         android:gravity="center"
                         android:text="수"
                         android:textStyle="bold"
@@ -121,11 +148,19 @@
                         app:layout_constraintStart_toEndOf="@id/topTue"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/topThu"
+                        app:layout_constraintStart_toEndOf="@id/topWed"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                     <TextView
                         android:id="@+id/topThu"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/table_left_stroke"
                         android:gravity="center"
                         android:text="목"
                         android:textStyle="bold"
@@ -133,11 +168,19 @@
                         app:layout_constraintStart_toEndOf="@id/topWed"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/topFri"
+                        app:layout_constraintStart_toEndOf="@id/topThu"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                     <TextView
                         android:id="@+id/topFri"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/table_left_stroke"
                         android:gravity="center"
                         android:text="금"
                         android:textStyle="bold"
@@ -156,7 +199,7 @@
 
                     <LinearLayout
                         android:id="@+id/leftLinearLayout"
-                        android:layout_width="20dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:paddingStart="0dp"
@@ -166,192 +209,245 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorPrimary" />
+
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="20dp"
                             android:layout_height="60dp"
-                            android:layout_gravity="end|top"
+                            android:layout_gravity="left"
+                            android:gravity="end|top"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="3dp"
                             android:text="9" />
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorPrimary" />
+
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="20dp"
                             android:layout_height="60dp"
-                            android:layout_gravity="end|top"
+                            android:layout_gravity="left"
+                            android:gravity="end|top"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="3dp"
                             android:text="10" />
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorPrimary" />
+
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="20dp"
                             android:layout_height="60dp"
-                            android:layout_gravity="end|top"
+                            android:layout_gravity="left"
+                            android:gravity="end|top"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="3dp"
                             android:text="11" />
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorPrimary" />
+
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="20dp"
                             android:layout_height="60dp"
-                            android:layout_gravity="end|top"
+                            android:layout_gravity="left"
+                            android:gravity="end|top"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="3dp"
                             android:text="12" />
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorPrimary" />
+
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="20dp"
                             android:layout_height="60dp"
-                            android:layout_gravity="end|top"
+                            android:layout_gravity="left"
+                            android:gravity="end|top"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="3dp"
                             android:text="1" />
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorPrimary" />
+
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="20dp"
                             android:layout_height="60dp"
-                            android:layout_gravity="end|top"
+                            android:layout_gravity="left"
+                            android:gravity="end|top"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="3dp"
                             android:text="2" />
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="60dp"
-                            android:layout_gravity="end|top"
-                            android:text="3" />
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorPrimary" />
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="20dp"
                             android:layout_height="60dp"
-                            android:layout_gravity="end|top"
+                            android:layout_gravity="left"
+                            android:gravity="end|top"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="3dp"
+                            android:text="3" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/colorPrimary" />
+
+                        <TextView
+                            android:layout_width="20dp"
+                            android:layout_height="60dp"
+                            android:layout_gravity="left"
+                            android:gravity="end|top"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="3dp"
                             android:text="4" />
 
 
                     </LinearLayout>
 
+                    <View
+                        android:id="@+id/monLeftGrid"
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="0dp"
+                        android:background="@color/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/monLinearLayout"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <FrameLayout
                         android:id="@+id/monLinearLayout"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:background="@drawable/table_left_stroke"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/tueLinearLayout"
-                        app:layout_constraintStart_toEndOf="@id/leftLinearLayout"
+                        app:layout_constraintStart_toEndOf="@id/monLeftGrid"
                         app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/tueLinearLayout"
+                        app:layout_constraintStart_toEndOf="@id/monLinearLayout"
+                        app:layout_constraintTop_toTopOf="parent" />
+
 
                     <FrameLayout
                         android:id="@+id/tueLinearLayout"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:background="@drawable/table_left_stroke"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/wedLinearLayout"
                         app:layout_constraintStart_toEndOf="@id/monLinearLayout"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/wedLinearLayout"
+                        app:layout_constraintStart_toEndOf="@id/tueLinearLayout"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <FrameLayout
                         android:id="@+id/wedLinearLayout"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:background="@drawable/table_left_stroke"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/thuLinearLayout"
                         app:layout_constraintStart_toEndOf="@id/tueLinearLayout"
                         app:layout_constraintTop_toTopOf="parent" />
 
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/thuLinearLayout"
+                        app:layout_constraintStart_toEndOf="@id/wedLinearLayout"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
                     <FrameLayout
                         android:id="@+id/thuLinearLayout"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:background="@drawable/table_left_stroke"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/friLinearLayout"
                         app:layout_constraintStart_toEndOf="@id/wedLinearLayout"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="0dp"
+                        android:background="@color/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/friLinearLayout"
+                        app:layout_constraintStart_toEndOf="@id/thuLinearLayout"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <FrameLayout
                         android:id="@+id/friLinearLayout"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
-                        android:background="@drawable/table_left_stroke"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/thuLinearLayout"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <LinearLayout
-                        android:id="@+id/tableWidthDividerContainer"
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:orientation="vertical"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/colorPrimary" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="59dp"
-                            android:background="@color/colorPrimary" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="59dp"
-                            android:background="@color/colorPrimary" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="59dp"
-                            android:background="@color/colorPrimary" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="59dp"
-                            android:background="@color/colorPrimary" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="59dp"
-                            android:background="@color/colorPrimary" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="59dp"
-                            android:background="@color/colorPrimary" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="59dp"
-                            android:background="@color/colorPrimary" />
-
-                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/noTimeTableTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/is_not_exist_timetable_please_create_timetable"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintVertical_bias="0.4"
-                        android:visibility="gone"
-                        android:text="@string/no_timetable_please_create_timetable"
-                        tools:visibility="visible"/>
+                        tools:visibility="visible" />
 
                     <Button
                         android:id="@+id/addTimeTableButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
+                        android:text="@string/create_new_timetable"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/noTimeTableTextView"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:visibility="gone"
-                        android:text="@string/create_new_timetable"
-                        tools:visibility="visible"/>
+                        tools:visibility="visible" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 

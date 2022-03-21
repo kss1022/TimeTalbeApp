@@ -3,8 +3,9 @@ package com.example.suwon_university_community.data.repository.user
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class DefaultUserRepository(
+class DefaultUserRepository @Inject constructor(
     private val fireStore: FirebaseFirestore,
     private val ioDispatcher: CoroutineDispatcher
 ) : UserRepository {

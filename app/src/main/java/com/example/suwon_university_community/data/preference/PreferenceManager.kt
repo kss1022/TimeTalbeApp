@@ -14,7 +14,6 @@ class PreferenceManager(private val preferences: SharedPreferences) {
 
         private const val INVALID_STRING_VALUE = false
         private const val INVALID_BOOLEAN_VALUE = false
-        private const val INVALID_MAIN_TIME_TABLE_ID = 2201
         private const val INVALID_LONG_VALUE = Long.MIN_VALUE
     }
 
@@ -80,12 +79,20 @@ class PreferenceManager(private val preferences: SharedPreferences) {
      * Main TimeTable id
      */
 
-    fun putMainTimeTableId(timeTableId: Int) {
-        editor.putInt(KEY_TIME_TABLE_MAIN, timeTableId)
+    fun putMainTimeTableId(timeTableId: Long) {
+        editor.putLong(KEY_TIME_TABLE_MAIN, timeTableId)
         editor.apply()
     }
 
-    fun putMainTimeTableId(): Int = preferences.getInt(KEY_TIME_TABLE_MAIN, INVALID_MAIN_TIME_TABLE_ID)
+    fun getMainTimeTableId(): Long?{
+       val value =  preferences.getLong(KEY_TIME_TABLE_MAIN, INVALID_LONG_VALUE)
+
+        return if(value == INVALID_LONG_VALUE){
+            null
+        }else{
+            value
+        }
+    }
 
 
 }

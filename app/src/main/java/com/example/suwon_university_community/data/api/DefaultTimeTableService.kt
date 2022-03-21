@@ -6,9 +6,10 @@ import com.example.suwon_university_community.data.entity.lecture.LectureEntity
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.tasks.await
+import javax.inject.Inject
 
 
-class DefaultTimeTableService(
+class DefaultTimeTableService  @Inject constructor(
     private val firebaseStore: FirebaseStorage
 ) : TimeTableService {
 

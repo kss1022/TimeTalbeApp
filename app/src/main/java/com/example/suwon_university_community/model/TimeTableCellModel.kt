@@ -7,5 +7,4 @@ data class TimeTableCellModel (
     val name : String,
     val locationAndTimeList : List<TimeTableLocationAndTime>,
     val professorName : String,
-    val timeTableId : Int
 )

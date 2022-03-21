@@ -85,7 +85,6 @@ data class LectureEntity(
             grade = grade ?: 0,
             locationAndTimeList = locationAndTime,
             professorName = professorName ?: "",
-            timeTableId = timeTableId
         )
     }
 }

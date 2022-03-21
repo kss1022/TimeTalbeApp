@@ -53,7 +53,8 @@
 
 
     <!-- 시간표-->
-    <string name="no_timetable_please_create_timetable">새로운 시간표를 만들어주세요!!!</string>
+    <string name="is_not_exist_timetable_please_create_timetable">새로운 시간표를 만들어주세요!!!</string>
     <string name="create_new_timetable">새로운 시간표\n만들기</string>
+    <string name="timetable_name">시간표 이름</string>
 
 </resources>

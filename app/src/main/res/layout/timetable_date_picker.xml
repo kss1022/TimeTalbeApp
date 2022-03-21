@@ -4,23 +4,36 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
+    <EditText
+        android:id="@+id/tableNameEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:hint="@string/timetable_name"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"/>
+
     <NumberPicker
         android:id="@+id/yearNumberPicker"
-        android:layout_width="63dp"
-        android:layout_height="124dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/semesterNumberPicker"
         app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/tableNameEditText"/>
 
 
     <NumberPicker
         android:id="@+id/semesterNumberPicker"
-        android:layout_width="63dp"
-        android:layout_height="124dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         app:layout_constraintStart_toEndOf="@+id/yearNumberPicker"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@id/yearNumberPicker"
         app:layout_constraintEnd_toEndOf="parent"/>
 
 

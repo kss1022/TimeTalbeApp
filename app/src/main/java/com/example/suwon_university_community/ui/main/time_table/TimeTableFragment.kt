@@ -3,7 +3,6 @@ package com.example.suwon_university_community.ui.main.time_table
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -15,12 +14,11 @@ import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.suwon_university_community.R
-import com.example.suwon_university_community.data.entity.lecture.LectureEntity
-import com.example.suwon_university_community.data.entity.timetable.TimeTableCellEntity
 import com.example.suwon_university_community.databinding.FragmentTimeTableBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
+import com.example.suwon_university_community.model.TimeTableCellModel
 import com.example.suwon_university_community.ui.base.BaseFragment
-import com.example.suwon_university_community.ui.main.time_table.addTimeTable.AddTimeTableActivity
+import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivity
 import javax.inject.Inject
 
 // TODO: 기본적으로 18시까지는 보여준다.  만약 더 추가된다면 어떻게 할것인가???
@@ -61,7 +59,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
     private fun bindViews() {
         binding.addButton.setOnClickListener {
             addTimerLauncher.launch(
-                AddTimeTableActivity.newIntent(requireContext())
+                AddTimeTableCellActivity.newIntent(requireContext() , viewModel.mainTimeTable)
             )
         }
 
@@ -74,56 +72,6 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         }
     }
 
-    // TODO:  EditText도 추가하여 시간표 이름을 받는다.
-    //  setOnValueChangedListener 를 통해 값을 받아서 EditText를 설정해준다.
-
-
-    private fun showAlertDialog() {
-        val numberPickers =
-            LayoutInflater.from(requireContext()).inflate(R.layout.timetable_date_picker, null)
-
-        val defaultYear = 2022
-        val minYear = 2015
-
-        val year = numberPickers.findViewById<NumberPicker>(R.id.yearNumberPicker).apply {
-            wrapSelectorWheel = false
-            descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
-
-            maxValue = defaultYear
-            minValue = minYear
-            
-            val yearDisplayArray = arrayListOf<String>()
-            
-            for( i in 0 .. (defaultYear -minYear) ) {
-                yearDisplayArray.add( "${defaultYear-i}년도")
-            }
-
-            displayedValues = yearDisplayArray.toArray(arrayOfNulls<String>(yearDisplayArray.size))
-        }
-        val semester = numberPickers.findViewById<NumberPicker>(R.id.semesterNumberPicker).apply {
-            maxValue = 2
-            minValue = 1
-            
-            displayedValues = arrayOf(
-                "1학기" , "2학기"
-            )
-        }
-
-        AlertDialog.Builder(requireContext())
-            .setView(numberPickers)
-            .setPositiveButton("OK") { dialog, _ ->
-                Log.e("yearNumberPicker",
-                    year.displayedValues[year.value - minYear]
-                )
-                Log.e("semesterNumberPicker", "${semester.value}")
-                dialog.dismiss()
-            }
-            .setNegativeButton("NO") { dialog, _ ->
-                dialog.dismiss()
-            }.show()
-    }
-    
-    
 
     override fun observeData() = viewModel.timeTableStateLiveData.observe(viewLifecycleOwner) {
         when (it) {
@@ -131,14 +79,13 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 handleLoadingState()
             }
 
-            is TimeTableState.Success -> {
-                handleSuccessState()
-            }
-
             is TimeTableState.NoTable -> {
                 handleNoTableState()
             }
 
+            is TimeTableState.Success -> {
+                handleSuccessState(it)
+            }
 
             is TimeTableState.Error -> {
                 handleErrorState(it)
@@ -155,13 +102,21 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         scrollView.isGone = true
     }
 
-    private fun handleSuccessState() = with(binding) {
+    private fun handleSuccessState(timeTableState: TimeTableState.Success) = with(binding) {
         progressBar.isGone = true
         errorMessageTextView.isGone = true
 
         scrollView.visibility = View.VISIBLE
         noTimeTableTextView.isGone = true
         addTimeTableButton.isGone = true
+
+
+
+        addLectureList(
+            timeTableState.timeTableWithCell.timeTableCell.map {
+            it.toModel()
+            }
+        )
     }
 
     private fun handleNoTableState() = with(binding) {
@@ -170,8 +125,13 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
         scrollView.visibility = View.VISIBLE
         noTimeTableTextView.visibility = View.VISIBLE
+        noTimeTableTextView.text =
+            getString(R.string.is_not_exist_timetable_please_create_timetable)
+
         addTimeTableButton.visibility = View.VISIBLE
+        addTimeTableButton.text = getString(R.string.create_new_timetable)
     }
+
 
 
     private fun handleErrorState(timeTableState: TimeTableState.Error) = with(binding) {
@@ -184,35 +144,103 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
     }
 
 
-    private fun addLectureList(lectureList: List<LectureEntity>, timeTableId: Int) {
+    private fun showAlertDialog() {
+        val numberPickers =
+            LayoutInflater.from(requireContext()).inflate(R.layout.timetable_date_picker, null)
 
-        lectureList.forEach { lecture ->
-            addLecture(requireContext(), lecture.toTimeTableCellEntity(timeTableId))
+        val year = getYearNumberPicker(numberPickers)
+        val semester = getSemesterNumberPicker(numberPickers)
+        val tableName = numberPickers.findViewById<EditText>(R.id.tableNameEditText)
+
+
+
+        AlertDialog.Builder(requireContext())
+            .setView(numberPickers)
+            .setTitle("시간표 만들기")
+            .setPositiveButton("OK") { dialog, _ ->
+
+
+                //year.displayedValues[year.value - MIN_YEAR]
+                //semester.value
+                var timeTableName: String = tableName.text.toString()
+
+                if (timeTableName.isBlank()) {
+                    timeTableName =
+                        "${year.displayedValues[year.value - MIN_YEAR]} ${semester.value}학기"
+                }
+
+                viewModel.saveNewTimeTable(
+                    timeTableName,
+                    (year.displayedValues[year.value - MIN_YEAR]).substring(0..3).toInt(),
+                    semester.value
+                )
+
+                dialog.dismiss()
+            }
+            .setNegativeButton("NO") { dialog, _ ->
+                dialog.dismiss()
+            }.show()
+    }
+
+
+    private fun getYearNumberPicker(numberPickers: View): NumberPicker =
+        numberPickers.findViewById<NumberPicker>(R.id.yearNumberPicker).apply {
+            wrapSelectorWheel = false
+            descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
+
+            maxValue = DEFAULT_YEAR
+            minValue = MIN_YEAR
+
+            val yearDisplayArray = arrayListOf<String>()
+
+            for (i in 0..(DEFAULT_YEAR - MIN_YEAR)) {
+                yearDisplayArray.add("${DEFAULT_YEAR - i}년도")
+            }
+
+            displayedValues = yearDisplayArray.toArray(arrayOfNulls<String>(yearDisplayArray.size))
+        }
+
+
+    private fun getSemesterNumberPicker(numberPickers: View): NumberPicker =
+        numberPickers.findViewById<NumberPicker>(R.id.semesterNumberPicker).apply {
+            maxValue = 2
+            minValue = 1
+
+            displayedValues = arrayOf(
+                "1학기", "2학기"
+            )
+        }
+
+
+    private fun addLectureList(timetableCellModelList: List<TimeTableCellModel>) {
+
+        timetableCellModelList.forEach { cell ->
+            addLecture(requireContext(), cell)
         }
     }
 
 
-    private fun addLecture(context: Context, lecture: TimeTableCellEntity) {
+    private fun addLecture(context: Context, model: TimeTableCellModel) {
 
-        lecture.locationAndTimeList.forEach { locationAndTime ->
+        model.locationAndTimeList.forEach { locationAndTime ->
             val location = locationAndTime.location
             val day = locationAndTime.day
             val time = locationAndTime.time
 
-            val button = createButton(context, lecture, location, time)
+            val button = createButton(context, model, location, time)
 
-            addButton(day, button, lecture)
+            addButton(day, button, model)
         }
     }
 
 
     private fun createButton(
         context: Context,
-        timeTableCell: TimeTableCellEntity,
+        model: TimeTableCellModel,
         location: String,
         time: List<Int>
     ): Button = Button(context).apply {
-        setText("${timeTableCell.name}\n${location}")
+        setText("${model.name}\n${location}")
         textSize = 10f
         gravity = Gravity.START
 
@@ -220,6 +248,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         setPadding(6.fromDpToPx(), 6.fromDpToPx(), 6.fromDpToPx(), 6.fromDpToPx())
 
         id = ViewCompat.generateViewId()
+        setBackgroundResource(R.color.red)
 
         setOnClickListener { view ->
             val id = addButtonList.filter {
@@ -241,6 +270,8 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
         lp.gravity = Gravity.START
         lp.topMargin = (time[0] * 60 + 29).fromDpToPx()
+        lp.marginStart = 2.fromDpToPx()
+        lp.marginEnd = 2.fromDpToPx()
 
         layoutParams = lp
     }
@@ -249,14 +280,14 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
     private fun addButton(
         day: String,
         button: Button,
-        timeTableCell: TimeTableCellEntity
+        model: TimeTableCellModel
     ) {
         when (day) {
             "월" -> {
                 binding.monLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
-                        timeTableCell.cellId,
+                        model.id,
                         button.id,
                         binding.monLinearLayout.id
                     )
@@ -267,7 +298,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 binding.tueLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
-                        timeTableCell.cellId,
+                        model.id,
                         button.id,
                         binding.tueLinearLayout.id
                     )
@@ -278,7 +309,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 binding.wedLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
-                        timeTableCell.cellId,
+                        model.id,
                         button.id,
                         binding.wedLinearLayout.id
                     )
@@ -289,7 +320,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 binding.thuLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
-                        timeTableCell.cellId,
+                        model.id,
                         button.id,
                         binding.thuLinearLayout.id
                     )
@@ -300,7 +331,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 binding.friLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
-                        timeTableCell.cellId,
+                        model.id,
                         button.id,
                         binding.friLinearLayout.id
                     )
@@ -316,5 +347,8 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         fun newInstance() = TimeTableFragment()
 
         const val TAG = "TimeTableFragment"
+
+        private const val DEFAULT_YEAR = 2022
+        private const val MIN_YEAR = 2015
     }
 }

@@ -7,8 +7,9 @@ import com.example.suwon_university_community.data.db.dao.LectureDao
 import com.example.suwon_university_community.data.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class DefaultLectureRepository(
+class DefaultLectureRepository  @Inject constructor(
     private val timeTableService: TimeTableService,
     private val preferenceManager: PreferenceManager,
     private val lectureDao: LectureDao,
