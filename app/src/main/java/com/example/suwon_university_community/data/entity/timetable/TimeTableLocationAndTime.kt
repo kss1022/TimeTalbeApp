@@ -7,6 +7,6 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class TimeTableLocationAndTime(
     val location: String,
-    val day: String,
+    val day: Char,
     val time: List<Int>
 ) : Parcelable

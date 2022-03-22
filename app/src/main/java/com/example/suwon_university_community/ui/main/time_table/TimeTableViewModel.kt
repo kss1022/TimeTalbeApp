@@ -69,7 +69,7 @@ class TimeTableViewModel @Inject constructor(
 //                distinguish = "ㅇ",
 //                grade = 1,
 //                locationAndTimeList = listOf(
-//                    TimeTableLocationAndTime("종강B102", "월" , listOf(1,2,3))
+//                    TimeTableLocationAndTime("종강B102", '월' , listOf(1,2,3))
 //                ),
 //                professorName = "교수이름",
 //            )

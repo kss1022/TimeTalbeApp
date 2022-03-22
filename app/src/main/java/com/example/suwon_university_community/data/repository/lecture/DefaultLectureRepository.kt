@@ -4,6 +4,8 @@ package com.example.suwon_university_community.data.repository.lecture
 import android.util.Log
 import com.example.suwon_university_community.data.api.TimeTableService
 import com.example.suwon_university_community.data.db.dao.LectureDao
+import com.example.suwon_university_community.data.entity.lecture.CollegeCategory
+import com.example.suwon_university_community.data.entity.lecture.LectureEntity
 import com.example.suwon_university_community.data.preference.PreferenceManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
@@ -29,12 +31,20 @@ class DefaultLectureRepository  @Inject constructor(
                 return@withContext
             }
 
-
             lectureDao.insertLectureList(updateData)
+
             preferenceManager.putUpdatedTime(fileUpdatedTimeMillis)
             Log.d("TimeRepository", "Updated Success")
         }
     }
 
 
+
+    override suspend fun getLectureList(category: CollegeCategory): List<LectureEntity> = withContext(ioDispatcher){
+        if( category == CollegeCategory.ALL) {
+            lectureDao.getAll()
+        } else{
+            lectureDao.getLectureList(category)
+        }
+    }
 }

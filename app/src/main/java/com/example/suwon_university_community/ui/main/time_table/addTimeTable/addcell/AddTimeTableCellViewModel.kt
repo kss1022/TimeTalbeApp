@@ -2,7 +2,6 @@ package com.example.suwon_university_community.ui.main.time_table.addTimeTable.a
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.suwon_university_community.data.entity.timetable.TimeTableWithCell
 import com.example.suwon_university_community.data.repository.timetable.TimeTableRepository
 import com.example.suwon_university_community.ui.base.BaseViewModel
 import kotlinx.coroutines.Job
@@ -18,8 +17,6 @@ class AddTimeTableCellViewModel @Inject constructor(
 
     override fun fetchData(): Job = viewModelScope.launch{
         addTimeTableStateLiveData.value = AddTimeTableCellState.Loading
-
-
 
         addTimeTableStateLiveData.value = AddTimeTableCellState.Success
     }

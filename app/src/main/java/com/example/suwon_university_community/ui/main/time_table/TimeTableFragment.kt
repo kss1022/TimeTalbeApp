@@ -100,6 +100,9 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         errorMessageTextView.isGone = true
 
         scrollView.isGone = true
+        addButton.isEnabled = false
+        listButton.isEnabled = false
+
     }
 
     private fun handleSuccessState(timeTableState: TimeTableState.Success) = with(binding) {
@@ -110,10 +113,12 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         noTimeTableTextView.isGone = true
         addTimeTableButton.isGone = true
 
+        addButton.isEnabled = true
+        listButton.isEnabled = true
 
 
         addLectureList(
-            timeTableState.timeTableWithCell.timeTableCell.map {
+            timeTableState.timeTableWithCell.timeTableCellList.map {
             it.toModel()
             }
         )
@@ -130,6 +135,8 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
         addTimeTableButton.visibility = View.VISIBLE
         addTimeTableButton.text = getString(R.string.create_new_timetable)
+
+        addButton.isEnabled = false
     }
 
 
@@ -139,6 +146,9 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         errorMessageTextView.visibility = View.VISIBLE
 
         scrollView.isGone = true
+
+        addButton.isEnabled = false
+        listButton.isEnabled = false
 
         errorMessageTextView.text = getString(timeTableState.massageId)
     }
@@ -278,12 +288,12 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
 
     private fun addButton(
-        day: String,
+        day: Char,
         button: Button,
         model: TimeTableCellModel
     ) {
         when (day) {
-            "월" -> {
+            '월' -> {
                 binding.monLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -294,7 +304,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 )
             }
 
-            "화" -> {
+            '화' -> {
                 binding.tueLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -305,7 +315,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 )
             }
 
-            "수" -> {
+            '수' -> {
                 binding.wedLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -316,7 +326,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 )
             }
 
-            "목" -> {
+            '목' -> {
                 binding.thuLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -327,7 +337,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 )
             }
 
-            "금" -> {
+            '금' -> {
                 binding.friLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(

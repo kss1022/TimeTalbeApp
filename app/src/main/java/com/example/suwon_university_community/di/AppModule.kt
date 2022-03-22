@@ -98,13 +98,14 @@ object AppModule {
     fun provideRoomTypeConverter(gson: Gson): RoomTypeConverter = RoomTypeConverter(gson)
 }
 
-
 @Module
 abstract class AppModuleBinds {
 
     @Singleton
     @Binds
-    abstract fun provideResourceProvider(provider: DefaultResourceProvider): ResourceProvider
+    abstract fun provideResourceProvider(
+        provider: DefaultResourceProvider
+    ): ResourceProvider
 
 
     @Singleton
@@ -112,7 +113,6 @@ abstract class AppModuleBinds {
     abstract fun provideTimeTableService(
         service: DefaultTimeTableService
     ): TimeTableService
-
 
 
     @Singleton
@@ -127,8 +127,6 @@ abstract class AppModuleBinds {
     abstract fun provideLectureRepository(
         repo: DefaultLectureRepository
     ): LectureRepository
-
-
 
 
     @Singleton

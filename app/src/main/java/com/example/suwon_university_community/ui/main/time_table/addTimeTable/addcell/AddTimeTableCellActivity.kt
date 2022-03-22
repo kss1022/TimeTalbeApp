@@ -3,7 +3,6 @@ package com.example.suwon_university_community.ui.main.time_table.addTimeTable.a
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.Button
@@ -12,26 +11,33 @@ import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
-import com.example.suwon_university_community.data.entity.lecture.LectureEntity
-import com.example.suwon_university_community.data.entity.timetable.TimeTableCellEntity
+import com.example.suwon_university_community.data.entity.lecture.CollegeCategory
 import com.example.suwon_university_community.data.entity.timetable.TimeTableWithCell
 import com.example.suwon_university_community.databinding.ActivityAddTimeTableCellBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
+import com.example.suwon_university_community.model.TimeTableCellModel
 import com.example.suwon_university_community.ui.base.BaseActivity
+import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.lecturelist.LectureListFragment
+import com.example.suwon_university_community.widget.adapter.LectureListFragmentAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
 
-class AddTimeTableCellActivity : BaseActivity<AddTimeTableCellViewModel, ActivityAddTimeTableCellBinding>(){
+
+class AddTimeTableCellActivity :
+    BaseActivity<AddTimeTableCellViewModel, ActivityAddTimeTableCellBinding>() {
 
 
     @Inject
     override lateinit var viewModelFactory: ViewModelProvider.Factory
 
-
+    private lateinit var viewPagerAdapter: LectureListFragmentAdapter
 
     override val viewModel: AddTimeTableCellViewModel by viewModels<AddTimeTableCellViewModel> {
         viewModelFactory
     }
-    override fun getViewBinding(): ActivityAddTimeTableCellBinding = ActivityAddTimeTableCellBinding.inflate(layoutInflater)
+
+    override fun getViewBinding(): ActivityAddTimeTableCellBinding =
+        ActivityAddTimeTableCellBinding.inflate(layoutInflater)
 
 
     private var addButtonList: ArrayList<Triple<Long, Int, Int>> =
@@ -43,65 +49,94 @@ class AddTimeTableCellActivity : BaseActivity<AddTimeTableCellViewModel, Activit
     }
 
     override fun initViews() {
-        binding.toolBar.setNavigationOnClickListener {
+
+        val timetableWithCell = intent.getParcelableExtra<TimeTableWithCell>(EXTRA_TIME_TABLE)
+
+        initTimeTable(timetableWithCell)
+        initViewPager()
+        bindViews()
+    }
+
+    private fun initTimeTable(timetableWithCell: TimeTableWithCell?) {
+        timetableWithCell?.let { timetableWithCell ->
+            if (timetableWithCell.timeTableCellList.isNullOrEmpty().not()) {
+                addLectureList(
+                    timetableWithCell.timeTableCellList.map { it.toModel() }
+                )
+            }
+        }
+
+    }
+
+    private fun initViewPager() = with(binding) {
+
+
+        val collegeCategories = CollegeCategory.values()
+
+        if (::viewPagerAdapter.isInitialized.not()) {
+            val collegeList = collegeCategories.map {
+                LectureListFragment.newInstance(it)
+            }
+
+            viewPagerAdapter = LectureListFragmentAdapter(
+                this@AddTimeTableCellActivity,
+                collegeList
+            )
+
+            viewPager.adapter = viewPagerAdapter
+            viewPager.offscreenPageLimit = collegeCategories.size
+
+            TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+                tab.setText(collegeCategories[position].categoryNameId)
+            }.attach()
+        }
+
+
+    }
+
+    private fun bindViews() = with(binding) {
+
+
+
+        toolBar.setNavigationOnClickListener {
             setResult(Activity.RESULT_OK)
             finish()
         }
 
-        val timetableWithCell = intent.getParcelableExtra<TimeTableWithCell>(EXTRA_TIME_TABLE)
-        Log.e("Intent", timetableWithCell.toString())
 
-
-        bindViews()
-    }
-
-    private fun bindViews() = with(binding){
-        binding.addButton.setOnClickListener {
-
-            addLecture( this@AddTimeTableCellActivity, LectureEntity(
-                id = 1,
-                name = "강의 추가",
-                distinguish = "ㅇㅁㄹ",
-                grade = 1,
-                time = "인문211(월:1 :1,2)",
-                collegeCategory = null,
-                department = null,
-                professorName = "교수"
-            ).toTimeTableCellEntity(2021))
+        addButton.setOnClickListener {
         }
     }
 
 
-
-    private fun addLectureList(lectureList: List<LectureEntity>, timeTableId: Int) {
-
-        lectureList.forEach { lecture ->
-            addLecture(this, lecture.toTimeTableCellEntity(timeTableId))
+    private fun addLectureList(modelList: List<TimeTableCellModel>) {
+        modelList.forEach { model ->
+            addLecture(this, model)
         }
     }
 
 
-    private fun addLecture(context: Context, lecture: TimeTableCellEntity) {
+    private fun addLecture(context: Context, model: TimeTableCellModel) {
 
-        lecture.locationAndTimeList.forEach { locationAndTime ->
+        model.locationAndTimeList.forEach { locationAndTime ->
             val location = locationAndTime.location
             val day = locationAndTime.day
             val time = locationAndTime.time
 
-            val button = createButton(context, lecture, location, time)
+            val button = createButton(context, model, location, time)
 
-            addButton(day, button, lecture)
+            addButton(day, button, model)
         }
     }
 
 
     private fun createButton(
         context: Context,
-        timeTableCell: TimeTableCellEntity,
+        model: TimeTableCellModel,
         location: String,
         time: List<Int>
     ): Button = Button(context).apply {
-        setText("${timeTableCell.name}\n${location}")
+        setText("${model.name}\n${location}")
         textSize = 10f
         gravity = Gravity.START
 
@@ -136,34 +171,64 @@ class AddTimeTableCellActivity : BaseActivity<AddTimeTableCellViewModel, Activit
 
 
     private fun addButton(
-        day: String,
+        day: Char,
         button: Button,
-        timeTableCell: TimeTableCellEntity
+        model: TimeTableCellModel
     ) {
         when (day) {
-            "월" -> {
+            '월' -> {
                 binding.monLinearLayout.addView(button)
-                addButtonList.add(Triple(timeTableCell.cellId, button.id, binding.monLinearLayout.id))
+                addButtonList.add(
+                    Triple(
+                        model.id,
+                        button.id,
+                        binding.monLinearLayout.id
+                    )
+                )
             }
 
-            "화" -> {
+            '화' -> {
                 binding.tueLinearLayout.addView(button)
-                addButtonList.add(Triple(timeTableCell.cellId, button.id, binding.tueLinearLayout.id))
+                addButtonList.add(
+                    Triple(
+                        model.id,
+                        button.id,
+                        binding.tueLinearLayout.id
+                    )
+                )
             }
 
-            "수" -> {
+            '수' -> {
                 binding.wedLinearLayout.addView(button)
-                addButtonList.add(Triple(timeTableCell.cellId, button.id, binding.wedLinearLayout.id))
+                addButtonList.add(
+                    Triple(
+                        model.id,
+                        button.id,
+                        binding.wedLinearLayout.id
+                    )
+                )
             }
 
-            "목" -> {
+            '목' -> {
                 binding.thuLinearLayout.addView(button)
-                addButtonList.add(Triple(timeTableCell.cellId, button.id, binding.thuLinearLayout.id))
+                addButtonList.add(
+                    Triple(
+                        model.id,
+                        button.id,
+                        binding.thuLinearLayout.id
+                    )
+                )
             }
 
-            "금" -> {
+            '금' -> {
                 binding.friLinearLayout.addView(button)
-                addButtonList.add(Triple(timeTableCell.cellId, button.id, binding.friLinearLayout.id))
+                addButtonList.add(
+                    Triple(
+                        model.id,
+                        button.id,
+                        binding.friLinearLayout.id
+                    )
+                )
             }
 
             else -> Unit
@@ -171,12 +236,12 @@ class AddTimeTableCellActivity : BaseActivity<AddTimeTableCellViewModel, Activit
     }
 
 
+    companion object {
+        fun newIntent(context: Context, timeTableWithCell: TimeTableWithCell) =
+            Intent(context, AddTimeTableCellActivity::class.java).apply {
+                putExtra(EXTRA_TIME_TABLE, timeTableWithCell)
+            }
 
-    companion object{
-        fun newIntent(context : Context , timeTableWithCell: TimeTableWithCell ) = Intent( context, AddTimeTableCellActivity::class.java).apply {
-            putExtra( EXTRA_TIME_TABLE, timeTableWithCell)
-        }
-
-         const val EXTRA_TIME_TABLE = "time_table"
+        const val EXTRA_TIME_TABLE = "time_table"
     }
 }

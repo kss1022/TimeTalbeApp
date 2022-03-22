@@ -9,7 +9,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 
-class DefaultTimeTableService  @Inject constructor(
+class DefaultTimeTableService @Inject constructor(
     private val firebaseStore: FirebaseStorage
 ) : TimeTableService {
 
@@ -31,15 +31,27 @@ class DefaultTimeTableService  @Inject constructor(
                 .drop(1)
                 .map { it.split(",") }
                 .map {
+
+
+                    var locationAndTime = it[3]
+
+                    val locationNum = it.size - CELL_COUNT
+
+                    when(locationNum){
+                        1->{ locationAndTime =locationAndTime +","+ it[4]}
+                        2->{locationAndTime = locationAndTime + "," +it[4] + "," + it[5] }
+                        3->{locationAndTime = locationAndTime + ","+ it[4] + ","+  it[5] +"," + it[6]}
+                    }
+
+
                     LectureEntity(
-                        id = hashCode().toLong(),
                         name = it[0],
                         distinguish = it[1],
                         grade = it[2].toInt(),
-                        time = it[3],
+                        time = locationAndTime,
                         collegeCategory = CollegeCategory.ICT,
-                        department = it[4].toIctDepartment(),
-                        professorName = it[5],
+                        departmentCategory = it[it.size - 2].toIctDepartment(),
+                        professorName = it[it.size - 1],
                     )
                 }
         } catch (e: Exception) {
@@ -85,5 +97,6 @@ class DefaultTimeTableService  @Inject constructor(
 
     companion object {
         private const val ICT = "ict_data.csv"
+        private const val CELL_COUNT = 6
     }
 }

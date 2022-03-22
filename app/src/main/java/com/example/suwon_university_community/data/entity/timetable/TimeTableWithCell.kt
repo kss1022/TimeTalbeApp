@@ -15,5 +15,5 @@ data class TimeTableWithCell (
         entityColumn = "cellId",
         associateBy = Junction(TimeTableCrossRefEntity::class)
     )
-    val timeTableCell : List<TimeTableCellEntity>
+    val timeTableCellList : List<TimeTableCellEntity>
 ) : Parcelable
