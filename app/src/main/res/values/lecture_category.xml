@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="all">전체</string>
+    <string name="elective">교양</string>
+    <string name="humanities_social">인문사회대학</string>
+    <string name="business_economy">경상대학</string>
+    <string name="industries">공과대학</string>
+    <string name="health_science">건강과학대학</string>
+    <string name="art">미술대학</string>
+    <string name="ict">ICT융합대학</string>
+    <string name="music">음악대학</string>
+    <string name="international">국제대학</string>
+    <string name="fusion_culture_art">융합문화예술대학</string>
+
+
+    <string name="all_type">전체</string>
+
+    <!--교양-->
+    <string name="elective_type">교양</string>
+    <string name="elective_type_night">교양(야)</string>
+
+    <!--인문사회대학-->
+    <string name="humanities_social_type_human">인문학부</string>
+    <string name="humanities_social_type_kor">국어국문학</string>
+    <string name="humanities_social_type_history">사학</string>
+
+    <string name="humanities_social_foreign">외국어학부</string>
+    <string name="humanities_social_eng">영어영문학</string>
+    <string name="humanities_social_franc">프랑스어문학</string>
+    <string name="humanities_social_russia">러시아어문학</string>
+    <string name="humanities_social_japan">일어일문학</string>
+    <string name="humanities_social_china">중어중문학</string>
+
+    <string name="humanities_social_type_law_and_admin">법·행정학부</string>
+    <string name="humanities_social_type_law">법학</string>
+    <string name="humanities_social_type_admin">행정학</string>
+    <string name="humanities_social_type_admin_night">행정학과(야)</string>
+
+    <string name="humanities_social_type_media">미디어커뮤니케이션학과</string>
+
+    <string name="humanities_social_type_fire_night">소방행정학과</string>
+
+    <!--경상대학-->
+    <string name="business_economy_type_manage_depart">경영학부</string>
+    <string name="business_economy_type_manage">경영</string>
+    <string name="business_economy_type_global">글로벌비즈니스</string>
+    <string name="business_economy_type_account">회계</string>
+
+    <string name="business_economy_type_economic">경제학부</string>
+    <string name="business_economy_type_economic_finace">경제금융</string>
+    <string name="business_economy_type_international_dev">국제개발협력</string>
+
+    <string name="business_economy_type_hotel_tour">호텔관광학부</string>
+    <string name="business_economy_type_hotel_manage">호텔경영</string>
+    <string name="business_economy_type_hotel_eat_manage">외식경영</string>
+    <string name="business_economy_type_hotel_tour_manage">관광경영</string>
+
+
+    <!--공과대학-->
+    <string name="industries_type_construction_environmental_energy">건설환경에너지공학부</string>
+    <string name="industries_type_construction_environmental">건설환경공학</string>
+    <string name="industries_type_environmental_energy">환경에너지공학</string>
+
+    <string name="industries_type_architectural_city">건축도시부동산학부</string>
+    <string name="industries_type_architectural">건축학</string>
+    <string name="industries_type_city">도시부동산학</string>
+
+
+    <string name="industries_type_industrial_machinery">산업및기계공학부</string>
+    <string name="industries_type_industry">산업공학</string>
+    <string name="industries_type_machinery">기계공학</string>
+
+    <string name="industries_type_electronical_electronic">전자재료공학부</string>
+    <string name="industries_type_electronical_materials">전자재료공학</string>
+    <string name="industries_type_electronical_physics">전자물리</string>
+
+
+    <string name="industries_type_electronic_electron">전기전자공학부</string>
+    <string name="industries_type_electronic">전기공학</string>
+    <string name="industries_type_electron">전자공학</string>
+
+    <string name="industries_type_chemistry_new_material">화학공학·신소재공학부</string>
+    <string name="industries_type_new_material">신소재공학</string>
+    <string name="industries_type_chemistry">화학공학</string>
+
+
+    <string name="industries_type_biochemistry">바이오화학산업학부</string>
+    <string name="industries_type_bio_science">바이오이언스</string>
+    <string name="industries_type_bio_science_marketing">바이오공학 및 마케팅</string>
+    <string name="industries_type_fusion_chemistry">융합화학산업</string>
+
+    <string name="industries_type_system_semiconductor">시스템반도체융복합전공</string>
+
+    <!--건강과학대학-->
+    <string name="health_science_type_nurse">간호학과</string>
+    <string name="health_science_type_food">식품영양학과</string>
+
+    <string name="health_science_type_sport_science">스포츠과학부</string>
+    <string name="health_science_type_exercise_health">운동건강관리</string>
+    <string name="health_science_type_physical">체육학</string>
+    <string name="health_science_type_leisure">레저스포츠</string>
+
+    <string name="health_science_type_child">아동가족복지학과</string>
+    <string name="health_science_type_clothing">의류학과</string>
+
+
+    <!--미술대학-->
+    <string name="art_type_sculpture">조형예술학부</string>
+    <string name="art_type_sculpture1">회화</string>
+    <string name="art_type_sculpture2">조소</string>
+
+    <string name="art_type_design">디자인학부</string>
+    <string name="art_type_craft">공예디자인</string>
+    <string name="art_type_communication">커뮤니케이션디자인</string>
+
+    <!--ICT융합대학-->
+    <string name="ict_type_com">컴퓨터학부</string>
+    <string name="ict_type_com_sw">컴퓨터SW</string>
+    <string name="ict_type_media_sw">미디어SW</string>
+
+    <string name="ict_type_info">정보통신학부</string>
+    <string name="ict_type_info_communication">정보통신</string>
+    <string name="ict_type_protection">정보보호</string>
+
+    <string name="ict_type_data">데이터과학부</string>
+
+    <string name="ict_type_cloud_fusion">클라우드융복합전공</string>
+
+
+    <!--음악대학-->
+    <string name="music_type_compos">작곡과</string>
+    <string name="music_type_voice">성악과</string>
+    <string name="music_type_piano">피아노과</string>
+    <string name="music_type_instrument">관현악과</string>
+    <string name="music_type_kor">국악과</string>
+
+
+    <!--국제대학-->
+    <string name="international_type_free_major">자유전공학부</string>
+
+    <!--융합문화예술대학-->
+    <string name="fusion_culture_art_type_culture">문화예술학부</string>
+    <string name="fusion_culture_art_type_movie">영화영상</string>
+    <string name="fusion_culture_art_type_drama">연극</string>
+    <string name="fusion_culture_art_type_dance">무용</string>
+    <string name="fusion_culture_art_type_culture_content">문화컨텐츠테크놀리지</string>
+</resources>

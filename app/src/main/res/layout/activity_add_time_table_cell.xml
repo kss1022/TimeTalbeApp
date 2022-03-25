@@ -182,6 +182,7 @@
 
 
             <ScrollView
+                android:id="@+id/scrollView"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:scrollbars="none">
@@ -557,6 +558,51 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
 
+            <Spinner
+                android:id="@+id/departmentSpinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintEnd_toStartOf="@id/majorSpinner"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tabLayout" />
+
+
+            <Spinner
+                android:id="@+id/majorSpinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintEnd_toStartOf="@id/gradeSpinner"
+                app:layout_constraintStart_toEndOf="@id/departmentSpinner"
+                app:layout_constraintTop_toTopOf="@id/departmentSpinner" />
+
+
+            <Spinner
+                android:id="@+id/gradeSpinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/majorSpinner"
+                app:layout_constraintTop_toTopOf="@id/departmentSpinner" />
+
+
+            <EditText
+                android:id="@+id/searchEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:hint="검색하세요"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/departmentSpinner" />
+
+
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewPager"
                 android:layout_width="0dp"
@@ -564,7 +610,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tabLayout" />
+                app:layout_constraintTop_toBottomOf="@id/searchEditText" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.suwon_university_community.data.entity.lecture.CollegeCategory
 import com.example.suwon_university_community.data.entity.lecture.LectureEntity
 
 
@@ -15,8 +14,8 @@ interface LectureDao {
     @Query("SELECT * FROM lectureentity")
     suspend fun getAll() : List<LectureEntity>
 
-    @Query("SELECT * FROM lectureentity WHERE collegeCategory=:category")
-    suspend fun getLectureList( category: CollegeCategory) : List<LectureEntity>
+    @Query("SELECT * FROM lectureentity WHERE department=:department")
+    suspend fun getLectureList( department: String) : List<LectureEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLectureList(lectureEntityList: List<LectureEntity> )

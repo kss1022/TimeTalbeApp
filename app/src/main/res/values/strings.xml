@@ -42,14 +42,6 @@
     <string name="login_fail">로그인에 실패 했습니다. 이메일과 비밀번호를 확인해주세요😭</string>
     <string name="login_success">로그인에 성공했습니다😊</string>
     <string name="email_is_not_verified">인증되지 않은 이메일 입니다😱.</string>
-    <string name="data_sience">데이터과학부</string>
-    <string name="computer">컴퓨터학부</string>
-    <string name="computer_sw">컴퓨터SW</string>
-    <string name="media_sw">미디어SW</string>
-    <string name="information_communication">정보통신학부</string>
-    <string name="information_secure">정보보호</string>
-    <string name="infromation_communication">정보통신</string>
-    <string name="cloude_convergence">클라우드융복합전공</string>
 
 
     <!-- 시간표-->

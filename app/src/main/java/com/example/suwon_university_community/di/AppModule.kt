@@ -3,8 +3,9 @@ package com.example.suwon_university_community.di
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.room.Room
-import com.example.suwon_university_community.data.api.DefaultTimeTableService
+import com.example.suwon_university_community.data.api.JsonTimeTableService
 import com.example.suwon_university_community.data.api.TimeTableService
+import com.example.suwon_university_community.data.api.response.LectureApi
 import com.example.suwon_university_community.data.db.AppDataBase
 import com.example.suwon_university_community.data.db.dao.LectureDao
 import com.example.suwon_university_community.data.db.dao.TimeTableDao
@@ -31,6 +32,9 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.Dispatchers
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @SuppressLint("JvmStaticProvidesInObjectDetector")
@@ -53,6 +57,30 @@ object AppModule {
     @Provides
     fun provideFireStorage(): FirebaseStorage = Firebase.storage
 
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideLectureApi(retrofit: Retrofit): LectureApi = buildLectureService(retrofit)
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideLectureRetrofit(
+        gsonConverterFactory: GsonConverterFactory,
+        okHttpClient: OkHttpClient
+    ): Retrofit = buildLectureRetrofit(gsonConverterFactory, okHttpClient)
+
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideGsonConvert(): GsonConverterFactory = buildGsonConvertFactory()
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideOKHttpClient(): OkHttpClient = buildOKHttpClient()
 
     @JvmStatic
     @Singleton
@@ -111,7 +139,7 @@ abstract class AppModuleBinds {
     @Singleton
     @Binds
     abstract fun provideTimeTableService(
-        service: DefaultTimeTableService
+        service: JsonTimeTableService
     ): TimeTableService
 
 

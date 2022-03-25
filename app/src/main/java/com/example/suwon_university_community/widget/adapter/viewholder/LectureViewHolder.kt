@@ -5,6 +5,7 @@ import com.example.suwon_university_community.model.LectureModel
 import com.example.suwon_university_community.ui.base.BaseViewModel
 import com.example.suwon_university_community.util.provider.ResourceProvider
 import com.example.suwon_university_community.widget.adapter.listener.AdapterListener
+import com.example.suwon_university_community.widget.adapter.listener.LectureListAdapterListener
 
 class LectureViewHolder(
     private val binding: ViewholderLectureBinding,
@@ -19,11 +20,15 @@ class LectureViewHolder(
 
         nameTextView.text = model.name
         locationTextView.text = model.time
-        detailTextView.text = "${model.distinguish},${model.grade},${model.collegeCategory},${model.departmentCategory}"
+        detailTextView.text = "${model.distinguish},${model.point},${model.department},${model.major}"
         pfNameTextView.text = model.professorName
     }
 
     override fun bindViews(model: LectureModel, adapterListener: AdapterListener) = with(binding) {
-
+        if(adapterListener is LectureListAdapterListener){
+            root.setOnClickListener {
+                adapterListener.selectLecture(model)
+            }
+        }
     }
 }

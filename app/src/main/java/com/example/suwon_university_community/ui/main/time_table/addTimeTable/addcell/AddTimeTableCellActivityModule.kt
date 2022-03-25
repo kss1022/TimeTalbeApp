@@ -28,5 +28,5 @@ abstract class AddTimeTableCellActivityModule {
             ViewModelBuilder::class
         ]
     )
-    abstract fun getLectureListFragment(): LectureListFragment
+    protected abstract fun getLectureListFragment(): LectureListFragment
 }

@@ -7,6 +7,7 @@ import com.example.suwon_university_community.data.db.dao.LectureDao
 import com.example.suwon_university_community.data.entity.lecture.CollegeCategory
 import com.example.suwon_university_community.data.entity.lecture.LectureEntity
 import com.example.suwon_university_community.data.preference.PreferenceManager
+import com.example.suwon_university_community.util.provider.ResourceProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -15,7 +16,8 @@ class DefaultLectureRepository  @Inject constructor(
     private val timeTableService: TimeTableService,
     private val preferenceManager: PreferenceManager,
     private val lectureDao: LectureDao,
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
+    private val resourceProvider: ResourceProvider
 ) : LectureRepository {
 
     override suspend fun refreshLecture() = withContext(ioDispatcher) {
@@ -33,6 +35,7 @@ class DefaultLectureRepository  @Inject constructor(
 
             lectureDao.insertLectureList(updateData)
 
+
             preferenceManager.putUpdatedTime(fileUpdatedTimeMillis)
             Log.d("TimeRepository", "Updated Success")
         }
@@ -40,11 +43,12 @@ class DefaultLectureRepository  @Inject constructor(
 
 
 
-    override suspend fun getLectureList(category: CollegeCategory): List<LectureEntity> = withContext(ioDispatcher){
-        if( category == CollegeCategory.ALL) {
+
+    override suspend fun getLectureList(department: String): List<LectureEntity> = withContext(ioDispatcher){
+        if( department ==  resourceProvider.getString( CollegeCategory.ALL.categoryNameId )) {
             lectureDao.getAll()
         } else{
-            lectureDao.getLectureList(category)
+            lectureDao.getLectureList(department)
         }
     }
 }
