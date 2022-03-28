@@ -266,14 +266,16 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
          var lastTime = 4
 
+
         timetableCellModelList.forEach { timetableCell ->
             timetableCell.locationAndTimeList.forEach {
-                if (it.time.last() > lastTime) lastTime = it.time.last()
+                val tableLastTime = it.time.second / 60 - 12
+                if (  tableLastTime > lastTime) lastTime = tableLastTime
             }
         }
 
-        if (lastTime > 6) {
-            for (i in 0..lastTime - 7) {
+        if (lastTime > 4) {
+            for (i in 0..lastTime - 5) {
                 val gridView = View(requireContext()).apply {
 
                     setBackgroundResource(R.color.colorPrimary)
@@ -329,7 +331,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         context: Context,
         model: TimeTableCellModel,
         location: String,
-        time: List<Int>
+        time: Pair<Int, Int>
     ): Button = Button(context).apply {
         text = getString(R.string.timetable_cell_title, model.name, location)
         setTextColor(ContextCompat.getColor(context, R.color.white))
@@ -368,9 +370,16 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         )
 
 
-        lp.height = ((time.size) * 60).fromDpToPx()
+
+        var minutes = time.second - time.first
+        minutes += (minutes / 60)
+
+        var marginTop = ( time.first -540 )
+        marginTop += marginTop / 60
+
+        lp.height = minutes.fromDpToPx()
         lp.gravity = Gravity.START
-        lp.topMargin = (time[0] * 60 + 29).fromDpToPx()
+        lp.topMargin = marginTop.fromDpToPx()
 
 
         layoutParams = lp

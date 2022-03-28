@@ -63,22 +63,21 @@ class LectureListViewModel @Inject constructor(
 
         val overlappingSet = mutableSetOf<TimeTableCellEntity>()
 
+
         model.toTimeTableCellModel().locationAndTimeList.forEach { selected ->
             addedList.forEach { added ->
                 added.locationAndTimeList.forEach { addedLocationAndTime ->
                     if (selected.day == addedLocationAndTime.day) {
-                        addedLocationAndTime.time.forEach { addedTime ->
-                            selected.time.forEach { selectedTime ->
-                                if (selectedTime == addedTime) {
-                                    overlappingSet.add(added)
-                                }
-                            }
-                        }
 
+                        if( (addedLocationAndTime.time.first > selected.time.second ||
+                                addedLocationAndTime.time.second < selected.time.first ).not()){
+                         overlappingSet.add(added)
+                        }
                     }
                 }
             }
         }
+
 
         if (overlappingSet.isNotEmpty()) {
 

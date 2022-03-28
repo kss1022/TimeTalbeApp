@@ -332,7 +332,7 @@ class AddTimeTableCellActivity :
                     addLectureOnView(this, cellModel)
 
                     binding.scrollView.scrollY =
-                        ((cellModel.locationAndTimeList[0].time[0]) * 60).fromDpToPx()
+                        (cellModel.locationAndTimeList[0].time.first - 540).fromDpToPx()
                 }
 
                 dialog.dismiss()
@@ -448,7 +448,7 @@ class AddTimeTableCellActivity :
         context: Context,
         model: TimeTableCellModel,
         location: String,
-        time: List<Int>
+        time: Pair<Int, Int>
     ): Button = Button(context).apply {
 
         text = getString(R.string.timetable_cell_title, model.name, location)
@@ -483,9 +483,16 @@ class AddTimeTableCellActivity :
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
+        var minutes = time.second - time.first
+        minutes += (minutes / 60)
+
+        var marginTop = ( time.first -540 )
+        marginTop += marginTop / 60
+
+
+        lp.height = minutes.fromDpToPx()
         lp.gravity = Gravity.START
-        lp.height = ((time.size) * 60).fromDpToPx()
-        lp.topMargin = (time[0] * 60 + 29).fromDpToPx()
+        lp.topMargin = marginTop.fromDpToPx()
 
         layoutParams = lp
     }

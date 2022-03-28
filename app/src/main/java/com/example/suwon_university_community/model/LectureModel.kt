@@ -14,13 +14,13 @@ data class LectureModel(
     val time: String?,
     val department: String?,
     val major: String?,
-    val grade : String?,
+    val grade: String?,
     val professorName: String?
-) : Model(id, cellType){
+) : Model(id, cellType) {
 
     //인문211(월1,4,6 토1,2),인문211(월1,4,6 토1,2)
     fun toTimeTableCellModel(): TimeTableCellModel {
-        if(time.isNullOrEmpty()){
+        if (time.isNullOrEmpty()) {
             return TimeTableCellModel(
                 id = id,
                 name = name ?: "",
@@ -46,19 +46,27 @@ data class LectureModel(
             dayAndTime.forEach { dayAndTime ->      // 월1,4,5)
                 val day = dayAndTime[0]
 
-                val timeArray : List<Int> =  if(dayAndTime.last() == ')'){
+                val timeArray: List<Int> = if (dayAndTime.last() == ')') {
                     dayAndTime.substring(1, dayAndTime.lastIndex).split(',').map {
                         it.toInt()
                     }
-                }else{
-                    dayAndTime.substring(1, dayAndTime.lastIndex+1).split(',').map {
+                } else {
+                    dayAndTime.substring(1, dayAndTime.lastIndex + 1).split(',').map {
                         it.toInt()
                     }
                 }
 
 
+                //1교시 -> 9 to 30      10 to 20
+                val realTime = if (timeArray.size == 1) {
+                    ((timeArray.first() + 8) * 60 + 30) to ((timeArray.first() + 9) * 60 + 20)
+                } else {
+                    ((timeArray.first() + 8) * 60 + 30) to ((timeArray.last() + 9) * 60 + 20)
+                }
+
+
                 locationAndTimeList.add(
-                    TimeTableLocationAndTime(location = location, day = day, time = timeArray)
+                    TimeTableLocationAndTime(location = location, day = day, time = realTime)
                 )
             }
 
