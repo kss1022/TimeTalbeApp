@@ -29,6 +29,7 @@ data class LectureEntity(
         time = time,
         department = department,
         major = major,
+        grade = grade,
         professorName = professorName
     )
 }

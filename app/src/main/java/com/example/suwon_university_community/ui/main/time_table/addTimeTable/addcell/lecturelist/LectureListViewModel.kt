@@ -1,11 +1,14 @@
 package com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.lecturelist
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.suwon_university_community.R
 import com.example.suwon_university_community.data.entity.lecture.CollegeCategory
 import com.example.suwon_university_community.data.entity.lecture.LectureEntity
+import com.example.suwon_university_community.data.entity.timetable.TimeTableCellEntity
 import com.example.suwon_university_community.data.repository.lecture.LectureRepository
+import com.example.suwon_university_community.data.repository.timetable.TimeTableRepository
+import com.example.suwon_university_community.model.LectureModel
 import com.example.suwon_university_community.ui.base.BaseViewModel
 import com.example.suwon_university_community.util.provider.ResourceProvider
 import kotlinx.coroutines.Job
@@ -14,6 +17,7 @@ import javax.inject.Inject
 
 class LectureListViewModel @Inject constructor(
     private val lectureRepository: LectureRepository,
+    private val timeTableRepository: TimeTableRepository,
     private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
 
@@ -22,15 +26,13 @@ class LectureListViewModel @Inject constructor(
     private var lectureEntityList: List<LectureEntity> = listOf()
 
 
+    val lectureListStateLiveData = MutableLiveData<LectureListState>(LectureListState.Uninitialized)
     val lectureListLiveData = MutableLiveData<List<LectureEntity>>()
 
 
-
-
     override fun fetchData(): Job = viewModelScope.launch {
+        lectureListStateLiveData.value = LectureListState.Loading
         category?.let {
-
-
             if (category == CollegeCategory.ALL) {
                 category?.categoryTypeList?.forEach {
 
@@ -48,6 +50,48 @@ class LectureListViewModel @Inject constructor(
             }
 
             lectureListLiveData.value = lectureEntityList
+            lectureListStateLiveData.value = LectureListState.Success
+        } ?: kotlin.run {
+            lectureListStateLiveData.value = LectureListState.Error(R.string.category_is_null)
+        }
+
+    }
+
+
+    fun checkTimeTableAndAdd(currentTableId: Long, model: LectureModel) = viewModelScope.launch {
+        val addedList = timeTableRepository.getTimeTableWithCell(currentTableId).timeTableCellList
+
+        val overlappingSet = mutableSetOf<TimeTableCellEntity>()
+
+        model.toTimeTableCellModel().locationAndTimeList.forEach { selected ->
+            addedList.forEach { added ->
+                added.locationAndTimeList.forEach { addedLocationAndTime ->
+                    if (selected.day == addedLocationAndTime.day) {
+                        addedLocationAndTime.time.forEach { addedTime ->
+                            selected.time.forEach { selectedTime ->
+                                if (selectedTime == addedTime) {
+                                    overlappingSet.add(added)
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+        if (overlappingSet.isNotEmpty()) {
+
+            var addedString = ""
+            overlappingSet.forEach {
+                addedString += it.name
+                it.locationAndTimeList.forEach { addedString += "  ${it.day} ${it.time}" }
+            }
+
+            lectureListStateLiveData.value =
+                LectureListState.Added(addedString)
+        } else {
+            lectureListStateLiveData.value = LectureListState.NotAdded(model)
         }
     }
 
@@ -68,15 +112,14 @@ class LectureListViewModel @Inject constructor(
     private var pos: Int = -1
 
 
-
-
     fun setSearchString(search: String) {
         this.search = search
 
 
         if (search.isBlank()) {
             lectureListLiveData.value = checkSpinner()
-        } else { lectureListLiveData.value = checkSpinner().filter {
+        } else {
+            lectureListLiveData.value = checkSpinner().filter {
                 it.name?.contains(search)!!
             }
         }
@@ -220,7 +263,7 @@ class LectureListViewModel @Inject constructor(
     }
 
 
-    private fun checkSpinner() : List<LectureEntity> {
+    private fun checkSpinner(): List<LectureEntity> {
 
         var spinnerList = listOf<LectureEntity>()
 
@@ -236,7 +279,7 @@ class LectureListViewModel @Inject constructor(
                         }
 
                         lectureListLiveData.value = spinnerList
-                        return  spinnerList
+                        return spinnerList
                     }
 
 
@@ -309,7 +352,7 @@ class LectureListViewModel @Inject constructor(
                     }
                 } else {
                     //8
-                        spinnerList = lectureEntityList
+                    spinnerList = lectureEntityList
                 }
             }
         }
@@ -318,4 +361,6 @@ class LectureListViewModel @Inject constructor(
         lectureListLiveData.value = spinnerList
         return spinnerList
     }
+
+
 }

@@ -19,4 +19,15 @@
     <color name="colorPrimary">@color/gray</color>
     <color name="colorPrimaryVariant">@color/white</color>
     <color name="colorOnPrimary">@color/black</color>
+
+
+
+    <!--시간표 색상-->
+    <color name="tableColor1">#F94144</color>
+    <color name="tableColor2">#F3722C</color>
+    <color name="tableColor3">#F8961E</color>
+    <color name="tableColor4">#F9C74F</color>
+    <color name="tableColor5">#90BE6D</color>
+    <color name="tableColor6">#43AA8B</color>
+    <color name="tableColor7">#577590</color>
 </resources>

@@ -3,12 +3,14 @@ package com.example.suwon_university_community.ui.main.time_table
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Typeface
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
@@ -20,10 +22,6 @@ import com.example.suwon_university_community.model.TimeTableCellModel
 import com.example.suwon_university_community.ui.base.BaseFragment
 import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivity
 import javax.inject.Inject
-
-// TODO: 기본적으로 18시까지는 보여준다.  만약 더 추가된다면 어떻게 할것인가???
-//  기본 화면에서는 전체를 Scroll뷰로 보여준다.
-//  추가화면에서는 Table을 Scroll뷰로 보여준다.
 
 
 class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBinding>() {
@@ -40,15 +38,14 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
     private val addTimerLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                Toast.makeText(requireContext(), "시간표가 추가되었습니다.", Toast.LENGTH_SHORT).show()
+                removeAddedView()
+                viewModel.fetchData()
             } else {
-                Toast.makeText(requireContext(), "시간표가 추가되지 않았습니다.", Toast.LENGTH_SHORT).show()
+                // 새로운 강의가 추가되지 않은 경우
             }
         }
 
 
-    private var addButtonList: ArrayList<Triple<Long, Int, Int>> =
-        arrayListOf<Triple<Long, Int, Int>>()
 
 
     override fun initViews() {
@@ -59,7 +56,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
     private fun bindViews() {
         binding.addButton.setOnClickListener {
             addTimerLauncher.launch(
-                AddTimeTableCellActivity.newIntent(requireContext() , viewModel.mainTimeTable)
+                AddTimeTableCellActivity.newIntent(requireContext(), viewModel.mainTimeTable)
             )
         }
 
@@ -119,8 +116,17 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
         addLectureList(
             timeTableState.timeTableWithCell.timeTableCellList.map {
-            it.toModel()
+                it.toModel()
             }
+        )
+
+
+        toolBarTimeTableNameTextView.text =
+            if (timeTableState.timeTableWithCell.timeTable.isDefault) getString(R.string.time_table) else timeTableState.timeTableWithCell.timeTable.tableName
+        toolBarTimeTableSeasonTextview.text = getString(
+            R.string.timetable_season,
+            timeTableState.timeTableWithCell.timeTable.year,
+            timeTableState.timeTableWithCell.timeTable.semester
         )
     }
 
@@ -137,8 +143,9 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         addTimeTableButton.text = getString(R.string.create_new_timetable)
 
         addButton.isEnabled = false
-    }
 
+        toolBarTimeTableNameTextView.text = ""
+    }
 
 
     private fun handleErrorState(timeTableState: TimeTableState.Error) = with(binding) {
@@ -227,6 +234,9 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         timetableCellModelList.forEach { cell ->
             addLecture(requireContext(), cell)
         }
+
+        checkTimeAndAddView(timetableCellModelList)
+
     }
 
 
@@ -237,10 +247,81 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
             val day = locationAndTime.day
             val time = locationAndTime.time
 
+
             val button = createButton(context, model, location, time)
 
             addButton(day, button, model)
         }
+    }
+
+
+    private var addButtonList: ArrayList<Triple<Long, Int, Int>> = arrayListOf()
+
+    private var addedGridViewList : ArrayList<Int> = arrayListOf()
+    private var addedTextViewList : ArrayList<Int> = arrayListOf()
+
+
+
+    private fun checkTimeAndAddView(timetableCellModelList: List<TimeTableCellModel>) {
+
+         var lastTime = 4
+
+        timetableCellModelList.forEach { timetableCell ->
+            timetableCell.locationAndTimeList.forEach {
+                if (it.time.last() > lastTime) lastTime = it.time.last()
+            }
+        }
+
+        if (lastTime > 6) {
+            for (i in 0..lastTime - 7) {
+                val gridView = View(requireContext()).apply {
+
+                    setBackgroundResource(R.color.colorPrimary)
+
+                    id = ViewCompat.generateViewId()
+
+                    val lp = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+
+                    lp.height = 1.fromDpToPx()
+
+
+                    layoutParams = lp
+                }
+
+                val textView = TextView(requireContext()).apply {
+                    width = 20.fromDpToPx()
+                    height = 60.fromDpToPx()
+
+                    text = "${ 5 + i}"
+
+                    id = ViewCompat.generateViewId()
+
+                    gravity = Gravity.END or Gravity.TOP
+                    setPadding(0.fromDpToPx(), 0.fromDpToPx(), 3.fromDpToPx(), 0.fromDpToPx())
+
+
+                    val lp = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                    )
+
+                    lp.gravity = Gravity.START
+                    layoutParams = lp
+                }
+
+
+                binding.leftLinearLayout.addView(gridView)
+                binding.leftLinearLayout.addView(textView)
+
+                addedGridViewList.add(gridView.id)
+                addedTextViewList.add(textView.id)
+            }
+        }
+
+
     }
 
 
@@ -250,16 +331,22 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         location: String,
         time: List<Int>
     ): Button = Button(context).apply {
-        setText("${model.name}\n${location}")
+        text = getString(R.string.timetable_cell_title, model.name, location)
+        setTextColor(ContextCompat.getColor(context, R.color.white))
+        typeface = Typeface.DEFAULT_BOLD
         textSize = 10f
         gravity = Gravity.START
 
-        height = ((time.size) * 60).fromDpToPx()
+
+        setBackgroundColor(ContextCompat.getColor(context, model.cellColor))
+        stateListAnimator = null
+
         setPadding(6.fromDpToPx(), 6.fromDpToPx(), 6.fromDpToPx(), 6.fromDpToPx())
 
         id = ViewCompat.generateViewId()
-        setBackgroundResource(R.color.red)
 
+
+        // TODO: 강의 Cell 을 터치시 bottomsheet를 사용하여 변경하기
         setOnClickListener { view ->
             val id = addButtonList.filter {
                 it.second == view.id
@@ -273,15 +360,18 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
             }
         }
 
+
+
         val lp = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
 
+
+        lp.height = ((time.size) * 60).fromDpToPx()
         lp.gravity = Gravity.START
         lp.topMargin = (time[0] * 60 + 29).fromDpToPx()
-        lp.marginStart = 2.fromDpToPx()
-        lp.marginEnd = 2.fromDpToPx()
+
 
         layoutParams = lp
     }
@@ -350,6 +440,30 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
             else -> Unit
         }
+    }
+
+
+    private fun removeAddedView() {
+        addButtonList.forEach {
+            val view = binding.root.findViewById<FrameLayout>(it.third)
+            view.removeView(view.findViewById(it.second))
+        }
+
+
+        binding.leftLinearLayout.let { leftLinearLayout->
+            addedGridViewList.forEach {
+                leftLinearLayout.removeView(leftLinearLayout.findViewById(it))
+            }
+
+
+            addedTextViewList.forEach {
+                leftLinearLayout.removeView(leftLinearLayout.findViewById(it))
+            }
+        }
+
+        addButtonList.clear()
+        addedGridViewList.clear()
+        addedTextViewList.clear()
     }
 
 

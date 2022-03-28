@@ -18,12 +18,22 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/toolBarTextView"
+            android:id="@+id/toolBarTimeTableNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/time_table"
             android:textSize="16sp"
-            android:textStyle="italic" />
+            android:textStyle="bold"
+            tools:text="@string/time_table" />
+
+        <TextView
+            android:id="@+id/toolBarTimeTableSeasonTextview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:textColor="@color/red"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            tools:text="@string/time_table" />
 
         <ImageView
             android:id="@+id/addButton"
@@ -524,7 +534,7 @@
 
             <View
                 android:layout_width="30dp"
-                android:layout_height="3dp"
+                android:layout_height="5dp"
                 android:layout_marginTop="12dp"
                 android:background="#cccccc"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -536,7 +546,7 @@
                 android:id="@+id/tabLayout"
                 android:layout_width="0dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -547,15 +557,6 @@
                 app:tabRippleColor="@android:color/transparent"
                 app:tabTextColor="@color/colorOnPrimary"
                 tools:visibility="visible" />
-
-
-            <View
-                android:layout_width="60dp"
-                android:layout_height="5dp"
-                android:background="@color/colorPrimary"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
 
             <Spinner
@@ -598,6 +599,7 @@
                 android:hint="검색하세요"
                 android:paddingTop="16dp"
                 android:paddingBottom="8dp"
+                android:windowSoftInputMode="stateAlwaysHidden"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/departmentSpinner" />

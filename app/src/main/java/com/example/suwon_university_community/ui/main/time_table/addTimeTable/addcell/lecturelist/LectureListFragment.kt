@@ -2,20 +2,25 @@ package com.example.suwon_university_community.ui.main.time_table.addTimeTable.a
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.isGone
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.data.entity.lecture.CollegeCategory
 import com.example.suwon_university_community.databinding.FragmentLectureListBinding
 import com.example.suwon_university_community.model.LectureModel
 import com.example.suwon_university_community.ui.base.BaseFragment
+import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivity
 import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellSharedViewModel
 import com.example.suwon_university_community.util.provider.DefaultResourceProvider
 import com.example.suwon_university_community.widget.adapter.ModelRecyclerViewAdapter
 import com.example.suwon_university_community.widget.adapter.listener.LectureListAdapterListener
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LectureListFragment : BaseFragment<LectureListViewModel, FragmentLectureListBinding>() {
@@ -40,7 +45,10 @@ class LectureListFragment : BaseFragment<LectureListViewModel, FragmentLectureLi
             resourcesProvider = resourceProvider,
             adapterListener = object : LectureListAdapterListener {
                 override fun selectLecture(model: LectureModel) {
-                    sharedViewModel.lectureEntityLiveData.value = model
+                    viewModel.checkTimeTableAndAdd(
+                        (activity as AddTimeTableCellActivity).timetableWithCell.timeTable.tableId,
+                        model
+                    )
                 }
             }
         )
@@ -58,20 +66,72 @@ class LectureListFragment : BaseFragment<LectureListViewModel, FragmentLectureLi
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
             adapter = modelAdapter
         }
-
-        bindViews()
-    }
-
-    private fun bindViews() = with(binding) {
-
     }
 
 
     override fun observeData() {
         viewModel.lectureListLiveData.observe(viewLifecycleOwner) { lectureList ->
-            modelAdapter.submitList(lectureList.map { it.toLectureModel() })
+
+           lifecycleScope.launch {
+               if(lectureList.isNotEmpty()){
+                   modelAdapter.submitList(lectureList.map { it.toLectureModel() })
+               }
+           }
+
+        }
+
+        viewModel.lectureListStateLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+
+                is LectureListState.Loading -> {
+                    handleLoadingState()
+                }
+
+
+                is LectureListState.Success -> {
+                    handleSuccessState()
+                }
+
+                is LectureListState.Added -> {
+                    Toast.makeText(requireContext(), "겹치는 시간이 있습니다😱\n${it.addedMessage}", Toast.LENGTH_SHORT).show()
+                }
+
+                is LectureListState.NotAdded -> {
+                    sharedViewModel.lectureEntityLiveData.value = it.model
+                }
+
+                is LectureListState.Error -> {
+                    handleErrorState(it)
+                }
+
+                else -> Unit
+            }
+
         }
     }
+
+
+    private fun handleLoadingState() = with(binding) {
+        progressBar.visibility = View.VISIBLE
+        errorMessageTextView.isGone = true
+        recyclerView.isGone = true
+    }
+
+
+    private fun handleSuccessState() = with(binding) {
+        progressBar.isGone = true
+        errorMessageTextView.isGone = true
+        recyclerView.visibility = View.VISIBLE
+    }
+
+
+    private fun handleErrorState(lectureListState: LectureListState.Error) = with(binding) {
+        progressBar.isGone = true
+        errorMessageTextView.visibility = View.VISIBLE
+        recyclerView.isGone = true
+        errorMessageTextView.text = getString(lectureListState.massageId)
+    }
+
 
 
     companion object {

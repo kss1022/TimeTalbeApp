@@ -1,9 +1,12 @@
 package com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import android.graphics.Typeface
+import android.os.SystemClock
+import android.text.InputType
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
@@ -20,13 +24,13 @@ import com.example.suwon_university_community.data.entity.lecture.CollegeCategor
 import com.example.suwon_university_community.data.entity.timetable.TimeTableWithCell
 import com.example.suwon_university_community.databinding.ActivityAddTimeTableCellBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
+import com.example.suwon_university_community.model.LectureModel
 import com.example.suwon_university_community.model.TimeTableCellModel
 import com.example.suwon_university_community.ui.base.BaseActivity
 import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.lecturelist.LectureListFragment
 import com.example.suwon_university_community.widget.adapter.LectureListFragmentAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
-
 
 
 class AddTimeTableCellActivity :
@@ -49,12 +53,14 @@ class AddTimeTableCellActivity :
         ActivityAddTimeTableCellBinding.inflate(layoutInflater)
 
 
+    lateinit var timetableWithCell: TimeTableWithCell
+
+
     private var isMotionEnd = false
     private var currentPage = 0
 
     private val viewPagerOnPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
-            Log.e("ViewPager" , "Selected")
 
             if (::viewPagerAdapter.isInitialized) {
                 currentPage = position
@@ -73,29 +79,12 @@ class AddTimeTableCellActivity :
     }
 
 
-    override fun observeData() {
-        sharedViewModel.lectureEntityLiveData.observe(this) {
-            if(isMotionEnd){
-                binding.motionLayout.transitionToStart()
-            }
-
-            val cellModel = it.toTimeTableCellModel()
-            addLecture(this, cellModel)
-
-
-            binding.scrollView.scrollY =
-                ((cellModel.locationAndTimeList[0].time[0]) * 60).fromDpToPx()
-        }
-    }
-
     override fun initViews() {
+        checkTimeTableWithCell()
 
-        val timetableWithCell = intent.getParcelableExtra<TimeTableWithCell>(EXTRA_TIME_TABLE)
-
-        initTimeTable(timetableWithCell)
+        initTimeTable()
         initViewPager()
         bindViews()
-
 
         binding.gradeSpinner.adapter = ArrayAdapter.createFromResource(
             this@AddTimeTableCellActivity,
@@ -104,15 +93,40 @@ class AddTimeTableCellActivity :
         )
     }
 
-    private fun initTimeTable(timetableWithCell: TimeTableWithCell?) {
-        timetableWithCell?.let { timetableWithCell ->
+
+    override fun observeData() {
+        sharedViewModel.lectureEntityLiveData.observe(this) {
+            showAlertDialog(it)
+        }
+    }
+
+
+    private fun checkTimeTableWithCell() {
+        val timetable = intent.getParcelableExtra<TimeTableWithCell>(EXTRA_TIME_TABLE) ?: {
+            setResult(Activity.RESULT_CANCELED)
+            finish()
+        }
+
+        timetableWithCell = timetable as TimeTableWithCell
+    }
+
+    private fun initTimeTable() {
+        timetableWithCell.let { timetableWithCell ->
             if (timetableWithCell.timeTableCellList.isNullOrEmpty().not()) {
                 timetableWithCell.timeTableCellList.map { it.toModel() }.forEach { model ->
-                    addLecture(this, model)
+                    addLectureOnView(this, model)
                 }
             }
         }
 
+
+        binding.toolBarTimeTableNameTextView.text =
+            if (timetableWithCell.timeTable.isDefault) getString(R.string.time_table) else timetableWithCell.timeTable.tableName
+        binding.toolBarTimeTableSeasonTextview.text = getString(
+            R.string.timetable_season,
+            timetableWithCell.timeTable.year,
+            timetableWithCell.timeTable.semester
+        )
     }
 
     private fun initViewPager() = with(binding) {
@@ -142,105 +156,68 @@ class AddTimeTableCellActivity :
     }
 
 
+
+
     private fun bindViews() = with(binding) {
 
         toolBar.setNavigationOnClickListener {
+            hideSoftKeyboard()
             setResult(Activity.RESULT_OK)
             finish()
         }
 
 
         addButton.setOnClickListener {
-            if(isMotionEnd){
-                motionLayout.transitionToStart()
-            }else{
-                motionLayout.transitionToEnd()
-            }
+            //todo 직접 추가  isMotion 확인 필요
         }
 
+
         searchEditText.apply {
+            inputType = InputType.TYPE_NULL
+
+            var currentClickTime : Long = 0
+            var lastClickTime : Long = 0
+
             addTextChangedListener {
-                viewPagerAdapter.fragmentList.forEach {
-                    it.viewModel.setSearchString(searchEditText.text.toString())
+                currentClickTime= SystemClock.uptimeMillis()
+                val elapsedTime: Long = currentClickTime - lastClickTime
+                lastClickTime = currentClickTime
+
+                if(elapsedTime > 100){
+                    viewPagerAdapter.fragmentList.forEach {
+                        it.viewModel.setSearchString(searchEditText.text.toString())
+                    }
                 }
             }
 
             setOnClickListener {
                 if (isMotionEnd.not()) {
+                    inputType = InputType.TYPE_NULL
                     motionLayout.transitionToEnd()
+                } else {
+                    inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+                    showSoftKeyboard()
                 }
             }
 
             setOnFocusChangeListener { view, hasFocus ->
-                if (hasFocus && isMotionEnd.not()){
+                if (hasFocus && isMotionEnd.not()) {
+                    inputType = InputType.TYPE_NULL
                     motionLayout.transitionToEnd()
+                } else {
+                    inputType = InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+                    showSoftKeyboard()
                 }
             }
         }
 
 
-        bindMotionLayout()
-
-
-        binding.departmentSpinner.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    pos: Int,
-                    id: Long
-                ) {
-                    binding.majorSpinner.adapter = ArrayAdapter(
-                        this@AddTimeTableCellActivity,
-                        android.R.layout.simple_spinner_item,
-                        getMajorList(pos)
-                    )
-                    viewPagerAdapter.fragmentList[currentPage].viewModel.setDepartmentString(parent?.getItemAtPosition(pos).toString())
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?) = Unit
-            }
-
-
-        binding.majorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                pos: Int,
-                id: Long
-            ) {
-                viewPagerAdapter.fragmentList[currentPage].viewModel.setMajorString(parent?.getItemAtPosition(pos).toString(), pos)
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) = Unit
-        }
-
-
-        binding.gradeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                pos: Int,
-                id: Long
-            ) {
-                viewPagerAdapter.fragmentList[currentPage].viewModel.setGradeString(parent?.getItemAtPosition(pos).toString())
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) = Unit
-        }
-
-    }
-
-
-    private fun bindMotionLayout() {
         binding.motionLayout.setTransitionListener(object : MotionLayout.TransitionListener {
             override fun onTransitionStarted(
                 motionLayout: MotionLayout?,
                 startId: Int,
                 endId: Int
-            ) {
-                if (isMotionEnd) hideSoftKeyboard()
-            }
+            ) = Unit
 
             override fun onTransitionChange(
                 motionLayout: MotionLayout?,
@@ -260,6 +237,66 @@ class AddTimeTableCellActivity :
                 progress: Float
             ) = Unit
         })
+
+        binding.departmentSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    pos: Int,
+                    id: Long
+                ) {
+                    binding.majorSpinner.adapter = ArrayAdapter(
+                        this@AddTimeTableCellActivity,
+                        android.R.layout.simple_spinner_item,
+                        getMajorList(pos)
+                    )
+                    viewPagerAdapter.fragmentList[currentPage].viewModel.setDepartmentString(
+                        parent?.getItemAtPosition(
+                            pos
+                        ).toString()
+                    )
+                }
+
+                override fun onNothingSelected(p0: AdapterView<*>?) = Unit
+            }
+
+
+        binding.majorSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                pos: Int,
+                id: Long
+            ) {
+                viewPagerAdapter.fragmentList[currentPage].viewModel.setMajorString(
+                    parent?.getItemAtPosition(
+                        pos
+                    ).toString(), pos
+                )
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) = Unit
+        }
+
+
+        binding.gradeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                pos: Int,
+                id: Long
+            ) {
+                viewPagerAdapter.fragmentList[currentPage].viewModel.setGradeString(
+                    parent?.getItemAtPosition(
+                        pos
+                    ).toString()
+                )
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) = Unit
+        }
+
     }
 
 
@@ -268,6 +305,43 @@ class AddTimeTableCellActivity :
         binding.viewPager.unregisterOnPageChangeCallback(viewPagerOnPageChangeCallback)
     }
 
+
+    private fun showAlertDialog(lectureModel: LectureModel) {
+        hideSoftKeyboard()
+
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.please_check_selected_lecture))
+            .setMessage(
+                getString(
+                    R.string.lecture_info,
+                    lectureModel.name ?: "",
+                    lectureModel.time ?: "",
+                    lectureModel.professorName ?: ""
+                )
+            )
+            .setPositiveButton("네!") { dialog, _ ->
+                if (isMotionEnd) {
+                    binding.motionLayout.transitionToStart()
+                }
+
+                val cellModel = lectureModel.toTimeTableCellModel()
+
+                viewModel.addLecture(timetableWithCell.timeTable.tableId, lectureModel, cellModel.locationAndTimeList)
+
+                if (cellModel.locationAndTimeList.isNullOrEmpty().not()) {
+                    addLectureOnView(this, cellModel)
+
+                    binding.scrollView.scrollY =
+                        ((cellModel.locationAndTimeList[0].time[0]) * 60).fromDpToPx()
+                }
+
+                dialog.dismiss()
+            }
+            .setNegativeButton("아니요") { dialog, _ ->
+                dialog.dismiss()
+            }.show()
+
+    }
 
 
     /**
@@ -279,7 +353,7 @@ class AddTimeTableCellActivity :
         return if (currentPage == 0) {
             val departmentList = arrayListOf<String>()
 
-            departmentList.add( resources.getString( CollegeCategory.values()[0].categoryNameId))
+            departmentList.add(resources.getString(CollegeCategory.values()[0].categoryNameId))
 
             CollegeCategory.values().forEach { collegeCategory ->
                 for (i in 1 until collegeCategory.categoryTypeList.size) {
@@ -298,7 +372,7 @@ class AddTimeTableCellActivity :
 
         val majorList = arrayListOf<String>()
         if (currentPage == 0) {
-            if(pos == 0){
+            if (pos == 0) {
                 majorList.add(getString(CollegeCategory.values()[currentPage].categoryTypeList[pos].first))
                 return majorList
             }
@@ -308,9 +382,7 @@ class AddTimeTableCellActivity :
             var collegeDepartment = pos
 
             while (true) {
-                var currentCount = 0
-
-                currentCount = CollegeCategory.values()[college].categoryTypeList.size - 1
+                val currentCount = CollegeCategory.values()[college].categoryTypeList.size - 1
 
                 if (collegeDepartment - currentCount <= 0) {
                     break
@@ -357,12 +429,13 @@ class AddTimeTableCellActivity :
         arrayListOf<Triple<Long, Int, Int>>()
 
 
-    private fun addLecture(context: Context, model: TimeTableCellModel) {
+    private fun addLectureOnView(context: Context, model: TimeTableCellModel) {
 
         model.locationAndTimeList.forEach { locationAndTime ->
             val location = locationAndTime.location
             val day = locationAndTime.day
             val time = locationAndTime.time
+
 
             val button = createButton(context, model, location, time)
 
@@ -377,11 +450,17 @@ class AddTimeTableCellActivity :
         location: String,
         time: List<Int>
     ): Button = Button(context).apply {
-        setText("${model.name}\n${location}")
+
+        text = getString(R.string.timetable_cell_title, model.name, location)
+        setTextColor(ContextCompat.getColor(context, R.color.white))
+        typeface = Typeface.DEFAULT_BOLD
         textSize = 10f
         gravity = Gravity.START
 
-        height = ((time.size) * 60).fromDpToPx()
+        setBackgroundColor(ContextCompat.getColor(context, model.cellColor))
+        stateListAnimator = null
+
+
         setPadding(6.fromDpToPx(), 6.fromDpToPx(), 6.fromDpToPx(), 6.fromDpToPx())
 
         id = ViewCompat.generateViewId()
@@ -394,8 +473,8 @@ class AddTimeTableCellActivity :
             addButtonList.filter {
                 it.first == id
             }.forEach {
-                val view = binding.root.findViewById<FrameLayout>(it.third)
-                view.removeView(view.findViewById(it.second))
+                val dayFrameLayout = binding.root.findViewById<FrameLayout>(it.third)
+                dayFrameLayout.removeView(dayFrameLayout.findViewById(it.second))
             }
         }
 
@@ -405,6 +484,7 @@ class AddTimeTableCellActivity :
         )
 
         lp.gravity = Gravity.START
+        lp.height = ((time.size) * 60).fromDpToPx()
         lp.topMargin = (time[0] * 60 + 29).fromDpToPx()
 
         layoutParams = lp
@@ -483,6 +563,15 @@ class AddTimeTableCellActivity :
         inputManger.hideSoftInputFromWindow(
             this@AddTimeTableCellActivity.currentFocus?.windowToken,
             0
+        )
+    }
+
+
+    private fun showSoftKeyboard() {
+        val inputManger =
+            this@AddTimeTableCellActivity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputManger.showSoftInput(
+            binding.searchEditText, InputMethodManager.RESULT_SHOWN
         )
     }
 

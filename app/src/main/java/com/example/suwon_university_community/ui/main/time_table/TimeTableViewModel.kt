@@ -61,21 +61,6 @@ class TimeTableViewModel @Inject constructor(
 
         mainTimeTableId?.let {
             mainTimeTable = timeTableRepository.getTimeTableWithCell(preferenceManager.getMainTimeTableId()!!)
-
-//            timeTableRepository.insertTimeTableCellWithTable(mainTimeTableId    ,
-//            TimeTableCellEntity(
-//                cellId = 0,
-//                name = "강의 이름",
-//                distinguish = "ㅇ",
-//                grade = 1,
-//                locationAndTimeList = listOf(
-//                    TimeTableLocationAndTime("종강B102", '월' , listOf(1,2,3))
-//                ),
-//                professorName = "교수이름",
-//            )
-//            )
-
-
             timeTableStateLiveData.value = TimeTableState.Success(mainTimeTable)
         } ?: kotlin.run {
             timeTableStateLiveData.value = TimeTableState.NoTable
