@@ -55,7 +55,7 @@ class MainActivity : DaggerAppCompatActivity(), NavigationBarView.OnItemSelected
         showFragment(HomeFragment.newInstance(), HomeFragment.TAG)
     }
 
-    private fun showFragment(fragment: Fragment, tag: String) {
+    fun showFragment(fragment: Fragment, tag: String) {
         val findFragment = supportFragmentManager.findFragmentByTag(tag)
 
         supportFragmentManager.fragments.forEach {

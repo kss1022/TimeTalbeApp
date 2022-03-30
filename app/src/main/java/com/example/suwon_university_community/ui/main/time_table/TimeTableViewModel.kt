@@ -2,6 +2,7 @@ package com.example.suwon_university_community.ui.main.time_table
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.suwon_university_community.data.entity.timetable.TimeTableCellEntity
 import com.example.suwon_university_community.data.entity.timetable.TimeTableEntity
 import com.example.suwon_university_community.data.entity.timetable.TimeTableWithCell
 import com.example.suwon_university_community.data.preference.PreferenceManager
@@ -88,13 +89,20 @@ class TimeTableViewModel @Inject constructor(
         fetchData()
     }
 
-    fun updateTimeTableEntity() {
 
+    fun addTimeTableEntity(timeTableCellEntity: TimeTableCellEntity) =viewModelScope.launch{
+        timeTableRepository.insertTimeTableCellWithTable(mainTimeTable.timeTable.tableId , timeTableCellEntity)
+        fetchData()
     }
 
-    fun deleteTImeTableEntity() {
 
+    fun deleteTImeTableEntity(cellId: Long) = viewModelScope.launch{
+        timeTableRepository.deleteTimeTableCellAtTable(mainTimeTable.timeTable.tableId, cellId)
+        fetchData()
     }
 
-
+    fun updateTimeTableEntity(timeTableCellEntity: TimeTableCellEntity) = viewModelScope.launch{
+        timeTableRepository.updateTimeTableCell(timeTableCellEntity)
+        fetchData()
+    }
 }

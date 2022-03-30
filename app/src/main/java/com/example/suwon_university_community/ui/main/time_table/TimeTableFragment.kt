@@ -1,5 +1,7 @@
 package com.example.suwon_university_community.ui.main.time_table
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -13,9 +15,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.suwon_university_community.R
+import com.example.suwon_university_community.data.entity.timetable.TimeTableWithCell
 import com.example.suwon_university_community.databinding.FragmentTimeTableBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
 import com.example.suwon_university_community.model.TimeTableCellModel
@@ -45,7 +49,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
             }
         }
 
-
+    private lateinit var timeTableWithCell: TimeTableWithCell
 
 
     override fun initViews() {
@@ -53,19 +57,55 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
     }
 
 
-    private fun bindViews() {
-        binding.addButton.setOnClickListener {
+    private fun bindViews() = with(binding) {
+        addButton.setOnClickListener {
+
+            directAddButton.isVisible = directAddButton.isVisible.not()
+            searchAddButton.isVisible = searchAddButton.isVisible.not()
+
+            directAddButton.alpha = 0f
+            searchAddButton.alpha = 0f
+
+            searchAddButton.animate().alpha(1f).setDuration(100L).setListener(object :
+                AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    directAddButton.animate().alpha(1f).setDuration(100L).setListener(null)
+                }
+            })
+
+
+        }
+
+        searchAddButton.setOnClickListener {
             addTimerLauncher.launch(
                 AddTimeTableCellActivity.newIntent(requireContext(), viewModel.mainTimeTable)
             )
         }
 
-        binding.listButton.setOnClickListener {
+
+        directAddButton.setOnClickListener {
+
+
+            TimeTableBottomSheetFragment.newInstance(timeTableWithCell, null) { timeTableCellEntity, i->
+
+                when (i) {
+                    TimeTableBottomSheetFragment.NEW -> {
+                        timeTableCellEntity?.let {
+                            removeAddedView()
+                            viewModel.addTimeTableEntity(timeTableCellEntity) }
+                    }
+                    else -> Unit
+                }
+            }.show(requireActivity().supportFragmentManager, TimeTableBottomSheetFragment.TAG)
+        }
+
+
+        listButton.setOnClickListener {
             // TODO: 시간표 리스트 보여주기
         }
 
-        binding.addTimeTableButton.setOnClickListener {
-            showAlertDialog()
+        addTimeTableButton.setOnClickListener {
+            createTimeTableAlertDialog()
         }
     }
 
@@ -99,8 +139,8 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         scrollView.isGone = true
         addButton.isEnabled = false
         listButton.isEnabled = false
-
     }
+
 
     private fun handleSuccessState(timeTableState: TimeTableState.Success) = with(binding) {
         progressBar.isGone = true
@@ -113,6 +153,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         addButton.isEnabled = true
         listButton.isEnabled = true
 
+        timeTableWithCell = timeTableState.timeTableWithCell
 
         addLectureList(
             timeTableState.timeTableWithCell.timeTableCellList.map {
@@ -161,7 +202,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
     }
 
 
-    private fun showAlertDialog() {
+    private fun createTimeTableAlertDialog() {
         val numberPickers =
             LayoutInflater.from(requireContext()).inflate(R.layout.timetable_date_picker, null)
 
@@ -174,7 +215,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         AlertDialog.Builder(requireContext())
             .setView(numberPickers)
             .setTitle("시간표 만들기")
-            .setPositiveButton("OK") { dialog, _ ->
+            .setPositiveButton("확인") { dialog, _ ->
 
 
                 //year.displayedValues[year.value - MIN_YEAR]
@@ -194,7 +235,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
                 dialog.dismiss()
             }
-            .setNegativeButton("NO") { dialog, _ ->
+            .setNegativeButton("취소") { dialog, _ ->
                 dialog.dismiss()
             }.show()
     }
@@ -244,7 +285,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
         model.locationAndTimeList.forEach { locationAndTime ->
             val location = locationAndTime.location
-            val day = locationAndTime.day
+            val day = locationAndTime.day.char
             val time = locationAndTime.time
 
 
@@ -257,20 +298,19 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
     private var addButtonList: ArrayList<Triple<Long, Int, Int>> = arrayListOf()
 
-    private var addedGridViewList : ArrayList<Int> = arrayListOf()
-    private var addedTextViewList : ArrayList<Int> = arrayListOf()
-
+    private var addedGridViewList: ArrayList<Int> = arrayListOf()
+    private var addedTextViewList: ArrayList<Int> = arrayListOf()
 
 
     private fun checkTimeAndAddView(timetableCellModelList: List<TimeTableCellModel>) {
 
-         var lastTime = 4
+        var lastTime = 4
 
 
         timetableCellModelList.forEach { timetableCell ->
             timetableCell.locationAndTimeList.forEach {
                 val tableLastTime = it.time.second / 60 - 12
-                if (  tableLastTime > lastTime) lastTime = tableLastTime
+                if (tableLastTime > lastTime) lastTime = tableLastTime
             }
         }
 
@@ -297,7 +337,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                     width = 20.fromDpToPx()
                     height = 60.fromDpToPx()
 
-                    text = "${ 5 + i}"
+                    text = "${5 + i}"
 
                     id = ViewCompat.generateViewId()
 
@@ -347,21 +387,44 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
         id = ViewCompat.generateViewId()
 
-
-        // TODO: 강의 Cell 을 터치시 bottomsheet를 사용하여 변경하기
+        //todo 시간표를 선택하였을 경우AlertDialog를 통해 보여준다. 이떄 수정모드를 눌렀을떄 BottomSheet보여주기
         setOnClickListener { view ->
-            val id = addButtonList.filter {
+            val modelId = addButtonList.filter {
                 it.second == view.id
             }.first().first
 
-            addButtonList.filter {
-                it.first == id
-            }.forEach {
-                val view = binding.root.findViewById<FrameLayout>(it.third)
-                view.removeView(view.findViewById(it.second))
+            if (::timeTableWithCell.isInitialized) {
+                val clickItem = timeTableWithCell.timeTableCellList.find {
+                    it.cellId == modelId
+                } ?: return@setOnClickListener
+
+                TimeTableBottomSheetFragment.newInstance(timeTableWithCell, clickItem) { timeTableCellEntity, i->
+                    when ( i) {
+                        TimeTableBottomSheetFragment.EDIT -> {
+                            timeTableCellEntity?.let{
+                                removeAddedView()
+                                viewModel.updateTimeTableEntity(timeTableCellEntity)
+                            }
+                        }
+
+                        TimeTableBottomSheetFragment.DELETE -> {
+                            removeAddedView()
+                            viewModel.deleteTImeTableEntity(clickItem.cellId)
+//
+//                            addButtonList.filter {
+//                                it.first == modelId
+//                            }.forEach {
+//                                val view = binding.root.findViewById<FrameLayout>(it.third)
+//                                view.removeView(view.findViewById(it.second))
+//                            }
+                        }
+
+                        else -> Unit
+                    }
+                }.show(requireActivity().supportFragmentManager, TimeTableBottomSheetFragment.TAG)
+
             }
         }
-
 
 
         val lp = LinearLayout.LayoutParams(
@@ -370,11 +433,10 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         )
 
 
-
         var minutes = time.second - time.first
         minutes += (minutes / 60)
 
-        var marginTop = ( time.first -540 )
+        var marginTop = (time.first - 540)
         marginTop += marginTop / 60
 
         lp.height = minutes.fromDpToPx()
@@ -459,7 +521,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         }
 
 
-        binding.leftLinearLayout.let { leftLinearLayout->
+        binding.leftLinearLayout.let { leftLinearLayout ->
             addedGridViewList.forEach {
                 leftLinearLayout.removeView(leftLinearLayout.findViewById(it))
             }

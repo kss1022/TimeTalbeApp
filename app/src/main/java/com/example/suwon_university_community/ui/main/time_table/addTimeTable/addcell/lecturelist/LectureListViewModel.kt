@@ -58,7 +58,7 @@ class LectureListViewModel @Inject constructor(
     }
 
 
-    fun checkTimeTableAndAdd(currentTableId: Long, model: LectureModel) = viewModelScope.launch {
+     fun checkTimeTableAndAdd(currentTableId: Long, model: LectureModel) = viewModelScope.launch {
         val addedList = timeTableRepository.getTimeTableWithCell(currentTableId).timeTableCellList
 
         val overlappingSet = mutableSetOf<TimeTableCellEntity>()
@@ -84,7 +84,7 @@ class LectureListViewModel @Inject constructor(
             var addedString = ""
             overlappingSet.forEach {
                 addedString += it.name
-                it.locationAndTimeList.forEach { addedString += "  ${it.day} ${it.time}" }
+                it.locationAndTimeList.forEach { addedString += "  ${it.day} ${it.getTimeString()}" }
             }
 
             lectureListStateLiveData.value =

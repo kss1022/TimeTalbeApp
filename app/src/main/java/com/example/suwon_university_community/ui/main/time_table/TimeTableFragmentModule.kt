@@ -14,4 +14,5 @@ abstract class TimeTableFragmentModule {
     @ViewModelKey(TimeTableViewModel::class)
     abstract fun bindViewModel(viewModel: TimeTableViewModel): ViewModel
 
+
 }

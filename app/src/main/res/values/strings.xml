@@ -54,5 +54,33 @@
     <string name="timetable_season">%d년도 %d학기</string>
     <string name="timetable_cell_title">%s\n%s</string>
     <string name="category_is_null">강의 리스트를 가져오는대 실패했습니다😭</string>
+    <string name="lecture_name">수업명</string>
+    <string name="professor_name">교수명</string>
+    <string name="add_location_and_time">시간 및 장소를 추가</string>
+    <string name="monday">월</string>
+    <string name="tuesday">화</string>
+    <string name="wednesday">수</string>
+    <string name="thurday">목</string>
+    <string name="fryday">금</string>
+    <string name="defaultday">알 수 없는 요일입니다</string>
+    <string name="time_error">잘못된 입력입니다. 시간을 확인해주세요😭</string>
+    <string name="time_is_empty">시간이 제데로 입력되지 않았어요!</string>
+    <string name="day_is_empty">요일을 선택하지 않았어요!</string>
+    <string name="day_and_time">%c %s</string>
+    <string name="time_format">%s:%s</string>
+
+    <string name="positive">확인</string>
+    <string name="negative">취소</string>
+    <string name="modify">수정</string>
+    <string name="delete">삭제</string>
+    <string name="location">장소</string>
+    <string name="title_activity_time_table_list">TimeTableListActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
 </resources>

@@ -35,7 +35,6 @@
             tools:text="@string/time_table" />
 
 
-
         <ImageView
             android:id="@+id/listButton"
             android:layout_width="wrap_content"
@@ -50,7 +49,28 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_baseline_add_24" />
+            android:src="@drawable/ic_baseline_add_circle_outline_24" />
+
+
+        <ImageView
+            android:id="@+id/searchAddButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_search_24"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+        <ImageView
+            android:id="@+id/directAddButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_edit_24"
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
 
     </androidx.appcompat.widget.Toolbar>
@@ -113,7 +133,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="월"
+                        android:text="@string/monday"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toStartOf="@id/topTue"
                         app:layout_constraintStart_toEndOf="@id/topMonGrid"
@@ -134,7 +154,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="화"
+                        android:text="@string/tuesday"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toStartOf="@id/topWed"
                         app:layout_constraintStart_toEndOf="@id/topMon"
@@ -154,7 +174,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="수"
+                        android:text="@string/wednesday"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toStartOf="@id/topThu"
                         app:layout_constraintStart_toEndOf="@id/topTue"
@@ -174,7 +194,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="목"
+                        android:text="@string/thurday"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toStartOf="@id/topFri"
                         app:layout_constraintStart_toEndOf="@id/topWed"
@@ -194,7 +214,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="금"
+                        android:text="@string/fryday"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/topThu"
@@ -219,7 +239,8 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:ignore="HardcodedText">
 
                         <View
                             android:layout_width="match_parent"
@@ -470,7 +491,6 @@
                 android:id="@+id/testLayout"
                 android:layout_width="0dp"
                 android:layout_height="400dp"
-                android:background="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -480,7 +500,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="정해둔 정보는 없습니다."
-                    android:textColor="@color/white"
+                    android:textColor="@color/red"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -489,7 +509,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-
 
     <ProgressBar
         android:id="@+id/progressBar"

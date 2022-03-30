@@ -11,7 +11,10 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.LinearLayout
 import androidx.activity.viewModels
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.content.ContextCompat
@@ -164,11 +167,6 @@ class AddTimeTableCellActivity :
             hideSoftKeyboard()
             setResult(Activity.RESULT_OK)
             finish()
-        }
-
-
-        addButton.setOnClickListener {
-            //todo 직접 추가  isMotion 확인 필요
         }
 
 
@@ -439,7 +437,7 @@ class AddTimeTableCellActivity :
 
             val button = createButton(context, model, location, time)
 
-            addButton(day, button, model)
+            addButton(day.char, button, model)
         }
     }
 
@@ -465,18 +463,18 @@ class AddTimeTableCellActivity :
 
         id = ViewCompat.generateViewId()
 
-        setOnClickListener { view ->
-            val id = addButtonList.filter {
-                it.second == view.id
-            }.first().first
-
-            addButtonList.filter {
-                it.first == id
-            }.forEach {
-                val dayFrameLayout = binding.root.findViewById<FrameLayout>(it.third)
-                dayFrameLayout.removeView(dayFrameLayout.findViewById(it.second))
-            }
-        }
+//        setOnClickListener { view ->
+//            val id = addButtonList.filter {
+//                it.second == view.id
+//            }.first().first
+//
+//            addButtonList.filter {
+//                it.first == id
+//            }.forEach {
+//                val dayFrameLayout = binding.root.findViewById<FrameLayout>(it.third)
+//                dayFrameLayout.removeView(dayFrameLayout.findViewById(it.second))
+//            }
+//        }
 
         val lp = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,

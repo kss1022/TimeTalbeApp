@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!--    var time = ""-->
+<!--    currentTimeTableCell.locationAndTimeList.forEach {-->
+<!--    val startHour = it.time.first / 60-->
+<!--    val endHour = it.time.second / 60-->
+<!--    time += "${it.day} ${startHour}:${it.time.first - startHour * 60} ~ ${endHour}:${it.time.second - endHour * 60}\n"-->
+<!--    }-->
+
+<!--    time = time.substring(0, time.length - 1)-->
+
+<!--    nameTextView.text = currentTimeTableCell.name-->
+<!--    locationTextView.text = time-->
+<!--    pfNameTextView.text = currentTimeTableCell.professorName-->
+
+
+
+<!--    modifyLecture.setOnClickListener {-->
+<!--    itemClickListener(EDIT)-->
+<!--    dialog?.dismiss()-->
+<!--    }-->
+<!--    deleteLecture.setOnClickListener {-->
+<!--    itemClickListener(DELETE)-->
+<!--    dialog?.dismiss()-->
+<!--    }-->
+
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:behavior_draggable="true"
+    app:behavior_hideable="true"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="강의 제목" />
+
+    <TextView
+        android:id="@+id/locationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/nameTextView"
+        app:layout_constraintTop_toBottomOf="@id/nameTextView"
+        tools:text="미래B103(수:3,4)" />
+
+
+    <TextView
+        android:id="@+id/pfNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/nameTextView"
+        app:layout_constraintTop_toBottomOf="@id/locationTextView"
+        tools:text="전계진" />
+
+    <TextView
+        android:id="@+id/modifyLecture"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="30dp"
+        android:drawableStart="@drawable/ic_baseline_edit_24"
+        android:drawablePadding="32dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/modify"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/pfNameTextView" />
+
+
+    <TextView
+        android:id="@+id/deleteLecture"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:drawableStart="@drawable/ic_baseline_delete_24"
+        android:drawablePadding="32dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/delete"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/modifyLecture" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+

@@ -17,8 +17,12 @@
         <!-- Customize your theme here. -->
         <!--ToolBar-->
         <item name="toolbarStyle">@style/Widget.Suwon_University_Community.Toolbar</item>
-        <item name="toolbarWithArrowButtonStyle">@style/Widget.Suwon_University_Community.Toolbar.WithArrow</item>
-        <item name="toolbarWithCloseButtonStyle">@style/Widget.Suwon_University_Community.Toolbar.WithClose</item>
+        <item name="toolbarWithArrowButtonStyle">
+            @style/Widget.Suwon_University_Community.Toolbar.WithArrow
+        </item>
+        <item name="toolbarWithCloseButtonStyle">
+            @style/Widget.Suwon_University_Community.Toolbar.WithClose
+        </item>
 
         <!--NavigationBarColor  60% WHITE-->
         <item name="android:navigationBarColor">#99FFFFFF</item>
@@ -26,6 +30,14 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
+    <style name="Theme.Suwon_University_Community.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Suwon_University_Community.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Suwon_University_Community.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
 </resources>

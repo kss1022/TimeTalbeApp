@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <CheckBox
+        android:id="@+id/monCheckBox"
+        style="@style/Widget.Suwon_University_Community.checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:button="@android:color/transparent"
+        android:text="@string/monday"
+        app:layout_constraintEnd_toStartOf="@id/tueCheckBox"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:checked="true" />
+
+    <CheckBox
+        android:id="@+id/tueCheckBox"
+        style="@style/Widget.Suwon_University_Community.checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/tuesday"
+        app:layout_constraintEnd_toStartOf="@id/wedCheckBox"
+        app:layout_constraintStart_toEndOf="@id/monCheckBox"
+        app:layout_constraintTop_toTopOf="@id/monCheckBox"
+        tools:checked="true" />
+
+    <CheckBox
+        android:id="@+id/wedCheckBox"
+        style="@style/Widget.Suwon_University_Community.checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/wednesday"
+        app:layout_constraintEnd_toStartOf="@id/thuCheckBox"
+        app:layout_constraintStart_toEndOf="@id/tueCheckBox"
+        app:layout_constraintTop_toTopOf="@id/monCheckBox" />
+
+
+    <CheckBox
+        android:id="@+id/thuCheckBox"
+        style="@style/Widget.Suwon_University_Community.checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/thurday"
+        app:layout_constraintEnd_toStartOf="@id/friCheckBox"
+        app:layout_constraintStart_toEndOf="@id/wedCheckBox"
+        app:layout_constraintTop_toTopOf="@id/monCheckBox" />
+
+
+    <CheckBox
+        android:id="@+id/friCheckBox"
+        style="@style/Widget.Suwon_University_Community.checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/fryday"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/thuCheckBox"
+        app:layout_constraintTop_toTopOf="@id/monCheckBox" />
+
+
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/checkBoxDivider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        app:dividerInsetEnd="16dp"
+        app:dividerInsetStart="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/locationEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/friCheckBox" />
+
+
+    <EditText
+        android:id="@+id/locationEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:hint="@string/location"
+        android:layout_marginHorizontal="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/checkBoxDivider" />
+
+    <TextView
+        android:id="@+id/startTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginTop="24dp"
+        android:text="시작시간"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/locationEditText" />
+
+    <EditText
+        android:id="@+id/startTimeEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="18dp"
+        android:hint="09:00"
+        android:inputType="number"
+        android:maxLength="5"
+        app:layout_constraintBottom_toBottomOf="@id/startTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/startTextView" />
+
+    <TextView
+        android:id="@+id/endTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:text="종료시간"
+        app:layout_constraintStart_toStartOf="@id/startTextView"
+        app:layout_constraintTop_toBottomOf="@id/startTextView" />
+
+    <EditText
+        android:id="@+id/endTimeEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="12:00"
+        android:inputType="number"
+        android:maxLength="5"
+        app:layout_constraintBottom_toBottomOf="@id/endTextView"
+        app:layout_constraintEnd_toEndOf="@id/startTimeEditText"
+        app:layout_constraintTop_toTopOf="@id/endTextView" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/negativeButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:background="@color/colorOnPrimary"
+        android:text="@string/negative"
+        android:textColor="@color/colorPrimaryVariant"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/positiveButton"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/endTextView" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/positiveButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:background="@color/colorOnPrimary"
+        android:text="@string/positive"
+        android:textColor="@color/colorPrimaryVariant"
+        app:layout_constraintBottom_toBottomOf="@id/negativeButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/negativeButton"
+        app:layout_constraintTop_toTopOf="@id/negativeButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

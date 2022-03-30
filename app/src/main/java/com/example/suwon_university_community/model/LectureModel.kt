@@ -2,6 +2,7 @@ package com.example.suwon_university_community.model
 
 import androidx.room.Entity
 import com.example.suwon_university_community.data.entity.timetable.TimeTableLocationAndTime
+import com.example.suwon_university_community.data.entity.timetable.toDayOfTheWeek
 
 
 @Entity
@@ -66,7 +67,7 @@ data class LectureModel(
 
 
                 locationAndTimeList.add(
-                    TimeTableLocationAndTime(location = location, day = day, time = realTime)
+                    TimeTableLocationAndTime(location = location, day = day.toDayOfTheWeek(), time = realTime)
                 )
             }
 
