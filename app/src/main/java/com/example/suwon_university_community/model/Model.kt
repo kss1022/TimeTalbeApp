@@ -12,7 +12,7 @@ abstract class Model(
     companion object{
         val DIFF_UTIL =  object : DiffUtil.ItemCallback<Model>(){
             override fun areItemsTheSame(oldItem: Model, newItem: Model): Boolean {
-                return oldItem.id == newItem.id
+                return oldItem.id == newItem.id  && oldItem.type == newItem.type
             }
 
 
@@ -23,18 +23,3 @@ abstract class Model(
         }
     }
 }
-
-
-
-//companion object {
-//    val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Model>() {
-//        override fun areItemsTheSame(oldItem: Model, newItem: Model): Boolean {
-//            return  oldItem.id == newItem.id && oldItem.type == newItem.type
-//        }
-//
-//        @SuppressLint("DiffUtilEquals")
-//        override fun areContentsTheSame(oldItem: Model, newItem: Model): Boolean {
-//            return oldItem === newItem
-//        }
-//    }
-//}

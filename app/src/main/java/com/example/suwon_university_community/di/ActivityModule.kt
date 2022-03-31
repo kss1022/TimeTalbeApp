@@ -7,6 +7,8 @@ import com.example.suwon_university_community.ui.main.MainActivity
 import com.example.suwon_university_community.ui.main.MainActivityModule
 import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivity
 import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivityModule
+import com.example.suwon_university_community.ui.main.time_table.addTimeTable.tablelist.TimeTableListActivity
+import com.example.suwon_university_community.ui.main.time_table.addTimeTable.tablelist.TimeTableListActivityModule
 import com.example.suwon_university_community.ui.start.StartActivity
 import com.example.suwon_university_community.ui.start.StartActivityModule
 import dagger.Module
@@ -46,4 +48,13 @@ abstract class ActivityModule {
     )
     abstract fun getAddTimeTableActivity(): AddTimeTableCellActivity
 
+
+    @ActivityScope
+    @ContributesAndroidInjector(
+        modules = [
+            TimeTableListActivityModule::class,
+            ViewModelBuilder::class
+        ]
+    )
+    abstract fun getTimeTableLIstActivity() : TimeTableListActivity
 }

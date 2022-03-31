@@ -19,13 +19,19 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.suwon_university_community.R
+import com.example.suwon_university_community.data.entity.timetable.DayOfTheWeek
 import com.example.suwon_university_community.data.entity.timetable.TimeTableWithCell
 import com.example.suwon_university_community.databinding.FragmentTimeTableBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
 import com.example.suwon_university_community.model.TimeTableCellModel
 import com.example.suwon_university_community.ui.base.BaseFragment
 import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivity
+import com.example.suwon_university_community.ui.main.time_table.addTimeTable.tablelist.TimeTableListActivity
 import javax.inject.Inject
+
+
+// TODO: 강의 시간이 9시 이전인 경우 앞부분에 grid와 뷰를 추가해줘야한다. AddTimeTableCell에도 추가해줘야함
+//  Default Time 을 object로 지정해둔다  ex: 9시 4시
 
 
 class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBinding>() {
@@ -44,8 +50,14 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
             if (result.resultCode == Activity.RESULT_OK) {
                 removeAddedView()
                 viewModel.fetchData()
-            } else {
-                // 새로운 강의가 추가되지 않은 경우
+            }
+        }
+
+    private val timeTableListLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                removeAddedView()
+                viewModel.fetchData()
             }
         }
 
@@ -73,7 +85,6 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 }
             })
 
-
         }
 
         searchAddButton.setOnClickListener {
@@ -86,13 +97,17 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         directAddButton.setOnClickListener {
 
 
-            TimeTableBottomSheetFragment.newInstance(timeTableWithCell, null) { timeTableCellEntity, i->
+            TimeTableBottomSheetFragment.newInstance(
+                timeTableWithCell,
+                null
+            ) { timeTableCellEntity, i ->
 
                 when (i) {
                     TimeTableBottomSheetFragment.NEW -> {
                         timeTableCellEntity?.let {
                             removeAddedView()
-                            viewModel.addTimeTableEntity(timeTableCellEntity) }
+                            viewModel.addTimeTableEntity(timeTableCellEntity)
+                        }
                     }
                     else -> Unit
                 }
@@ -101,7 +116,11 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
 
         listButton.setOnClickListener {
-            // TODO: 시간표 리스트 보여주기
+            if (::timeTableWithCell.isInitialized) {
+                timeTableListLauncher.launch(
+                    TimeTableListActivity.newInstance(requireContext(), timeTableWithCell)
+                )
+            }
         }
 
         addTimeTableButton.setOnClickListener {
@@ -163,7 +182,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
 
         toolBarTimeTableNameTextView.text =
-            if (timeTableState.timeTableWithCell.timeTable.isDefault) getString(R.string.time_table) else timeTableState.timeTableWithCell.timeTable.tableName
+            if (timeTableState.timeTableWithCell.timeTable.tableName.isEmpty()) getString(R.string.time_table) else timeTableState.timeTableWithCell.timeTable.tableName
         toolBarTimeTableSeasonTextview.text = getString(
             R.string.timetable_season,
             timeTableState.timeTableWithCell.timeTable.year,
@@ -184,6 +203,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         addTimeTableButton.text = getString(R.string.create_new_timetable)
 
         addButton.isEnabled = false
+        listButton.isEnabled = false
 
         toolBarTimeTableNameTextView.text = ""
     }
@@ -220,15 +240,10 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
                 //year.displayedValues[year.value - MIN_YEAR]
                 //semester.value
-                var timeTableName: String = tableName.text.toString()
 
-                if (timeTableName.isBlank()) {
-                    timeTableName =
-                        "${year.displayedValues[year.value - MIN_YEAR]} ${semester.value}학기"
-                }
 
                 viewModel.saveNewTimeTable(
-                    timeTableName,
+                    tableName.text.toString(),
                     (year.displayedValues[year.value - MIN_YEAR]).substring(0..3).toInt(),
                     semester.value
                 )
@@ -270,22 +285,29 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         }
 
 
+    private var addButtonList: ArrayList<Triple<Long, Int, Int>> = arrayListOf()
+
+    private var addedGridViewList: ArrayList<Int> = arrayListOf()
+    private var addedTextViewList: ArrayList<Int> = arrayListOf()
+
+
+    var minTime = DEFAULT_MIN_TIME
+
+
     private fun addLectureList(timetableCellModelList: List<TimeTableCellModel>) {
+        checkTimeAndAddGridView(timetableCellModelList)
 
         timetableCellModelList.forEach { cell ->
-            addLecture(requireContext(), cell)
+            addLectureOnView(requireContext(), cell)
         }
-
-        checkTimeAndAddView(timetableCellModelList)
-
     }
 
 
-    private fun addLecture(context: Context, model: TimeTableCellModel) {
+    private fun addLectureOnView(context: Context, model: TimeTableCellModel) {
 
         model.locationAndTimeList.forEach { locationAndTime ->
             val location = locationAndTime.location
-            val day = locationAndTime.day.char
+            val day = locationAndTime.day
             val time = locationAndTime.time
 
 
@@ -296,74 +318,86 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
     }
 
 
-    private var addButtonList: ArrayList<Triple<Long, Int, Int>> = arrayListOf()
-
-    private var addedGridViewList: ArrayList<Int> = arrayListOf()
-    private var addedTextViewList: ArrayList<Int> = arrayListOf()
-
-
-    private fun checkTimeAndAddView(timetableCellModelList: List<TimeTableCellModel>) {
-
-        var lastTime = 4
-
+    private fun checkTimeAndAddGridView(timetableCellModelList: List<TimeTableCellModel>) {
+        var maxTime = DEFAULT_MAX_TIME
+        minTime = DEFAULT_MIN_TIME
 
         timetableCellModelList.forEach { timetableCell ->
             timetableCell.locationAndTimeList.forEach {
-                val tableLastTime = it.time.second / 60 - 12
-                if (tableLastTime > lastTime) lastTime = tableLastTime
+                val tableMaxTime = it.time.second / 60
+                if (tableMaxTime > maxTime) maxTime = tableMaxTime
+
+                val tableMinTime = it.time.first / 60
+                if (tableMinTime < minTime) minTime = tableMinTime
             }
         }
 
-        if (lastTime > 4) {
-            for (i in 0..lastTime - 5) {
-                val gridView = View(requireContext()).apply {
-
-                    setBackgroundResource(R.color.colorPrimary)
-
-                    id = ViewCompat.generateViewId()
-
-                    val lp = LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    )
-
-                    lp.height = 1.fromDpToPx()
-
-
-                    layoutParams = lp
-                }
-
-                val textView = TextView(requireContext()).apply {
-                    width = 20.fromDpToPx()
-                    height = 60.fromDpToPx()
-
-                    text = "${5 + i}"
-
-                    id = ViewCompat.generateViewId()
-
-                    gravity = Gravity.END or Gravity.TOP
-                    setPadding(0.fromDpToPx(), 0.fromDpToPx(), 3.fromDpToPx(), 0.fromDpToPx())
-
-
-                    val lp = LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT
-                    )
-
-                    lp.gravity = Gravity.START
-                    layoutParams = lp
-                }
-
-
-                binding.leftLinearLayout.addView(gridView)
-                binding.leftLinearLayout.addView(textView)
-
-                addedGridViewList.add(gridView.id)
-                addedTextViewList.add(textView.id)
+        if (maxTime > DEFAULT_MAX_TIME) {
+            for (i in (DEFAULT_MAX_TIME + 1)..maxTime) {
+                addGrid(i)
             }
         }
 
+        if (minTime < DEFAULT_MIN_TIME) {
+            for (i in (DEFAULT_MIN_TIME - 1) downTo minTime) {
+                addGrid(i)
+            }
+        }
 
+    }
+
+    private fun addGrid(i: Int) {
+        val gridView = View(requireContext()).apply {
+
+            setBackgroundResource(R.color.colorPrimary)
+
+            id = ViewCompat.generateViewId()
+
+            val lp = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+
+            lp.height = 1.fromDpToPx()
+
+
+            layoutParams = lp
+        }
+
+        val textView = TextView(requireContext()).apply {
+            width = 20.fromDpToPx()
+            height = 60.fromDpToPx()
+
+            text = if (i > DEFAULT_MAX_TIME) "${i - 12}" else "$i"
+
+            id = ViewCompat.generateViewId()
+
+            gravity = Gravity.END or Gravity.TOP
+            setPadding(0.fromDpToPx(), 0.fromDpToPx(), 3.fromDpToPx(), 0.fromDpToPx())
+
+
+            val lp = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+
+            lp.gravity = Gravity.START
+            layoutParams = lp
+        }
+
+
+
+        if (i > DEFAULT_MAX_TIME) {
+            binding.leftLinearLayout.addView(gridView)
+            binding.leftLinearLayout.addView(textView)
+        } else {
+            binding.leftLinearLayout.addView(textView, 0)
+            binding.leftLinearLayout.addView(gridView, 0)
+        }
+
+
+        addedGridViewList.add(gridView.id)
+        addedTextViewList.add(textView.id)
     }
 
 
@@ -398,10 +432,13 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                     it.cellId == modelId
                 } ?: return@setOnClickListener
 
-                TimeTableBottomSheetFragment.newInstance(timeTableWithCell, clickItem) { timeTableCellEntity, i->
-                    when ( i) {
+                TimeTableBottomSheetFragment.newInstance(
+                    timeTableWithCell,
+                    clickItem
+                ) { timeTableCellEntity, i ->
+                    when (i) {
                         TimeTableBottomSheetFragment.EDIT -> {
-                            timeTableCellEntity?.let{
+                            timeTableCellEntity?.let {
                                 removeAddedView()
                                 viewModel.updateTimeTableEntity(timeTableCellEntity)
                             }
@@ -436,7 +473,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         var minutes = time.second - time.first
         minutes += (minutes / 60)
 
-        var marginTop = (time.first - 540)
+        var marginTop = (time.first - minTime * 60)
         marginTop += marginTop / 60
 
         lp.height = minutes.fromDpToPx()
@@ -449,12 +486,12 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
 
     private fun addButton(
-        day: Char,
+        day: DayOfTheWeek,
         button: Button,
         model: TimeTableCellModel
     ) {
         when (day) {
-            '월' -> {
+            DayOfTheWeek.MON -> {
                 binding.monLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -465,7 +502,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 )
             }
 
-            '화' -> {
+            DayOfTheWeek.TUE -> {
                 binding.tueLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -476,7 +513,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 )
             }
 
-            '수' -> {
+            DayOfTheWeek.WED -> {
                 binding.wedLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -487,7 +524,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 )
             }
 
-            '목' -> {
+            DayOfTheWeek.THU -> {
                 binding.thuLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -498,7 +535,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 )
             }
 
-            '금' -> {
+            DayOfTheWeek.FRI -> {
                 binding.friLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -543,7 +580,10 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
         const val TAG = "TimeTableFragment"
 
-        private const val DEFAULT_YEAR = 2022
-        private const val MIN_YEAR = 2015
+        const val DEFAULT_YEAR = 2022
+        const val MIN_YEAR = 2015
+
+        private const val DEFAULT_MAX_TIME = 16
+        private const val DEFAULT_MIN_TIME = 9
     }
 }

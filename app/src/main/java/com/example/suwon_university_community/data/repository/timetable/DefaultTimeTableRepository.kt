@@ -28,16 +28,26 @@ class DefaultTimeTableRepository @Inject constructor(
         timeTableDao.insertTimeTableCellWithTable(timeTableId, timeTableEntity)
     }
 
+    override suspend fun deleteTimeTableWithCell(timeTableId: Long) = withContext(ioDispatcher){
+        val cellIdList = timeTableDao.getTimeTableWithCell(timeTableId).timeTableCellList.map { it.cellId }
+        timeTableDao.deleteTImeTableWithCell( timeTableId,cellIdList )
+    }
+
 
     override suspend fun getTimeTableWithCell(timeTableId: Long): TimeTableWithCell = withContext(ioDispatcher){
         timeTableDao.getTimeTableWithCell( timeTableId)
     }
 
-    override suspend fun deleteTimeTableCellAtTable(timeTableId: Long, timTableCellId: Long) {
+    override suspend fun deleteTimeTableCellAtTable(timeTableId: Long, timTableCellId: Long) = withContext(ioDispatcher) {
         timeTableDao.deleteTimeTableCellAtTable(timeTableId, timTableCellId)
     }
 
-    override suspend fun updateTimeTableCell(timeTableCellEntity: TimeTableCellEntity) {
+
+    override suspend fun updateTimeTable(timeTableEntity: TimeTableEntity) {
+        timeTableDao.updateTimeTable(timeTableEntity)
+    }
+
+    override suspend fun updateTimeTableCell(timeTableCellEntity: TimeTableCellEntity) = withContext(ioDispatcher) {
         timeTableDao.updateTimeTableCell(timeTableCellEntity)
     }
 }

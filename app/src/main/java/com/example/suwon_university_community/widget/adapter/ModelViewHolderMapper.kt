@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.suwon_university_community.databinding.ViewholderEmptyBinding
 import com.example.suwon_university_community.databinding.ViewholderLectureBinding
+import com.example.suwon_university_community.databinding.ViewholderTimeTableBinding
 import com.example.suwon_university_community.model.CellType
 import com.example.suwon_university_community.model.Model
 import com.example.suwon_university_community.ui.base.BaseViewModel
@@ -11,6 +12,7 @@ import com.example.suwon_university_community.util.provider.ResourceProvider
 import com.example.suwon_university_community.widget.adapter.viewholder.EmptyViewHolder
 import com.example.suwon_university_community.widget.adapter.viewholder.LectureViewHolder
 import com.example.suwon_university_community.widget.adapter.viewholder.ModelViewHolder
+import com.example.suwon_university_community.widget.adapter.viewholder.TimeTableViewHolder
 
 object ModelViewHolderMapper {
 
@@ -32,6 +34,11 @@ object ModelViewHolderMapper {
 
             CellType.LECTURE_CELL -> LectureViewHolder(
                 ViewholderLectureBinding.inflate(inflater, parent, false),
+                viewModel,
+                resourcesProvider
+            )
+            CellType.TABLE_CELL -> TimeTableViewHolder(
+                ViewholderTimeTableBinding.inflate(inflater, parent, false),
                 viewModel,
                 resourcesProvider
             )

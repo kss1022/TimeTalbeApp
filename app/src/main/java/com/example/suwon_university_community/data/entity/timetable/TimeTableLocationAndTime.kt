@@ -14,7 +14,7 @@ data class TimeTableLocationAndTime(
         val startHour  = time.first / 60
         val endHour = time.second / 60
 
-        return "$startHour:${time.first - startHour*60}~$endHour:${time.second - endHour*60}"
+        return  "%02d:%02d~%02d:%02d".format(startHour, time.first - startHour*60,endHour,  time.second - endHour*60)
     }
 }
 

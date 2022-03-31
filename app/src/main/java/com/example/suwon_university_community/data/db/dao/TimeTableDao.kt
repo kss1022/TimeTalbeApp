@@ -56,6 +56,9 @@ interface TimeTableDao {
     @Query("DELETE FROM timetablecrossrefentity WHERE tableId=:tableId AND cellId=:cellId")
     suspend fun deleteTimeTableCrossRefEntity(tableId: Long, cellId: Long)
 
+    @Query("DELETE FROM TimeTableEntity WHERE tableId=:tableId")
+    suspend fun deleteTimeTable(tableId: Long)
+
 
     @Transaction
     suspend fun deleteTimeTableCellAtTable(tableId: Long, cellId : Long){
@@ -63,6 +66,17 @@ interface TimeTableDao {
         deleteTimeTableCrossRefEntity(tableId, cellId)
     }
 
+    @Transaction
+    suspend fun deleteTImeTableWithCell(tableId: Long , cellIdList : List<Long>){
+        cellIdList.forEach {
+            deleteTimeTableCellAtTable(tableId, it)
+        }
+        deleteTimeTable(tableId)
+    }
+
+
+    @Update
+    suspend fun updateTimeTable ( timeTableEntity: TimeTableEntity)
 
     @Update
     suspend fun updateTimeTableCell( timeTableCellEntity: TimeTableCellEntity)

@@ -13,38 +13,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-/**
- *
- * 시간표 생성!
- * Base 학기 시간표 : 년도  = 2022, 학기 = 1. 이름 = nullable
- *
- *  추가할 fragment :  시간표 리스트(추가 삭제 이름 변경 base 설정)
- *
- */
-
-
-/**
- *
- * 테이블 저장 할떄 .
- * 테이블 리스트를 가지고 있어서 해당 이름과 같은지 확인해줘야한다. 있으면 toast
- *
- *
- * 테이블 리스트를 가지고 있어야한다.
- *
- * default 인지 boolean값도 저장해준다 (기본 시간표인지)
- *
- *
- *
- * Main 시간표 id를 Preference에 저장해준다.  그 시간표를 메인화면 시간표로 설정해준다.
- *
- *
- * 메인 화면에서는 리스를 가져와서 empty인 경우 비어있다고 보여주고
- * 리스트가 있는데 메인 시간표로 설정이 안될수도 있지 혹시모르니까 그런경우 리스트로 가서
- * 메인 리스트로 설정해주기
- *
- *
- */
-
 
 class TimeTableViewModel @Inject constructor(
     private val timeTableRepository: TimeTableRepository,
@@ -61,7 +29,8 @@ class TimeTableViewModel @Inject constructor(
         val mainTimeTableId = preferenceManager.getMainTimeTableId()
 
         mainTimeTableId?.let {
-            mainTimeTable = timeTableRepository.getTimeTableWithCell(preferenceManager.getMainTimeTableId()!!)
+            mainTimeTable =
+                timeTableRepository.getTimeTableWithCell(preferenceManager.getMainTimeTableId()!!)
             timeTableStateLiveData.value = TimeTableState.Success(mainTimeTable)
         } ?: kotlin.run {
             timeTableStateLiveData.value = TimeTableState.NoTable
@@ -72,37 +41,45 @@ class TimeTableViewModel @Inject constructor(
 
     fun saveNewTimeTable(tableName: String, year: Int, semester: Int) = viewModelScope.launch {
 
-        val tableId = System.currentTimeMillis()
-
-        timeTableRepository.insertTimeTable(
-            TimeTableEntity(
-                tableId = tableId,
-                tableName = tableName,
-                year = year,
-                semester = semester,
-                isDefault = true
+        if(preferenceManager.getMainTimeTableId() == null){
+            timeTableRepository.insertTimeTable(
+                TimeTableEntity(
+                    tableId = DEFAULT_TIME_TABLE_ID,
+                    tableName = tableName,
+                    year = year,
+                    semester = semester,
+                    isDefault = true
+                )
             )
+
+            preferenceManager.putMainTimeTableId(DEFAULT_TIME_TABLE_ID)
+            fetchData()
+        }
+    }
+
+
+    fun addTimeTableEntity(timeTableCellEntity: TimeTableCellEntity) = viewModelScope.launch {
+        timeTableRepository.insertTimeTableCellWithTable(
+            mainTimeTable.timeTable.tableId,
+            timeTableCellEntity
         )
-
-        preferenceManager.putMainTimeTableId(tableId)
-
         fetchData()
     }
 
 
-    fun addTimeTableEntity(timeTableCellEntity: TimeTableCellEntity) =viewModelScope.launch{
-        timeTableRepository.insertTimeTableCellWithTable(mainTimeTable.timeTable.tableId , timeTableCellEntity)
-        fetchData()
-    }
-
-
-    fun deleteTImeTableEntity(cellId: Long) = viewModelScope.launch{
+    fun deleteTImeTableEntity(cellId: Long) = viewModelScope.launch {
         timeTableRepository.deleteTimeTableCellAtTable(mainTimeTable.timeTable.tableId, cellId)
         fetchData()
     }
 
-    fun updateTimeTableEntity(timeTableCellEntity: TimeTableCellEntity) = viewModelScope.launch{
+    fun updateTimeTableEntity(timeTableCellEntity: TimeTableCellEntity) = viewModelScope.launch {
         timeTableRepository.updateTimeTableCell(timeTableCellEntity)
         fetchData()
+    }
+
+
+
+    companion object {
+        private const val DEFAULT_TIME_TABLE_ID = 202201L
     }
 }

@@ -11,10 +11,7 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.LinearLayout
+import android.widget.*
 import androidx.activity.viewModels
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.core.content.ContextCompat
@@ -24,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.example.suwon_university_community.R
 import com.example.suwon_university_community.data.entity.lecture.CollegeCategory
+import com.example.suwon_university_community.data.entity.timetable.DayOfTheWeek
 import com.example.suwon_university_community.data.entity.timetable.TimeTableWithCell
 import com.example.suwon_university_community.databinding.ActivityAddTimeTableCellBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
@@ -116,15 +114,16 @@ class AddTimeTableCellActivity :
     private fun initTimeTable() {
         timetableWithCell.let { timetableWithCell ->
             if (timetableWithCell.timeTableCellList.isNullOrEmpty().not()) {
-                timetableWithCell.timeTableCellList.map { it.toModel() }.forEach { model ->
+                val modelList = timetableWithCell.timeTableCellList.map { it.toModel() }
+                checkTimeAndAddGridView(modelList)
+                modelList.forEach { model ->
                     addLectureOnView(this, model)
                 }
             }
         }
 
-
         binding.toolBarTimeTableNameTextView.text =
-            if (timetableWithCell.timeTable.isDefault) getString(R.string.time_table) else timetableWithCell.timeTable.tableName
+            if (timetableWithCell.timeTable.tableName.isEmpty()) getString(R.string.time_table) else timetableWithCell.timeTable.tableName
         binding.toolBarTimeTableSeasonTextview.text = getString(
             R.string.timetable_season,
             timetableWithCell.timeTable.year,
@@ -159,8 +158,6 @@ class AddTimeTableCellActivity :
     }
 
 
-
-
     private fun bindViews() = with(binding) {
 
         toolBar.setNavigationOnClickListener {
@@ -173,15 +170,15 @@ class AddTimeTableCellActivity :
         searchEditText.apply {
             inputType = InputType.TYPE_NULL
 
-            var currentClickTime : Long = 0
-            var lastClickTime : Long = 0
+            var currentClickTime: Long = 0
+            var lastClickTime: Long = 0
 
             addTextChangedListener {
-                currentClickTime= SystemClock.uptimeMillis()
+                currentClickTime = SystemClock.uptimeMillis()
                 val elapsedTime: Long = currentClickTime - lastClickTime
                 lastClickTime = currentClickTime
 
-                if(elapsedTime > 100){
+                if (elapsedTime > 100) {
                     viewPagerAdapter.fragmentList.forEach {
                         it.viewModel.setSearchString(searchEditText.text.toString())
                     }
@@ -324,7 +321,11 @@ class AddTimeTableCellActivity :
 
                 val cellModel = lectureModel.toTimeTableCellModel()
 
-                viewModel.addLecture(timetableWithCell.timeTable.tableId, lectureModel, cellModel.locationAndTimeList)
+                viewModel.addLecture(
+                    timetableWithCell.timeTable.tableId,
+                    lectureModel,
+                    cellModel.locationAndTimeList
+                )
 
                 if (cellModel.locationAndTimeList.isNullOrEmpty().not()) {
                     addLectureOnView(this, cellModel)
@@ -426,6 +427,7 @@ class AddTimeTableCellActivity :
     private var addButtonList: ArrayList<Triple<Long, Int, Int>> =
         arrayListOf<Triple<Long, Int, Int>>()
 
+    var minTime = DEFAULT_MIN_TIME
 
     private fun addLectureOnView(context: Context, model: TimeTableCellModel) {
 
@@ -437,7 +439,86 @@ class AddTimeTableCellActivity :
 
             val button = createButton(context, model, location, time)
 
-            addButton(day.char, button, model)
+            addButton(day, button, model)
+        }
+    }
+
+
+    private fun checkTimeAndAddGridView(timetableCellModelList: List<TimeTableCellModel>) {
+        var maxTime = DEFAULT_MAX_TIME
+        minTime = DEFAULT_MIN_TIME
+
+        timetableCellModelList.forEach { timetableCell ->
+            timetableCell.locationAndTimeList.forEach {
+                val tableMaxTime = it.time.second / 60
+                if (tableMaxTime > maxTime) maxTime = tableMaxTime
+
+                val tableMinTime = it.time.first / 60
+                if (tableMinTime < minTime) minTime = tableMinTime
+            }
+        }
+
+        if (maxTime > DEFAULT_MAX_TIME) {
+            for (i in (DEFAULT_MAX_TIME + 1)..maxTime) {
+                addGrid(i)
+            }
+        }
+
+        if (minTime < DEFAULT_MIN_TIME) {
+            for (i in (DEFAULT_MIN_TIME - 1) downTo minTime) {
+                addGrid(i)
+            }
+        }
+
+    }
+
+    private fun addGrid(i: Int) {
+        val gridView = View(this).apply {
+
+            setBackgroundResource(R.color.colorPrimary)
+
+            id = ViewCompat.generateViewId()
+
+            val lp = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+
+            lp.height = 1.fromDpToPx()
+
+
+            layoutParams = lp
+        }
+
+        val textView = TextView(this).apply {
+            width = 20.fromDpToPx()
+            height = 60.fromDpToPx()
+
+            text = if (i > DEFAULT_MAX_TIME) "${i - 12}" else "$i"
+
+            id = ViewCompat.generateViewId()
+
+            gravity = Gravity.END or Gravity.TOP
+            setPadding(0.fromDpToPx(), 0.fromDpToPx(), 3.fromDpToPx(), 0.fromDpToPx())
+
+
+            val lp = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+
+            lp.gravity = Gravity.START
+            layoutParams = lp
+        }
+
+
+
+        if (i > DEFAULT_MAX_TIME) {
+            binding.leftLinearLayout.addView(gridView)
+            binding.leftLinearLayout.addView(textView)
+        } else {
+            binding.leftLinearLayout.addView(textView, 0)
+            binding.leftLinearLayout.addView(gridView, 0)
         }
     }
 
@@ -484,7 +565,7 @@ class AddTimeTableCellActivity :
         var minutes = time.second - time.first
         minutes += (minutes / 60)
 
-        var marginTop = ( time.first -540 )
+        var marginTop = (time.first - minTime * 60)
         marginTop += marginTop / 60
 
 
@@ -497,12 +578,12 @@ class AddTimeTableCellActivity :
 
 
     private fun addButton(
-        day: Char,
+        day: DayOfTheWeek,
         button: Button,
         model: TimeTableCellModel
     ) {
         when (day) {
-            '월' -> {
+            DayOfTheWeek.MON -> {
                 binding.monLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -513,7 +594,7 @@ class AddTimeTableCellActivity :
                 )
             }
 
-            '화' -> {
+            DayOfTheWeek.TUE -> {
                 binding.tueLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -524,7 +605,7 @@ class AddTimeTableCellActivity :
                 )
             }
 
-            '수' -> {
+            DayOfTheWeek.WED -> {
                 binding.wedLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -535,7 +616,7 @@ class AddTimeTableCellActivity :
                 )
             }
 
-            '목' -> {
+            DayOfTheWeek.THU -> {
                 binding.thuLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -546,7 +627,7 @@ class AddTimeTableCellActivity :
                 )
             }
 
-            '금' -> {
+            DayOfTheWeek.FRI -> {
                 binding.friLinearLayout.addView(button)
                 addButtonList.add(
                     Triple(
@@ -588,5 +669,8 @@ class AddTimeTableCellActivity :
             }
 
         const val EXTRA_TIME_TABLE = "time_table"
+
+        private const val DEFAULT_MAX_TIME = 22
+        private const val DEFAULT_MIN_TIME = 9
     }
 }
