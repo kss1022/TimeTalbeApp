@@ -11,7 +11,6 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
-// TODO: 의존성 주입하기 
 class DefaultNoticeRepository @Inject constructor(
     private val noticeService: NoticeService,
     private val noticeDao: NoticeDao,
@@ -35,11 +34,11 @@ class DefaultNoticeRepository @Inject constructor(
         }
     }
 
-    override suspend fun getNoticeList(categoty : String ): List<NoticeEntity>  = withContext(ioDispatcher){
-        if(categoty == resourceProvider.getString( NoticeCategory.ALL.categoryNameId)){
+    override suspend fun getNoticeList(category : String ): List<NoticeEntity>  = withContext(ioDispatcher){
+        if(category == resourceProvider.getString( NoticeCategory.ALL.categoryNameId)){
             noticeDao.getAll()
         }else{
-            noticeDao.getNoticeList(categoty)
+            noticeDao.getNoticeList(category)
         }
     }
 }

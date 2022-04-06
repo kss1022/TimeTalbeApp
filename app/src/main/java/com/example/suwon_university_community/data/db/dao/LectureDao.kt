@@ -10,7 +10,6 @@ import com.example.suwon_university_community.data.entity.lecture.LectureEntity
 @Dao
 interface LectureDao {
 
-    // TODO: Paging을 사용해서 가져오기
     @Query("SELECT * FROM lectureentity")
     suspend fun getAll() : List<LectureEntity>
 

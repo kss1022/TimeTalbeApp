@@ -145,6 +145,7 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
      * positiveButton click- > [checkData] -> [checkOverlapTimeAndAdd]
      *
      */
+    @SuppressLint("InflateParams")
     private fun showEditAlertDialog(editLocationAndTime: TimeTableLocationAndTime?) {
         val alertDialog = AlertDialog.Builder(requireContext()).create()
 
@@ -276,7 +277,7 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
             }
         }
 
-        setOnKeyListener { view, i, keyEvent ->
+        setOnKeyListener { _, _, keyEvent ->
 
             if (keyEvent.keyCode == KeyEvent.KEYCODE_DEL) {
                 editText.setText("")
@@ -388,7 +389,7 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
         }
 
         return if (overlappingSet.isNotEmpty()) {
-            var overlapTimeStr = overlappingSet.first().day.char + overlappingSet.first().getTimeString()
+            val overlapTimeStr = overlappingSet.first().day.char + overlappingSet.first().getTimeString()
 
             Toast.makeText(requireContext(), "겹치는 시간이 있습니다😱\n$overlapTimeStr", Toast.LENGTH_SHORT)
                 .show()
@@ -413,6 +414,7 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
 
 
 
+    @SuppressLint("InflateParams")
     private fun addLocationAndTimeView(
         timeTableLocationAndTime: TimeTableLocationAndTime,
         editPos: Int?

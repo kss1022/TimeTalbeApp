@@ -170,7 +170,7 @@ class AddTimeTableCellActivity :
         searchEditText.apply {
             inputType = InputType.TYPE_NULL
 
-            var currentClickTime: Long = 0
+            var currentClickTime: Long
             var lastClickTime: Long = 0
 
             addTextChangedListener {
@@ -195,7 +195,7 @@ class AddTimeTableCellActivity :
                 }
             }
 
-            setOnFocusChangeListener { view, hasFocus ->
+            setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus && isMotionEnd.not()) {
                     inputType = InputType.TYPE_NULL
                     motionLayout.transitionToEnd()

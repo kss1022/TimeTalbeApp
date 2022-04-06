@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.os.bundleOf
+import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,31 +40,53 @@ class NoticeListFragment : BaseFragment<NoticeViewModel, FragmentNoticeListBindi
         when (it) {
 
             is NoticeListState.Loading -> {
+                handleLoadingState()
             }
             is NoticeListState.Success -> {
                 handleSuccessState(it)
             }
 
             is NoticeListState.Error -> {
+                handleErrorState(it)
             }
+
+            else->Unit
         }
     }
 
+    private fun handleLoadingState() = with(binding) {
+        progressBar.visibility = View.VISIBLE
+        errorMessageTextView.isGone = true
+        recyclerView.isGone = true
+    }
 
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun handleSuccessState(it: NoticeListState.Success) {
-        (binding.recyclerView.adapter as? NoticeAdapter)?.run {
+    private fun handleSuccessState(it: NoticeListState.Success) = with(binding) {
+        progressBar.isGone = true
+        errorMessageTextView.isGone = true
+        recyclerView.visibility = View.VISIBLE
+
+
+        (recyclerView.adapter as? NoticeAdapter)?.run {
             addData(it.noticeDateModelList)
             notifyDataSetChanged()
         }
     }
 
+    private fun handleErrorState(it: NoticeListState.Error) = with(binding) {
+        progressBar.isGone = true
+        errorMessageTextView.visibility = View.VISIBLE
+        recyclerView.isGone = true
+
+        errorMessageTextView.text = getString(it.massageId)
+    }
+
+
     override fun initViews() {
         initRecyclerView()
         bindViews()
     }
-
 
 
     private fun initRecyclerView() {
@@ -74,8 +97,8 @@ class NoticeListFragment : BaseFragment<NoticeViewModel, FragmentNoticeListBindi
     }
 
     private fun bindViews() {
-        (binding.recyclerView.adapter as  NoticeAdapter)?.apply {
-            onItemClickListener ={ noticeModel ->
+        (binding.recyclerView.adapter as NoticeAdapter).apply {
+            onItemClickListener = { noticeModel ->
                 val url = Uri.parse(noticeModel.url)
                 CustomTabsIntent.Builder().build().also {
                     it.launchUrl(requireContext(), url)

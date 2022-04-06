@@ -44,15 +44,15 @@ data class LectureModel(
 
             val dayAndTime = temp[1].split(" ")
 
-            dayAndTime.forEach { dayAndTime ->      // 월1,4,5)
-                val day = dayAndTime[0]
+            dayAndTime.forEach { dayWithTime ->      // 월1,4,5)
+                val day = dayWithTime[0]
 
-                val timeArray: List<Int> = if (dayAndTime.last() == ')') {
-                    dayAndTime.substring(1, dayAndTime.lastIndex).split(',').map {
+                val timeArray: List<Int> = if (dayWithTime.last() == ')') {
+                    dayWithTime.substring(1, dayWithTime.lastIndex).split(',').map {
                         it.toInt()
                     }
                 } else {
-                    dayAndTime.substring(1, dayAndTime.lastIndex + 1).split(',').map {
+                    dayWithTime.substring(1, dayWithTime.lastIndex + 1).split(',').map {
                         it.toInt()
                     }
                 }

@@ -1,6 +1,7 @@
 package com.example.suwon_university_community.extensions
 
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.widget.ImageView
 import com.bumptech.glide.Glide
@@ -26,6 +27,7 @@ internal fun ImageView.clear() = Glide.with(context).clear(this)
 //        .into(this)
 //}
 
+    @SuppressLint("CheckResult")
     fun ImageView.load(url: String, corner: Float = 0f, scaleType: Transformation<Bitmap> = CenterInside()) {
         Glide.with(this)
             .load(url)

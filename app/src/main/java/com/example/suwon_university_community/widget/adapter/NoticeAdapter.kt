@@ -59,12 +59,13 @@ class NoticeAdapter ( private val resourceProvider: ResourceProvider) : Recycler
 
     override fun getItemCount(): Int = data.size
 
+
     fun addData(noticeDateModelList: List<NoticeDateModel>) {
         val newData = mutableListOf<DataItem>()
 
         noticeDateModelList.forEach { model ->
 
-            model.date?.let {
+            model.date.let {
                 newData += DataItem(model.getDate())
             }
 
@@ -75,7 +76,6 @@ class NoticeAdapter ( private val resourceProvider: ResourceProvider) : Recycler
         }
 
         data = newData
-        notifyDataSetChanged()
     }
 
 

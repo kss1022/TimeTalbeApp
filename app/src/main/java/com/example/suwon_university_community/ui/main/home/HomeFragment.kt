@@ -27,7 +27,9 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
     override fun initViews() {
         initViewPager()
         initCollegeLink()
+        bindViews()
     }
+
 
 
 
@@ -88,13 +90,25 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
 
         collegeLink.collegeMapLink.setOnClickListener {
             // TODO: 지도 만들기
+
+            val url = Uri.Builder().scheme("https").authority("www.suwon.ac.kr")
+                .appendPath("index.html")
+                .appendQueryParameter("menuno", "657")
+                .build()
+
+            CustomTabsIntent.Builder().build().also {
+                it.launchUrl(requireContext(), url)
+            }
         }
     }
 
 
-    override fun observeData(){
+
+    private fun bindViews() {
 
     }
+
+    override fun observeData() = Unit
 
     companion object {
         fun newInstance() = HomeFragment()

@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 
 class JsonNoticeService @Inject constructor(
-    private val firebaseStore: FirebaseStorage,
+    firebaseStore: FirebaseStorage,
     private val noticeApi: NoticeApi
 ) : NoticeService {
 
@@ -22,9 +22,6 @@ class JsonNoticeService @Inject constructor(
 
     override suspend fun getNoticeList(): List<NoticeEntity> =
         try{
-            val url =  sheetReference.downloadUrl.await()
-
-
             val response = noticeApi.getNoticeList()
 
             if(response.isSuccessful){

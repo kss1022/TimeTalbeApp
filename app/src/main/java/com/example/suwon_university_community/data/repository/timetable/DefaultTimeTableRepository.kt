@@ -23,9 +23,9 @@ class DefaultTimeTableRepository @Inject constructor(
 
     override suspend fun insertTimeTableCellWithTable(
         timeTableId: Long,
-        timeTableEntity: TimeTableCellEntity
+        timeTableCellEntity: TimeTableCellEntity
     )  = withContext(ioDispatcher){
-        timeTableDao.insertTimeTableCellWithTable(timeTableId, timeTableEntity)
+        timeTableDao.insertTimeTableCellWithTable(timeTableId, timeTableCellEntity)
     }
 
     override suspend fun deleteTimeTableWithCell(timeTableId: Long) = withContext(ioDispatcher){

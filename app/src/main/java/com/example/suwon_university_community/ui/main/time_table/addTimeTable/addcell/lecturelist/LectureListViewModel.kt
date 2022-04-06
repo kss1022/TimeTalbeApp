@@ -264,7 +264,7 @@ class LectureListViewModel @Inject constructor(
 
     private fun checkSpinner(): List<LectureEntity> {
 
-        var spinnerList = listOf<LectureEntity>()
+        val spinnerList: List<LectureEntity>
 
         if (department != null) {
 

@@ -10,8 +10,6 @@ import com.example.suwon_university_community.data.entity.timetable.TimeTableWit
 interface TimeTableDao {
 
     // TODO: 서버에 테이블을 저장하고 가져오는 로직 구현
-    // TODO: 테이블 삭제하는 로직 구현 : 테이블 삭제시 속한 Cell들도 삭제해줘야한다. Ref도 삭제
-
 
     @Transaction
     @Query("SELECT * FROM TimeTableEntity WHERE tableId=:tableId")
@@ -31,8 +29,6 @@ interface TimeTableDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTimeTableCrossRefEntity(reference: TimeTableCrossRefEntity)
 
-
-    // TODO: flow를 사용하여 추가할시 데이터를 받아올수 있도록 한다.
 
     @Transaction
     suspend fun insertTimeTableCellWithTable(
