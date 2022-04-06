@@ -52,7 +52,7 @@ class LectureListViewModel @Inject constructor(
             lectureListLiveData.value = lectureEntityList
             lectureListStateLiveData.value = LectureListState.Success
         } ?: kotlin.run {
-            lectureListStateLiveData.value = LectureListState.Error(R.string.category_is_null)
+            lectureListStateLiveData.value = LectureListState.Error(R.string.lecture_category_is_null)
         }
 
     }

@@ -7,6 +7,8 @@ import com.example.suwon_university_community.ui.main.chat.ChatFragment
 import com.example.suwon_university_community.ui.main.chat.ChatFragmentModule
 import com.example.suwon_university_community.ui.main.home.HomeFragment
 import com.example.suwon_university_community.ui.main.home.HomeFragmentModule
+import com.example.suwon_university_community.ui.main.home.notice.NoticeFragmentModule
+import com.example.suwon_university_community.ui.main.home.notice.NoticeListFragment
 import com.example.suwon_university_community.ui.main.my.MyFragment
 import com.example.suwon_university_community.ui.main.my.MyFragmentModule
 import com.example.suwon_university_community.ui.main.time_table.TimeTableFragment
@@ -27,6 +29,7 @@ abstract class MainActivityModule {
         ]
     )
     abstract fun getHomeFragment(): HomeFragment
+
 
     @FragmentScope
     @ContributesAndroidInjector(
@@ -56,5 +59,16 @@ abstract class MainActivityModule {
         ]
     )
     abstract fun getTimeTableFragment(): TimeTableFragment
+
+
+
+    @FragmentScope
+    @ContributesAndroidInjector(
+        modules = [
+            NoticeFragmentModule::class,
+            ViewModelBuilder::class
+        ]
+    )
+    protected abstract fun getNoticeListFragment(): NoticeListFragment
 
 }

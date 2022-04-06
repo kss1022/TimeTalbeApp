@@ -3,16 +3,22 @@ package com.example.suwon_university_community.di
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.room.Room
+import com.example.suwon_university_community.data.api.JsonNoticeService
 import com.example.suwon_university_community.data.api.JsonTimeTableService
+import com.example.suwon_university_community.data.api.NoticeService
 import com.example.suwon_university_community.data.api.TimeTableService
-import com.example.suwon_university_community.data.api.response.LectureApi
+import com.example.suwon_university_community.data.api.response.lecture.LectureApi
+import com.example.suwon_university_community.data.api.response.notice.NoticeApi
 import com.example.suwon_university_community.data.db.AppDataBase
 import com.example.suwon_university_community.data.db.dao.LectureDao
+import com.example.suwon_university_community.data.db.dao.NoticeDao
 import com.example.suwon_university_community.data.db.dao.TimeTableDao
 import com.example.suwon_university_community.data.preference.PreferenceManager
 import com.example.suwon_university_community.data.preference.PreferenceManager.Companion.PREFERENCES_NAME
 import com.example.suwon_university_community.data.repository.lecture.DefaultLectureRepository
 import com.example.suwon_university_community.data.repository.lecture.LectureRepository
+import com.example.suwon_university_community.data.repository.notice.DefaultNoticeRepository
+import com.example.suwon_university_community.data.repository.notice.NoticeRepository
 import com.example.suwon_university_community.data.repository.timetable.DefaultTimeTableRepository
 import com.example.suwon_university_community.data.repository.timetable.TimeTableRepository
 import com.example.suwon_university_community.data.repository.user.DefaultUserRepository
@@ -35,6 +41,7 @@ import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @SuppressLint("JvmStaticProvidesInObjectDetector")
@@ -61,15 +68,33 @@ object AppModule {
     @JvmStatic
     @Singleton
     @Provides
-    fun provideLectureApi(retrofit: Retrofit): LectureApi = buildLectureService(retrofit)
+    fun provideLectureApi(@Named("Lecture") retrofit: Retrofit): LectureApi = buildLectureService(retrofit)
 
     @JvmStatic
     @Singleton
     @Provides
+    @Named("Lecture")
     fun provideLectureRetrofit(
         gsonConverterFactory: GsonConverterFactory,
         okHttpClient: OkHttpClient
     ): Retrofit = buildLectureRetrofit(gsonConverterFactory, okHttpClient)
+
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideNoticeApi(@Named("Notice") retrofit: Retrofit) : NoticeApi = buildNoticeService(retrofit)
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    @Named("Notice")
+    fun provideNoticeRetrofit(
+        gsonConverterFactory: GsonConverterFactory,
+        okHttpClient: OkHttpClient
+    ): Retrofit = buildNoticeRetrofit(gsonConverterFactory, okHttpClient)
+
+
 
 
     @JvmStatic
@@ -115,6 +140,12 @@ object AppModule {
     @Provides
     fun provideTimeTableDao(appDataBase: AppDataBase): TimeTableDao = appDataBase.getTimeTableDao()
 
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideNoticeDao(appDataBase: AppDataBase) : NoticeDao = appDataBase.getNoticeDao()
+
     @JvmStatic
     @Singleton
     @Provides
@@ -142,6 +173,12 @@ abstract class AppModuleBinds {
         service: JsonTimeTableService
     ): TimeTableService
 
+    @Singleton
+    @Binds
+    abstract fun provideNoticeService(
+        service : JsonNoticeService
+    ) : NoticeService
+
 
     @Singleton
     @Binds
@@ -162,4 +199,10 @@ abstract class AppModuleBinds {
     abstract fun provideTimeTableRepository(
         repo: DefaultTimeTableRepository
     ): TimeTableRepository
+
+    @Singleton
+    @Binds
+    abstract fun provideNoticeRepository(
+        repo : DefaultNoticeRepository
+    ) : NoticeRepository
 }

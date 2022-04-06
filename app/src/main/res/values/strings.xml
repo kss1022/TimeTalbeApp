@@ -54,7 +54,7 @@
     <string name="lecture_info">수업명 : %s\n시간 및 장소 : %s\n교수명 : %s</string>
     <string name="timetable_season">%d년도 %d학기</string>
     <string name="timetable_cell_title">%s\n%s</string>
-    <string name="category_is_null">강의 리스트를 가져오는대 실패했습니다😭</string>
+    <string name="lecture_category_is_null">강의 리스트를 가져오는대 실패했습니다😭</string>
     <string name="lecture_name">수업명</string>
     <string name="professor_name">교수명</string>
     <string name="add_location_and_time">시간 및 장소를 추가</string>
@@ -78,5 +78,15 @@
 
     <string name="lecture_number">강의 수 :  </string>
     <string name="total_time">총 시간 :  </string>
+
+
+    <!-- home-->
+    <string name="public_notice">통합공지</string>
+    <string name="college_schedule">학사일정</string>
+    <string name="college_number">교내번호</string>
+    <string name="center_library">중앙 도서관</string>
+    <string name="campus_map">캠퍼스 맵</string>
+    <string name="notice_category_is_null">공지를 가져오는대 실패했습니다😭</string>
+
 
 </resources>

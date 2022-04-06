@@ -1,6 +1,6 @@
 package com.example.suwon_university_community.data.api
 
-import com.example.suwon_university_community.data.api.response.LectureApi
+import com.example.suwon_university_community.data.api.response.lecture.LectureApi
 import com.example.suwon_university_community.data.entity.lecture.LectureEntity
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference

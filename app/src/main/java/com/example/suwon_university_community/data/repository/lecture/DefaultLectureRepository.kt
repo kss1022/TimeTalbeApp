@@ -22,7 +22,7 @@ class DefaultLectureRepository  @Inject constructor(
 
     override suspend fun refreshLecture() = withContext(ioDispatcher) {
         val fileUpdatedTimeMillis = timeTableService.getUpdatedTimeMillis()
-        val lastDatabaseUpdatedTIme = preferenceManager.getUpdatedTime()
+        val lastDatabaseUpdatedTIme = preferenceManager.getTimeTableUpdatedTime()
 
 
         if (lastDatabaseUpdatedTIme == null || fileUpdatedTimeMillis > lastDatabaseUpdatedTIme) {
@@ -36,7 +36,7 @@ class DefaultLectureRepository  @Inject constructor(
             lectureDao.insertLectureList(updateData)
 
 
-            preferenceManager.putUpdatedTime(fileUpdatedTimeMillis)
+            preferenceManager.putTimeTableUpdatedTime(fileUpdatedTimeMillis)
             Log.d("TimeRepository", "Updated Success")
         }
     }

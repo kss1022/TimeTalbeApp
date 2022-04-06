@@ -172,6 +172,12 @@ class TimeTableListActivity : BaseActivity<TimeTableListViewModel, ActivityTimeT
     }
 
 
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.slide_from_left, R.anim.slide_to_right)
+    }
+
+
 
     private fun timeTableAlertDialog() {
         val numberPickers =

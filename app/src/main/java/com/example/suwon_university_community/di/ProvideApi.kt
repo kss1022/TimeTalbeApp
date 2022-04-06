@@ -1,6 +1,7 @@
 package com.example.suwon_university_community.di
 import com.example.suwon_university_community.BuildConfig
-import com.example.suwon_university_community.data.api.response.LectureApi
+import com.example.suwon_university_community.data.api.response.lecture.LectureApi
+import com.example.suwon_university_community.data.api.response.notice.NoticeApi
 import com.example.suwon_university_community.data.api.url.Url
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,6 +21,24 @@ fun buildLectureRetrofit (
         .addConverterFactory(gsonConverter)
         .client(okHttpClient)
         .build()
+
+
+
+
+fun buildNoticeService(retrofit: Retrofit): NoticeApi = retrofit.create(NoticeApi::class.java)
+
+
+fun buildNoticeRetrofit (
+    gsonConverter : GsonConverterFactory,
+    okHttpClient: OkHttpClient
+) : Retrofit = Retrofit.Builder()
+    .baseUrl(Url.FIRE_STORE_DEFAULT_URL)
+    .addConverterFactory(gsonConverter)
+    .client(okHttpClient)
+    .build()
+
+
+
 
 
 fun buildGsonConvertFactory(): GsonConverterFactory = GsonConverterFactory.create()

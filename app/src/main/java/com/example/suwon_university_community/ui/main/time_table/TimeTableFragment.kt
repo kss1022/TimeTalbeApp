@@ -30,10 +30,6 @@ import com.example.suwon_university_community.ui.main.time_table.addTimeTable.ta
 import javax.inject.Inject
 
 
-// TODO: 강의 시간이 9시 이전인 경우 앞부분에 grid와 뷰를 추가해줘야한다. AddTimeTableCell에도 추가해줘야함
-//  Default Time 을 object로 지정해둔다  ex: 9시 4시
-
-
 class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBinding>() {
 
     @Inject
@@ -45,7 +41,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
     override fun getViewBinding(): FragmentTimeTableBinding =
         FragmentTimeTableBinding.inflate(layoutInflater)
 
-    private val addTimerLauncher =
+    private val addTimeTableCellLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 removeAddedView()
@@ -88,7 +84,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         }
 
         searchAddButton.setOnClickListener {
-            addTimerLauncher.launch(
+            addTimeTableCellLauncher.launch(
                 AddTimeTableCellActivity.newIntent(requireContext(), viewModel.mainTimeTable)
             )
         }
@@ -120,6 +116,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                 timeTableListLauncher.launch(
                     TimeTableListActivity.newInstance(requireContext(), timeTableWithCell)
                 )
+                activity?.overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left)
             }
         }
 

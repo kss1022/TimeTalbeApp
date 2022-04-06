@@ -12,6 +12,8 @@ class PreferenceManager(private val preferences: SharedPreferences) {
         const val KEY_TIME_TABLE_UPDATED_TIME = "TIME_TABLE_UPDATED"
         const val KEY_TIME_TABLE_MAIN = "TIME_TABLE_MAIN"
 
+        const val KEY_NOTICE_UPDATED_TIME = "NOTICE_UPDATED"
+
         private const val INVALID_STRING_VALUE = false
         private const val INVALID_BOOLEAN_VALUE = false
         private const val INVALID_LONG_VALUE = Long.MIN_VALUE
@@ -59,12 +61,12 @@ class PreferenceManager(private val preferences: SharedPreferences) {
      * TimeTable updated time
      */
 
-    fun putUpdatedTime(updatedTime: Long) {
+    fun putTimeTableUpdatedTime(updatedTime: Long) {
         editor.putLong(KEY_TIME_TABLE_UPDATED_TIME, updatedTime)
         editor.apply()
     }
 
-    fun getUpdatedTime(): Long? {
+    fun getTimeTableUpdatedTime(): Long? {
         val value = preferences.getLong(KEY_TIME_TABLE_UPDATED_TIME, INVALID_LONG_VALUE)
 
         return if (value == INVALID_LONG_VALUE) {
@@ -95,4 +97,22 @@ class PreferenceManager(private val preferences: SharedPreferences) {
     }
 
 
+    /**
+     * Notice
+     */
+
+    fun putNoticeUpdatedTime(updatedTime : Long){
+        editor.putLong(KEY_NOTICE_UPDATED_TIME, updatedTime)
+        editor.apply()
+    }
+
+    fun getNoticeUpdatedTime() : Long?{
+        val value = preferences.getLong(KEY_NOTICE_UPDATED_TIME, INVALID_LONG_VALUE)
+
+        return if(value == INVALID_LONG_VALUE){
+             null
+        }else{
+            value
+        }
+    }
 }

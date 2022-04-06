@@ -10,30 +10,28 @@ import org.junit.Test
 class ExampleUnitTest {
 
 
-//    dayAndTime.forEach { dayAndTime ->      // 월1,4,5)
-//        val day = dayAndTime[0]
-//
-//        val timeArray = dayAndTime.substring(1, dayAndTime.lastIndex).split(',').map {
-//            it.toInt()
-//        }
-//
-//
-//        locationAndTimeList.add(
-//            TimeTableLocationAndTime(location = location, day = day, time = timeArray)
-//        )
-//    }
 
     @Test
     fun addition_isCorrect() {
-        val dayAndTime = "수1,2"
-
-        System.out.println( dayAndTime.lastIndex )
-
-//        val timeArray = dayAndTime.substring(1, dayAndTime.lastIndex).split(',').map {
-//            it.toInt()
-//        }
 
 
+
+        val dataSet = mutableListOf<Triple<Int , Int, Int>>()
+
+        for(i in 1..33){
+            dataSet.add(Triple( (1..30).random() , (1..30).random() ,(1..30).random()))
+        }
+
+
+      val sortedData =  dataSet.sortedWith(
+            compareByDescending<Triple<Int, Int, Int>> {  it.first  }
+                .thenByDescending { it.second }
+                .thenByDescending { it.third }
+        )
+
+        for(i in sortedData){
+            System.out.println(i)
+        }
 
     }
 

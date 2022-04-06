@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="all_notice">전체</string>
+    <string name="integration_notice">통합공지</string>
+    <string name="department_notice">학과공지</string>
+    <string name="employment_notice">취업공지</string>
+    <string name="startup_notice">창업공지</string>
+    <string name="international_cooperation_notice">국제협력처공지</string>
+    <string name="language_school_notice">어학원공지</string>
+    <string name="scholarship_and_loan_notice">장학/대출</string>
+</resources>

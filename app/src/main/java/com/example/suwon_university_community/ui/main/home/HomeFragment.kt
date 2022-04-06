@@ -1,11 +1,15 @@
 package com.example.suwon_university_community.ui.main.home
 
-import android.os.Bundle
-import android.view.View
+import android.net.Uri
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.suwon_university_community.databinding.FragmentHomeBinding
 import com.example.suwon_university_community.ui.base.BaseFragment
+import com.example.suwon_university_community.ui.main.home.notice.NoticeCategory
+import com.example.suwon_university_community.ui.main.home.notice.NoticeListFragment
+import com.example.suwon_university_community.widget.adapter.NoticeListFragmentAdapter
+import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
@@ -15,25 +19,84 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
 
     override val viewModel: HomeViewModel by viewModels<HomeViewModel> { viewModelFactory }
 
-
     override fun getViewBinding(): FragmentHomeBinding = FragmentHomeBinding.inflate(layoutInflater)
 
-
-
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
+    private lateinit var  viewPagerAdapter : NoticeListFragmentAdapter
 
 
     override fun initViews() {
-        super.initViews()
+        initViewPager()
+        initCollegeLink()
     }
 
-    override fun observeData() {
+
+
+    private fun initViewPager() = with(binding){
+        val noticeCategories = NoticeCategory.values()
+
+        if(::viewPagerAdapter.isInitialized.not()){
+            val noticeList = noticeCategories.map {
+                NoticeListFragment.newInstance(it)
+            }
+
+            viewPagerAdapter = NoticeListFragmentAdapter(
+                this@HomeFragment,
+                noticeList
+            )
+
+            viewPager.adapter = viewPagerAdapter
+            viewPager.offscreenPageLimit =  noticeCategories.size
+
+            TabLayoutMediator(tabLayout, viewPager){ tab, position->
+                tab.setText(noticeCategories[position].categoryNameId)
+            }.attach()
+        }
     }
 
-    companion object{
+
+    private fun initCollegeLink() = with(binding) {
+        collegeLink.collegeScheduleLink.setOnClickListener {
+            //https://www.suwon.ac.kr/index.html?menuno=727
+            val url = Uri.Builder().scheme("https").authority("www.suwon.ac.kr")
+                .appendPath("index.html")
+                .appendQueryParameter("menuno", "727")
+                .build()
+
+            CustomTabsIntent.Builder().build().also {
+                it.launchUrl(requireContext(), url)
+            }
+        }
+
+        collegeLink.collegeNumberLink.setOnClickListener {
+            //https://www.suwon.ac.kr/index.html?menuno=653
+            val url = Uri.Builder().scheme("https").authority("www.suwon.ac.kr")
+                .appendPath("index.html")
+                .appendQueryParameter("menuno", "653")
+                .build()
+
+            CustomTabsIntent.Builder().build().also {
+                it.launchUrl(requireContext(), url)
+            }
+        }
+
+        collegeLink.collegeLibraryLink.setOnClickListener {
+            val url = Uri.parse("https://lib.suwon.ac.kr/#")
+            CustomTabsIntent.Builder().build().also {
+                it.launchUrl(requireContext(), url)
+            }
+        }
+
+        collegeLink.collegeMapLink.setOnClickListener {
+            // TODO: 지도 만들기
+        }
+    }
+
+
+    override fun observeData(){
+
+    }
+
+    companion object {
         fun newInstance() = HomeFragment()
 
         const val TAG = "HomeFragment"

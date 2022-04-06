@@ -2,8 +2,8 @@
 <resources>
 
     <style name="Widget.Suwon_University_Community.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
-        <item name="android:background">@color/white</item>
-        <item name="elevation">4dp</item>
+        <item name="android:background">@color/colorPrimaryVariant</item>
+        <item name="android:elevation">0dp</item>
     </style>
 
 
@@ -39,6 +39,8 @@
         <item name="chipIconSize">12dp</item>
         <item name="iconStartPadding">6dp</item>
         <item name="chipEndPadding">2dp</item>
+        <item name="chipCornerRadius">12dp</item>
+        <item name="chipMinHeight">24dp</item>
     </style>
 
 

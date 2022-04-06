@@ -6,7 +6,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class HomeViewModel  @Inject constructor() : BaseViewModel() {
+class HomeViewModel  @Inject constructor(
+) : BaseViewModel() {
+
 
     override fun fetchData(): Job = viewModelScope.launch{
     }
