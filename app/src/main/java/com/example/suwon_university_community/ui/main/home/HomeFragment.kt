@@ -4,10 +4,12 @@ import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import com.example.suwon_university_community.R
 import com.example.suwon_university_community.databinding.FragmentHomeBinding
 import com.example.suwon_university_community.ui.base.BaseFragment
 import com.example.suwon_university_community.ui.main.home.notice.NoticeCategory
 import com.example.suwon_university_community.ui.main.home.notice.NoticeListFragment
+import com.example.suwon_university_community.ui.main.home.setting.SettingActivity
 import com.example.suwon_university_community.widget.adapter.NoticeListFragmentAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
@@ -105,7 +107,10 @@ class HomeFragment : BaseFragment<HomeViewModel, FragmentHomeBinding>() {
 
 
     private fun bindViews() {
-
+        binding.settingImageView.setOnClickListener {
+            startActivity(SettingActivity.newIntent(requireContext()))
+            activity?.overridePendingTransition(R.anim.slide_from_right, R.anim.slide_to_left)
+        }
     }
 
     override fun observeData() = Unit

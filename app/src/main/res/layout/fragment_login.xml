@@ -50,17 +50,6 @@
         app:layout_constraintStart_toStartOf="@id/emailEditText"
         app:layout_constraintTop_toBottomOf="@id/passWordEditText" />
 
-    <TextView
-        android:id="@+id/searchId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/id_search"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/searchPassword"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:layout_constraintStart_toStartOf="@id/emailEditText"
-        app:layout_constraintTop_toBottomOf="@+id/loginButton" />
 
     <TextView
         android:id="@+id/searchPassword"
@@ -68,10 +57,10 @@
         android:layout_height="wrap_content"
         android:text="@string/search_password"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/searchId"
         app:layout_constraintEnd_toStartOf="@id/signIn"
-        app:layout_constraintStart_toEndOf="@id/searchId"
-        app:layout_constraintTop_toTopOf="@+id/searchId" />
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="@id/emailEditText"
+        app:layout_constraintTop_toBottomOf="@+id/loginButton" />
 
     <TextView
         android:id="@+id/signIn"
@@ -79,10 +68,10 @@
         android:layout_height="wrap_content"
         android:text="@string/signIn"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/searchId"
+        app:layout_constraintBottom_toBottomOf="@id/searchPassword"
         app:layout_constraintEnd_toEndOf="@id/emailEditText"
         app:layout_constraintStart_toEndOf="@id/searchPassword"
-        app:layout_constraintTop_toTopOf="@+id/searchId" />
+        app:layout_constraintTop_toTopOf="@+id/searchPassword" />
 
 
     <ProgressBar

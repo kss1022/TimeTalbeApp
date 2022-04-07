@@ -9,8 +9,6 @@ import com.example.suwon_university_community.ui.main.home.HomeFragment
 import com.example.suwon_university_community.ui.main.home.HomeFragmentModule
 import com.example.suwon_university_community.ui.main.home.notice.NoticeFragmentModule
 import com.example.suwon_university_community.ui.main.home.notice.NoticeListFragment
-import com.example.suwon_university_community.ui.main.my.MyFragment
-import com.example.suwon_university_community.ui.main.my.MyFragmentModule
 import com.example.suwon_university_community.ui.main.time_table.TimeTableFragment
 import com.example.suwon_university_community.ui.main.time_table.TimeTableFragmentModule
 import dagger.Module
@@ -40,15 +38,6 @@ abstract class MainActivityModule {
     )
     abstract fun getChatFragment(): ChatFragment
 
-
-    @FragmentScope
-    @ContributesAndroidInjector(
-        modules = [
-            MyFragmentModule::class,
-            ViewModelBuilder::class
-        ]
-    )
-    abstract fun getMyFragment(): MyFragment
 
 
     @FragmentScope

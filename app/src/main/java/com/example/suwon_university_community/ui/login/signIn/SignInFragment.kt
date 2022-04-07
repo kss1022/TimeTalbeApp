@@ -187,6 +187,9 @@ class SignInFragment : BaseFragment<SignInViewModel, FragmentSignInBinding>() {
                 dialog.dismiss()
             }
             .setNegativeButton("아니요 나중에 로그인 할게요!") { dialog, _ ->
+                activity?.let {
+                    it.finish()
+                }
                 dialog.dismiss()
             }
             .show()

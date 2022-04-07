@@ -9,7 +9,6 @@ import com.example.suwon_university_community.R
 import com.example.suwon_university_community.databinding.ActivityMainBinding
 import com.example.suwon_university_community.ui.main.chat.ChatFragment
 import com.example.suwon_university_community.ui.main.home.HomeFragment
-import com.example.suwon_university_community.ui.main.my.MyFragment
 import com.example.suwon_university_community.ui.main.time_table.TimeTableFragment
 import com.google.android.material.navigation.NavigationBarView
 import dagger.android.support.DaggerAppCompatActivity
@@ -21,6 +20,8 @@ class MainActivity : DaggerAppCompatActivity(), NavigationBarView.OnItemSelected
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -41,10 +42,7 @@ class MainActivity : DaggerAppCompatActivity(), NavigationBarView.OnItemSelected
                 showFragment(TimeTableFragment.newInstance() , TimeTableFragment.TAG)
                  true
             }
-            R.id.menu_my -> {
-                showFragment(MyFragment.newInstance() , MyFragment.TAG)
-                true
-            }
+
             else ->  false
         }
     }

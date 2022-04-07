@@ -3,6 +3,7 @@
 
     <!-- Toolbar-->
     <string name="suwon_university">수원대학교</string>
+    <string name="setting">설정</string>
     <string name="chatting">채팅</string>
     <string name="time_table">시간표</string>
     <string name="time_table_list">시간표 목록</string>
@@ -26,7 +27,7 @@
     <string name="need_web_mail">전송 버튼을 누르면 \n해당 이메일로 인증 메일이 전송됩니다</string>
     <string name="please_input_suwon_web_email">수원대학교 웹메일 이메일을 입력해주세요\nsample@suwon.ac.kr</string>
     <string name="please_check_your_email">이메일로 링크가 전송되었습니다 확인해주세요😊</string>
-    <string name="send_email_check_please">인증 메일이 전송 되었습니다. 확인해주세요😊</string>
+    <string name="send_email_check_please">인증 메일이 전송 되었습니다. 인증 후 다시 로그인 해 주세요</string>
 
     <string name="email_send_failed_click_button_please">인증 메일이 전송되지 않았어요\n다시 전송버튼을 눌러주세요😭</string>
     <string name="signIn_fail_check_your_email">회원가입에 실패 했습니다.\n이메일과 비밀번호를 확인해주세요😭</string>
@@ -42,8 +43,10 @@
     <!-- 로그인-->
     <string name="login_fail">로그인에 실패 했습니다. 이메일과 비밀번호를 확인해주세요😭</string>
     <string name="login_success">로그인에 성공했습니다😊</string>
-    <string name="email_is_not_verified">인증되지 않은 이메일 입니다😱.</string>
-
+    <string name="email_is_not_verified">인증되지 않은 이메일 입니다😱</string>
+    <string name="email_is_verified">인증된 이메일 입니다</string>
+    <string name="password_reset_mail_send">비밀번호 재설정 이메일이 전송되었습니다.</string>
+    <string name="password_reset_mail_fail">메일 전송에 실패했습니다. 아이디를 확인해주세요</string>
 
     <!-- 시간표-->
     <string name="is_not_exist_timetable_please_create_timetable">새로운 시간표를 만들어주세요!!!</string>
@@ -87,6 +90,26 @@
     <string name="center_library">중앙 도서관</string>
     <string name="campus_map">캠퍼스 맵</string>
     <string name="notice_category_is_null">공지를 가져오는대 실패했습니다😭</string>
+
+
+    <!--setting-->
+    <string name="need_login">로그인이 필요합니다</string>
+    <string name="time_table_backup">시간표 백업</string>
+    <string name="time_table_restore">시간표 복원</string>
+    <string name="theme">테마</string>
+    <string name="change_password">비밀번호 변경</string>
+    <string name="change_password_success">비밀번호 변경이 성공했습니다.</string>
+    <string name="current_password_fail">이전 비밀번호가 일치하지 않습니다.</string>
+    <string name="change_password_fail">비밀번호 변경에 실패했습니다😭</string>
+    <string name="logout">로그아웃</string>
+    <string name="signOut">회원탈퇴</string>
+    <string name="signOut_success">회원 탈퇴되었습니다.</string>
+    <string name="signOut_fail">회원탈퇴에 실패했습니다😭</string>
+
+    <string name="system_setting_mode">시스템 설정 모드</string>
+    <string name="light_mode">라이트 모드</string>
+    <string name="dark_mode">다크 모드</string>
+    <string name="cancel">취소</string>
 
 
 </resources>

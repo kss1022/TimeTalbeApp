@@ -5,6 +5,8 @@ import com.example.suwon_university_community.ui.login.AuthActivity
 import com.example.suwon_university_community.ui.login.AuthActivityModule
 import com.example.suwon_university_community.ui.main.MainActivity
 import com.example.suwon_university_community.ui.main.MainActivityModule
+import com.example.suwon_university_community.ui.main.home.setting.SettingActivity
+import com.example.suwon_university_community.ui.main.home.setting.SettingActivityModule
 import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivity
 import com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivityModule
 import com.example.suwon_university_community.ui.main.time_table.addTimeTable.tablelist.TimeTableListActivity
@@ -56,5 +58,15 @@ abstract class ActivityModule {
             ViewModelBuilder::class
         ]
     )
-    abstract fun getTimeTableLIstActivity() : TimeTableListActivity
+    abstract fun getTimeTableListActivity(): TimeTableListActivity
+
+
+    @ActivityScope
+    @ContributesAndroidInjector(
+        modules = [
+            SettingActivityModule::class,
+            ViewModelBuilder::class
+        ]
+    )
+    abstract fun getSettingActivity() : SettingActivity
 }

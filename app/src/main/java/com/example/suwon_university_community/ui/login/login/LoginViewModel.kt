@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class LoginViewModel @Inject constructor(
-    private val auth : FirebaseAuth,
+    private val auth: FirebaseAuth,
     private val preferenceManager: PreferenceManager
 ) : BaseViewModel() {
 
@@ -32,11 +32,13 @@ class LoginViewModel @Inject constructor(
 
                     loginStateLiveData.value = LogInState.Success(isEmailVerified)
                     preferenceManager.putVerified(isEmailVerified)
+                    preferenceManager.putRecentlyLoginId(email)
                 } else {
                     loginStateLiveData.value = LogInState.Error(R.string.login_fail)
                 }
             }
     }
+
 
     private fun saveIdToken() {
         auth.currentUser?.let { user ->
@@ -45,5 +47,18 @@ class LoginViewModel @Inject constructor(
                     preferenceManager.putIdToken(task.result.token!!)
                 }
             }
-        }    }
+        }
+    }
+
+    fun sendPasswordResetEmail( emailAdress : String){
+        loginStateLiveData.value = LogInState.Loading
+
+        auth.setLanguageCode("ko")
+        auth.sendPasswordResetEmail(emailAdress).addOnSuccessListener {
+            loginStateLiveData.value = LogInState.Error(R.string.password_reset_mail_send)
+        }.addOnFailureListener {
+            loginStateLiveData.value = LogInState.Error(R.string.password_reset_mail_fail)
+
+        }
+    }
 }

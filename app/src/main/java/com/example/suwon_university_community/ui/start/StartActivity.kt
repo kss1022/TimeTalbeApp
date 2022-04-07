@@ -1,7 +1,10 @@
 package com.example.suwon_university_community.ui.start
 
+import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
+import com.example.suwon_university_community.data.preference.PreferenceManager
 import com.example.suwon_university_community.databinding.ActivityStartBinding
 import com.example.suwon_university_community.ui.base.BaseActivity
 import com.example.suwon_university_community.ui.main.MainActivity
@@ -16,12 +19,24 @@ class StartActivity : BaseActivity<StartActivityViewModel, ActivityStartBinding>
         viewModelFactory
     }
 
+    @Inject
+    lateinit var preferenceManager: PreferenceManager
 
-    override fun getViewBinding(): ActivityStartBinding = ActivityStartBinding.inflate(layoutInflater)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val themeType = preferenceManager.getThemeType()
+        themeType?.let {
+            AppCompatDelegate.setDefaultNightMode(themeType)
+        }
+    }
+
+    override fun getViewBinding(): ActivityStartBinding =
+        ActivityStartBinding.inflate(layoutInflater)
 
 
-    override fun observeData() = viewModel.startStateLiveData.observe(this){
-        when(it){
+    override fun observeData() = viewModel.startStateLiveData.observe(this) {
+        when (it) {
             is StartState.Loading -> {
                 handleLoadingState()
             }
@@ -29,7 +44,7 @@ class StartActivity : BaseActivity<StartActivityViewModel, ActivityStartBinding>
                 handleSuccessState()
             }
 
-            else->Unit
+            else -> Unit
         }
     }
 
@@ -40,17 +55,11 @@ class StartActivity : BaseActivity<StartActivityViewModel, ActivityStartBinding>
 
 
     private fun handleSuccessState() {
-            startActivity(MainActivity.newIntent(this))
-            finish()
+        startActivity(MainActivity.newIntent(this))
+        finish()
     }
 
 
-//    private val loginLauncher =
-//        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//            if (result.resultCode == Activity.RESULT_OK) {
-//                startActivity(MainActivity.newIntent(this))
-//            }
-//            finish()
-//        }
+
 
 }

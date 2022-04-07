@@ -1,9 +1,12 @@
 package com.example.suwon_university_community.ui.login.login
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.core.view.isGone
 import androidx.core.widget.addTextChangedListener
@@ -11,7 +14,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.suwon_university_community.R
+import com.example.suwon_university_community.data.preference.PreferenceManager
 import com.example.suwon_university_community.databinding.FragmentLoginBinding
+import com.example.suwon_university_community.extensions.fromDpToPx
 import com.example.suwon_university_community.ui.base.BaseFragment
 import javax.inject.Inject
 
@@ -23,13 +28,18 @@ class LoginFragment : BaseFragment<LoginViewModel, FragmentLoginBinding>() {
 
     override val viewModel: LoginViewModel by viewModels<LoginViewModel> { viewModelFactory }
 
+    @Inject
+    lateinit var preferenceManager: PreferenceManager
 
     override fun getViewBinding(): FragmentLoginBinding =
         FragmentLoginBinding.inflate(layoutInflater)
 
-
     override fun initViews() {
         bindViews()
+        preferenceManager.getRecentlyLoginId()?.let {
+            binding.emailEditText.setText(it)
+        }
+
     }
 
     override fun observeData() = viewModel.loginStateLiveData.observe(viewLifecycleOwner) {
@@ -120,17 +130,37 @@ class LoginFragment : BaseFragment<LoginViewModel, FragmentLoginBinding>() {
         }
 
 
-        searchId.setOnClickListener {
-            // TODO: 아이디찾기
-        }
-
         searchPassword.setOnClickListener {
-            // TODO: 비밀번호 찾기
+            showPasswordResetAlertDialog()
         }
 
         signIn.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_SignInFragment)
         }
+    }
+
+    private fun showPasswordResetAlertDialog() {
+        val editText = EditText(requireContext()).apply {
+            val lp = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT)
+            lp.setMargins(30.fromDpToPx(), 0, 30.fromDpToPx(), 0)
+            layoutParams = lp
+        }
+
+        val container = FrameLayout(requireContext())
+        container.addView( editText)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("회원가입 한 아이디를 입력해주세요\n")
+            .setMessage("비밀번호 재설정 이메일을 전송하시겠어요?")
+            .setView(container)
+            .setPositiveButton("이메일 발송"){ dialog, _->
+                viewModel.sendPasswordResetEmail(editText.text.toString())
+                dialog.dismiss()
+            }
+            .setNegativeButton("취소"){ dialog, _->
+                dialog.dismiss()
+            }
+            .show()
     }
 
 }

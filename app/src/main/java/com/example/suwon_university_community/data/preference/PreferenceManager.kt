@@ -9,14 +9,19 @@ class PreferenceManager(private val preferences: SharedPreferences) {
         const val PREFERENCES_NAME = "com.example.suwon_university_community"
         const val KEY_ID_TOKEN = "ID_TOKEN"
         const val KEY_VERIFIED = "VERIFIED"
+        const val KEY_RECENTLY_LOGIN_ID = "RECENTLY_LOGIN_ID"
+
         const val KEY_TIME_TABLE_UPDATED_TIME = "TIME_TABLE_UPDATED"
         const val KEY_TIME_TABLE_MAIN = "TIME_TABLE_MAIN"
 
         const val KEY_NOTICE_UPDATED_TIME = "NOTICE_UPDATED"
 
+        const val KEY_THEME_TYPE = "THEME_TYPE"
+
         private const val INVALID_STRING_VALUE = false
         private const val INVALID_BOOLEAN_VALUE = false
         private const val INVALID_LONG_VALUE = Long.MIN_VALUE
+        private const val INVALID_INT_VALUE = Int.MIN_VALUE
     }
 
     private val editor by lazy { preferences.edit() }
@@ -26,6 +31,26 @@ class PreferenceManager(private val preferences: SharedPreferences) {
         editor.clear()
         editor.apply()
     }
+
+    /**
+     * theme
+     */
+
+    fun putThemeType( type : Int){
+        editor.putInt(KEY_THEME_TYPE, type)
+        editor.apply()
+    }
+
+    fun getThemeType() : Int? {
+        val type =  preferences.getInt(KEY_THEME_TYPE, INVALID_INT_VALUE)
+
+        return if(type == INVALID_INT_VALUE){
+            null
+        }else{
+            type
+        }
+    }
+
 
 
     /**
@@ -55,6 +80,33 @@ class PreferenceManager(private val preferences: SharedPreferences) {
     }
 
     fun getVerified(): Boolean = preferences.getBoolean(KEY_VERIFIED, false)
+
+
+    fun removeVerified() {
+        editor.putBoolean(KEY_VERIFIED, false)
+        editor.apply()
+    }
+
+    /**
+     * recently login id
+     */
+
+
+    fun putRecentlyLoginId( id: String) {
+        editor.putString(KEY_RECENTLY_LOGIN_ID, id)
+        editor.apply()
+    }
+
+    fun getRecentlyLoginId(): String?{
+        val value = preferences.getString(KEY_RECENTLY_LOGIN_ID, "")
+
+        return if(value == ""){
+            null
+        }else{
+            value
+        }
+    }
+
 
 
     /**
