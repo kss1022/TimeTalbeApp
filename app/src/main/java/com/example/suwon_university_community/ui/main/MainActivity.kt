@@ -7,7 +7,6 @@ import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import com.example.suwon_university_community.R
 import com.example.suwon_university_community.databinding.ActivityMainBinding
-import com.example.suwon_university_community.ui.main.chat.ChatFragment
 import com.example.suwon_university_community.ui.main.home.HomeFragment
 import com.example.suwon_university_community.ui.main.time_table.TimeTableFragment
 import com.google.android.material.navigation.NavigationBarView
@@ -34,14 +33,17 @@ class MainActivity : DaggerAppCompatActivity(), NavigationBarView.OnItemSelected
                 showFragment(HomeFragment.newInstance() , HomeFragment.TAG)
                  true
             }
-            R.id.menu_chat -> {
-                showFragment(ChatFragment.newInstance() , ChatFragment.TAG)
-                 true
-            }
+
             R.id.menu_time_table -> {
                 showFragment(TimeTableFragment.newInstance() , TimeTableFragment.TAG)
                  true
             }
+
+
+//            R.id.menu_chat -> {
+//                showFragment(ChatFragment.newInstance() , ChatFragment.TAG)
+//                true
+//            }
 
             else ->  false
         }

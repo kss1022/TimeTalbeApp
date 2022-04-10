@@ -6,5 +6,5 @@ enum class DayOfTheWeek(val char: Char) {
     WED('수'),
     THU('목'),
     FRI('금'),
-    DEFAULT(' ')
+    DEFAULT('토')
 }

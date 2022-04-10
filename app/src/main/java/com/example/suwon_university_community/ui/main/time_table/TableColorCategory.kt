@@ -16,4 +16,5 @@ enum class TableColorCategory(
     TABLE_5(R.color.tableColor5),
     TABLE_6(R.color.tableColor6),
     TABLE_7(R.color.tableColor7),
+    TABLE_8(R.color.tableColor8),
 }

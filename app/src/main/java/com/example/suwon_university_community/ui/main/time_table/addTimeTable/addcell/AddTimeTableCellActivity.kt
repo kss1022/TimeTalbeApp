@@ -178,7 +178,7 @@ class AddTimeTableCellActivity :
                 val elapsedTime: Long = currentClickTime - lastClickTime
                 lastClickTime = currentClickTime
 
-                if (elapsedTime > 100) {
+                if (elapsedTime > 50) {
                     viewPagerAdapter.fragmentList.forEach {
                         it.viewModel.setSearchString(searchEditText.text.toString())
                     }
@@ -450,11 +450,13 @@ class AddTimeTableCellActivity :
 
         timetableCellModelList.forEach { timetableCell ->
             timetableCell.locationAndTimeList.forEach {
-                val tableMaxTime = it.time.second / 60
-                if (tableMaxTime > maxTime) maxTime = tableMaxTime
+                if (it.day != DayOfTheWeek.DEFAULT) {
+                    val tableMaxTime = it.time.second / 60
+                    if (tableMaxTime > maxTime) maxTime = tableMaxTime
 
-                val tableMinTime = it.time.first / 60
-                if (tableMinTime < minTime) minTime = tableMinTime
+                    val tableMinTime = it.time.first / 60
+                    if (tableMinTime < minTime) minTime = tableMinTime
+                }
             }
         }
 

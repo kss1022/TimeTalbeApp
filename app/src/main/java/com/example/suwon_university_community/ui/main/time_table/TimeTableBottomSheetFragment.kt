@@ -3,19 +3,23 @@ package com.example.suwon_university_community.ui.main.time_table
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.size
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
+import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.R
 import com.example.suwon_university_community.data.entity.timetable.*
 import com.example.suwon_university_community.databinding.TimeTableBottomSheetBinding
+import com.example.suwon_university_community.widget.adapter.ColorAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
@@ -24,15 +28,20 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
     val binding get() = _binding!!
 
     private lateinit var currentTimeTableWithCell: TimeTableWithCell
-    private  lateinit var editTimeTableCell : TimeTableCellEntity
+    private lateinit var editTimeTableCell: TimeTableCellEntity
 
 
     private val addedLocationAndTimeViewList =
         arrayListOf<Triple<TimeTableLocationAndTime, Int, Int>>()
 
 
+    private var baseColor = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        setStyle(DialogFragment.STYLE_NORMAL, R.style.Widget_Suwon_University_Community_BottomSheetDialog)
+        setStyle(
+            DialogFragment.STYLE_NORMAL,
+            R.style.Widget_Suwon_University_Community_BottomSheetDialog
+        )
 
         super.onCreate(savedInstanceState)
     }
@@ -76,7 +85,13 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
     private fun initViews() = with(binding) {
         lectureNameEditText.setText(editTimeTableCell.name)
         professorNameEditText.setText(editTimeTableCell.professorName)
-
+        baseColor = ContextCompat.getColor(requireContext(), editTimeTableCell.cellColor)
+        colorButton.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                editTimeTableCell.cellColor
+            )
+        )
 
         editTimeTableCell.locationAndTimeList.forEach {
             addLocationAndTimeView(it, null)
@@ -96,47 +111,111 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
 
 
         deleteButton.setOnClickListener {
-            if(::editTimeTableCell.isInitialized){
-                itemClickListener( null , DELETE)
-                this@TimeTableBottomSheetFragment.dismiss()
-            }else{
+            if (::editTimeTableCell.isInitialized) {
+                showDeleteAlertDialog()
+            } else {
                 this@TimeTableBottomSheetFragment.dismiss()
             }
         }
 
-        confirmButton.setOnClickListener {
-            if(::editTimeTableCell.isInitialized) {
-                itemClickListener( TimeTableCellEntity(
-                    cellId = editTimeTableCell.cellId,
-                    name = lectureNameEditText.text.toString(),
-                    distinguish = editTimeTableCell.distinguish,
-                    point = editTimeTableCell.point,
-                    locationAndTimeList = addedLocationAndTimeViewList.map { it.first }.sortedBy { it.day }.sortedBy { it.time.first },
-                    professorName = professorNameEditText.text.toString(),
-                    cellColor = editTimeTableCell.cellColor
-                ) , EDIT)
 
-            }else{
-                var colorCount = currentTimeTableWithCell.timeTableCellList.size
-                if (colorCount >= TableColorCategory.values().size) {
-                    colorCount -= TableColorCategory.values().size
+        colorButton.setOnClickListener {
+            showColorAlertDialog()
+        }
+
+        confirmButton.setOnClickListener {
+            if (::editTimeTableCell.isInitialized) {
+                itemClickListener(
+                    TimeTableCellEntity(
+                        cellId = editTimeTableCell.cellId,
+                        name = lectureNameEditText.text.toString(),
+                        distinguish = editTimeTableCell.distinguish,
+                        point = editTimeTableCell.point,
+                        locationAndTimeList = addedLocationAndTimeViewList.map { it.first }
+                            .sortedBy { it.day }.sortedBy { it.time.first },
+                        professorName = professorNameEditText.text.toString(),
+                        cellColor = baseColor
+                    ), EDIT
+                )
+
+            } else {
+                if (baseColor == -1) {
+
+                    val colorList = TableColorCategory.values().toMutableList()
+
+                    currentTimeTableWithCell.timeTableCellList.forEach { newCell ->
+                        if (newCell.locationAndTimeList.isNullOrEmpty().not()) {
+                            colorList.find { it.colorId == newCell.cellColor }?.let {
+                                colorList.remove(colorList.find { it.colorId == newCell.cellColor })
+                            }
+                        }
+                    }
+
+                    if (colorList.isEmpty()) {
+                        baseColor = TableColorCategory.values().random().colorId
+                    } else {
+                        baseColor = colorList.first().colorId
+                    }
                 }
 
-                itemClickListener( TimeTableCellEntity(
-                    cellId = System.currentTimeMillis(),
-                    name = lectureNameEditText.text.toString(),
-                    distinguish = "",
-                    point =  0f,
-                    locationAndTimeList = addedLocationAndTimeViewList.map { it.first },
-                    professorName =  professorNameEditText.text.toString(),
-                    cellColor = TableColorCategory.values()[colorCount].colorId
-                ) , NEW)
+                itemClickListener(
+                    TimeTableCellEntity(
+                        cellId = System.currentTimeMillis(),
+                        name = lectureNameEditText.text.toString(),
+                        distinguish = "",
+                        point = 0f,
+                        locationAndTimeList = addedLocationAndTimeViewList.map { it.first },
+                        professorName = professorNameEditText.text.toString(),
+                        cellColor = baseColor
+                    ), NEW
+                )
             }
 
 
 
             this@TimeTableBottomSheetFragment.dismiss()
         }
+    }
+
+
+    private fun showDeleteAlertDialog() {
+        AlertDialog.Builder(requireContext())
+            .setMessage("정말 삭제하시겠어요?")
+            .setPositiveButton("확인") { dialog, _ ->
+                itemClickListener(null, DELETE)
+                dialog.dismiss()
+                this@TimeTableBottomSheetFragment.dismiss()
+            }
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+            }.show()
+    }
+
+
+    private fun showColorAlertDialog() {
+        val alertDialog = AlertDialog.Builder(requireContext()).create()
+
+
+        val colorView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.time_table_color_alert_dialog, null).apply {
+                this.findViewById<RecyclerView>(R.id.colorRecyclerVwew).apply {
+                    val colorList = TableColorCategory.values().map { it.colorId }
+                    adapter = ColorAdapter(requireContext(), colorList) {
+                        Log.e("Color Id", "$it")
+                        binding.colorButton.setBackgroundColor(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                it
+                            )
+                        )
+                        baseColor = it
+                        alertDialog.dismiss()
+                    }
+                }
+            }
+
+        alertDialog.setView(colorView)
+        alertDialog.show()
     }
 
 
@@ -163,13 +242,13 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
                 }
 
 
-                this.findViewById<Button>(R.id.positiveButton).setOnClickListener {
+                this.findViewById<TextView>(R.id.positiveButton).setOnClickListener {
                     if (checkData(this, editLocationAndTime)) {
                         alertDialog.dismiss()
                     }
                 }
 
-                this.findViewById<Button>(R.id.negativeButton).setOnClickListener {
+                this.findViewById<TextView>(R.id.negativeButton).setOnClickListener {
                     alertDialog.dismiss()
                 }
 
@@ -313,7 +392,7 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
         val endTime = endEditText.substring(0, 2).toInt() * 60 + endEditText.substring(3, 5).toInt()
 
 
-        if (startTime > endTime) {
+        if (startTime >= endTime) {
             Toast.makeText(requireContext(), getString(R.string.time_is_empty), Toast.LENGTH_SHORT)
                 .show()
             return false
@@ -343,11 +422,21 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
     }
 
 
-    private fun checkOverlapTimeAndAdd(location: String, dayList: ArrayList<Char>, startTime: Int, endTime: Int, editLocationAndTime: TimeTableLocationAndTime?): Boolean {
+    private fun checkOverlapTimeAndAdd(
+        location: String,
+        dayList: ArrayList<Char>,
+        startTime: Int,
+        endTime: Int,
+        editLocationAndTime: TimeTableLocationAndTime?
+    ): Boolean {
         val addedList = currentTimeTableWithCell.timeTableCellList
 
         val selectedLocationAndTimeList = dayList.map {
-            TimeTableLocationAndTime(location = location, day = it.toDayOfTheWeek(), startTime to endTime)
+            TimeTableLocationAndTime(
+                location = location,
+                day = it.toDayOfTheWeek(),
+                startTime to endTime
+            )
         }
 
         val overlappingSet = mutableSetOf<TimeTableLocationAndTime>()
@@ -389,7 +478,8 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
         }
 
         return if (overlappingSet.isNotEmpty()) {
-            val overlapTimeStr = overlappingSet.first().day.char + overlappingSet.first().getTimeString()
+            val overlapTimeStr =
+                overlappingSet.first().day.char + overlappingSet.first().getTimeString()
 
             Toast.makeText(requireContext(), "겹치는 시간이 있습니다😱\n$overlapTimeStr", Toast.LENGTH_SHORT)
                 .show()
@@ -408,10 +498,6 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
             true
         }
     }
-
-
-
-
 
 
     @SuppressLint("InflateParams")
@@ -433,7 +519,11 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
 
 
             this.findViewById<TextView>(R.id.timeTextView).apply {
-                text = getString(R.string.day_and_time, timeTableLocationAndTime.day.char, timeTableLocationAndTime.getTimeString())
+                text = getString(
+                    R.string.day_and_time,
+                    timeTableLocationAndTime.day.char,
+                    timeTableLocationAndTime.getTimeString()
+                )
                 setOnClickListener {
                     showEditAlertDialog(timeTableLocationAndTime)
                 }
@@ -482,8 +572,6 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
     }
 
 
-
-
     private fun removeAddedView(timeTableLocationAndTime: TimeTableLocationAndTime): Int? {
         val size = addedLocationAndTimeViewList.size
 
@@ -502,9 +590,6 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
         }
         return null
     }
-
-
-
 
 
     override fun onDestroy() {
@@ -529,7 +614,7 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
             }
         }
 
-        lateinit var itemClickListener: ( TimeTableCellEntity?, Int ) -> Unit
+        lateinit var itemClickListener: (TimeTableCellEntity?, Int) -> Unit
 
         const val TAG = "TimeTableBottomSheet"
         const val ENTITY = "TimeTableEntity"

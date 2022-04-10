@@ -9,7 +9,6 @@ import com.example.suwon_university_community.data.entity.timetable.TimeTableWit
 @Dao
 interface TimeTableDao {
 
-    // TODO: 서버에 테이블을 저장하고 가져오는 로직 구현
 
     @Transaction
     @Query("SELECT * FROM TimeTableEntity WHERE tableId=:tableId")

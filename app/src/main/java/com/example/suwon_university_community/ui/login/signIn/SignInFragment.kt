@@ -177,7 +177,6 @@ class SignInFragment : BaseFragment<SignInViewModel, FragmentSignInBinding>() {
 
     }
 
-    //todo  YES: LoginFragment로 이동  NO : 이전 실행 창으로 이동
     private fun showAlertDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle("회원가입아 완료되었습니다.")

@@ -219,7 +219,7 @@ class TimeTableListActivity : BaseActivity<TimeTableListViewModel, ActivityTimeT
 
         AlertDialog.Builder(this)
             .setView(numberPickers)
-            .setTitle("시간표 만들기")
+            .setTitle("시간표 수정하기")
             .setPositiveButton("확인") { dialog, _ ->
                 viewModel.editTimeTable(
                     timeTableModel.id,

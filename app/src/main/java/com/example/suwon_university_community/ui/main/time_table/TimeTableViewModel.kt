@@ -67,7 +67,7 @@ class TimeTableViewModel @Inject constructor(
     }
 
 
-    fun deleteTImeTableEntity(cellId: Long) = viewModelScope.launch {
+    fun deleteTimeTableEntity(cellId: Long) = viewModelScope.launch {
         timeTableRepository.deleteTimeTableCellAtTable(mainTimeTable.timeTable.tableId, cellId)
         fetchData()
     }

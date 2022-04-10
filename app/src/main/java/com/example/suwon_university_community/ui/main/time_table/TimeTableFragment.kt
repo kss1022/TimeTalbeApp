@@ -2,6 +2,7 @@ package com.example.suwon_university_community.ui.main.time_table
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -18,8 +19,11 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.R
 import com.example.suwon_university_community.data.entity.timetable.DayOfTheWeek
+import com.example.suwon_university_community.data.entity.timetable.TimeTableLocationAndTime
 import com.example.suwon_university_community.data.entity.timetable.TimeTableWithCell
 import com.example.suwon_university_community.databinding.FragmentTimeTableBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
@@ -57,11 +61,19 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
             }
         }
 
+
     private lateinit var timeTableWithCell: TimeTableWithCell
 
 
     override fun initViews() {
+        initRecyclerView()
         bindViews()
+    }
+
+    private fun initRecyclerView() = with(binding) {
+        lectureListRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+        }
     }
 
 
@@ -283,6 +295,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
 
     private var addButtonList: ArrayList<Triple<Long, Int, Int>> = arrayListOf()
+    private var addNoTimeTextList: ArrayList<Pair<Long, Int>> = arrayListOf()
 
     private var addedGridViewList: ArrayList<Int> = arrayListOf()
     private var addedTextViewList: ArrayList<Int> = arrayListOf()
@@ -302,16 +315,27 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
     private fun addLectureOnView(context: Context, model: TimeTableCellModel) {
 
-        model.locationAndTimeList.forEach { locationAndTime ->
-            val location = locationAndTime.location
-            val day = locationAndTime.day
-            val time = locationAndTime.time
+        if (model.locationAndTimeList.isEmpty()) {
+            //시간이 없는 경우
+            addNoTimeLecture(model, null)
+
+        } else {
+            model.locationAndTimeList.forEach { locationAndTime ->
+                val location = locationAndTime.location
+                val day = locationAndTime.day
+                val time = locationAndTime.time
+
+                if (day == DayOfTheWeek.DEFAULT) {
+                    //토요일 인 경우
+                    addNoTimeLecture(model, locationAndTime)
+                }
 
 
-            val button = createButton(context, model, location, time)
-
-            addButton(day, button, model)
+                val button = createButton(context, model, location, time)
+                addButton(day, button, model)
+            }
         }
+
     }
 
 
@@ -321,11 +345,13 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
         timetableCellModelList.forEach { timetableCell ->
             timetableCell.locationAndTimeList.forEach {
-                val tableMaxTime = it.time.second / 60
-                if (tableMaxTime > maxTime) maxTime = tableMaxTime
+                if(it.day !=  DayOfTheWeek.DEFAULT){
+                    val tableMaxTime = it.time.second / 60
+                    if (tableMaxTime > maxTime) maxTime = tableMaxTime
 
-                val tableMinTime = it.time.first / 60
-                if (tableMinTime < minTime) minTime = tableMinTime
+                    val tableMinTime = it.time.first / 60
+                    if (tableMinTime < minTime) minTime = tableMinTime
+                }
             }
         }
 
@@ -418,7 +444,6 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
         id = ViewCompat.generateViewId()
 
-        //todo 시간표를 선택하였을 경우AlertDialog를 통해 보여준다. 이떄 수정모드를 눌렀을떄 BottomSheet보여주기
         setOnClickListener { view ->
             val modelId = addButtonList.filter {
                 it.second == view.id
@@ -443,7 +468,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
                         TimeTableBottomSheetFragment.DELETE -> {
                             removeAddedView()
-                            viewModel.deleteTImeTableEntity(clickItem.cellId)
+                            viewModel.deleteTimeTableEntity(clickItem.cellId)
 //
 //                            addButtonList.filter {
 //                                it.first == modelId
@@ -547,12 +572,87 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         }
     }
 
+    @SuppressLint("SetTextI18n")
+    private fun addNoTimeLecture(
+        model: TimeTableCellModel,
+        locationAndTime: TimeTableLocationAndTime?
+    ) {
+        val tv = TextView(requireContext()).apply {
+            locationAndTime?.let {
+                text =
+                    "${model.name}  [ ${locationAndTime.day.char}${locationAndTime.getTimeString()} ]"
+            } ?: kotlin.run {
+                text = model.name
+            }
+
+            id = ViewCompat.generateViewId()
+
+            val lp = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            lp.setMargins(12.fromDpToPx(), 12.fromDpToPx(), 12.fromDpToPx(), 12.fromDpToPx())
+
+            layoutParams = lp
+            background = null
+            setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryVariant))
+
+
+            setOnClickListener { view ->
+                val modelId = addNoTimeTextList.filter {
+                    it.second == view.id
+                }.first().first
+
+                if (::timeTableWithCell.isInitialized) {
+                    val clickItem = timeTableWithCell.timeTableCellList.find {
+                        it.cellId == modelId
+                    } ?: return@setOnClickListener
+
+
+                    TimeTableBottomSheetFragment.newInstance(
+                        timeTableWithCell,
+                        clickItem
+                    ) { timeTableCellEntity, i ->
+                        when (i) {
+                            TimeTableBottomSheetFragment.EDIT -> {
+                                timeTableCellEntity?.let {
+                                    removeAddedView()
+                                    viewModel.updateTimeTableEntity(timeTableCellEntity)
+                                }
+                            }
+
+                            TimeTableBottomSheetFragment.DELETE -> {
+                                removeAddedView()
+                                viewModel.deleteTimeTableEntity(clickItem.cellId)
+                     }
+
+                            else -> Unit
+                        }
+                    }.show(
+                        requireActivity().supportFragmentManager,
+                        TimeTableBottomSheetFragment.TAG
+                    )
+                }
+            }
+        }
+
+        binding.noTimeLectureList.addView(tv)
+        addNoTimeTextList.add(model.id to tv.id)
+    }
+
 
     private fun removeAddedView() {
         addButtonList.forEach {
             val view = binding.root.findViewById<FrameLayout>(it.third)
             view.removeView(view.findViewById(it.second))
         }
+
+        binding.noTimeLectureList.let { linearLayout ->
+            addNoTimeTextList.forEach {
+                linearLayout.removeView(linearLayout.findViewById(it.second))
+            }
+        }
+
 
 
         binding.leftLinearLayout.let { leftLinearLayout ->
@@ -567,6 +667,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         }
 
         addButtonList.clear()
+        addNoTimeTextList.clear()
         addedGridViewList.clear()
         addedTextViewList.clear()
     }
