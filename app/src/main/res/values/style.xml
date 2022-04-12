@@ -6,6 +6,11 @@
         <item name="android:elevation">0dp</item>
     </style>
 
+    <style name="Widget.Suwon_University_Community.Toolbar.TitleTextAppearance"  parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 
     <style name="Widget.Suwon_University_Community.Toolbar.WithArrow" parent="Widget.Suwon_University_Community.Toolbar">
         <item name="navigationIcon">@drawable/ic_baseline_arrow_back_24</item>

@@ -16,6 +16,6 @@ interface NoticeDao {
     @Query("SELECT * FROM noticeentity WHERE category=:category")
     suspend fun getNoticeList( category: String) : List<NoticeEntity>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertNoticeList( noticeList : List<NoticeEntity>)
 }

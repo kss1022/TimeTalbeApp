@@ -11,9 +11,7 @@
         android:icon="@drawable/bottom_menu_selector_time_table"/>
 
 
-<!--    <item android:id="@+id/menu_chat"-->
-<!--        android:title=""-->
-<!--        android:icon="@drawable/bottom_menu_selector_chat"/>-->
-
-
+        <item android:id="@+id/menu_memo"
+            android:title=""
+            android:icon="@drawable/bottom_menu_selector_memo"/>
 </menu>

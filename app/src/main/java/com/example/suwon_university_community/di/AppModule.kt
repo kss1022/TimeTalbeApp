@@ -11,12 +11,15 @@ import com.example.suwon_university_community.data.api.response.lecture.LectureA
 import com.example.suwon_university_community.data.api.response.notice.NoticeApi
 import com.example.suwon_university_community.data.db.AppDataBase
 import com.example.suwon_university_community.data.db.dao.LectureDao
+import com.example.suwon_university_community.data.db.dao.MemoDao
 import com.example.suwon_university_community.data.db.dao.NoticeDao
 import com.example.suwon_university_community.data.db.dao.TimeTableDao
 import com.example.suwon_university_community.data.preference.PreferenceManager
 import com.example.suwon_university_community.data.preference.PreferenceManager.Companion.PREFERENCES_NAME
 import com.example.suwon_university_community.data.repository.lecture.DefaultLectureRepository
 import com.example.suwon_university_community.data.repository.lecture.LectureRepository
+import com.example.suwon_university_community.data.repository.memo.DefaultMemoRepository
+import com.example.suwon_university_community.data.repository.memo.MemoRepository
 import com.example.suwon_university_community.data.repository.notice.DefaultNoticeRepository
 import com.example.suwon_university_community.data.repository.notice.NoticeRepository
 import com.example.suwon_university_community.data.repository.timetable.DefaultTimeTableRepository
@@ -146,6 +149,12 @@ object AppModule {
     @Provides
     fun provideNoticeDao(appDataBase: AppDataBase) : NoticeDao = appDataBase.getNoticeDao()
 
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideMemoDao(appDataBase: AppDataBase) : MemoDao = appDataBase.getMemoDao()
+
     @JvmStatic
     @Singleton
     @Provides
@@ -205,4 +214,10 @@ abstract class AppModuleBinds {
     abstract fun provideNoticeRepository(
         repo : DefaultNoticeRepository
     ) : NoticeRepository
+
+    @Singleton
+    @Binds
+    abstract fun provideMemoRepository(
+        repo: DefaultMemoRepository
+    ) : MemoRepository
 }

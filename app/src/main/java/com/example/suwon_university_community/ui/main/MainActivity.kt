@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.example.suwon_university_community.R
 import com.example.suwon_university_community.databinding.ActivityMainBinding
 import com.example.suwon_university_community.ui.main.home.HomeFragment
+import com.example.suwon_university_community.ui.main.memo.MemoFragment
 import com.example.suwon_university_community.ui.main.time_table.TimeTableFragment
 import com.google.android.material.navigation.NavigationBarView
 import dagger.android.support.DaggerAppCompatActivity
@@ -39,15 +40,17 @@ class MainActivity : DaggerAppCompatActivity(), NavigationBarView.OnItemSelected
                  true
             }
 
+            R.id.menu_memo -> {
+                showFragment(MemoFragment.newInstance() , MemoFragment.TAG)
+                true
+            }
 
-//            R.id.menu_chat -> {
-//                showFragment(ChatFragment.newInstance() , ChatFragment.TAG)
-//                true
-//            }
 
             else ->  false
         }
     }
+
+
 
     private fun initViews() = with(binding) {
         bottomNavigationView.setOnItemSelectedListener(this@MainActivity)

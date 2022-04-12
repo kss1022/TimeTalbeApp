@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.R
 import com.example.suwon_university_community.data.entity.timetable.DayOfTheWeek
+import com.example.suwon_university_community.data.entity.timetable.TimeTableCellEntity
 import com.example.suwon_university_community.data.entity.timetable.TimeTableLocationAndTime
 import com.example.suwon_university_community.data.entity.timetable.TimeTableWithCell
 import com.example.suwon_university_community.databinding.FragmentTimeTableBinding
@@ -345,7 +346,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
         timetableCellModelList.forEach { timetableCell ->
             timetableCell.locationAndTimeList.forEach {
-                if(it.day !=  DayOfTheWeek.DEFAULT){
+                if (it.day != DayOfTheWeek.DEFAULT) {
                     val tableMaxTime = it.time.second / 60
                     if (tableMaxTime > maxTime) maxTime = tableMaxTime
 
@@ -454,34 +455,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                     it.cellId == modelId
                 } ?: return@setOnClickListener
 
-                TimeTableBottomSheetFragment.newInstance(
-                    timeTableWithCell,
-                    clickItem
-                ) { timeTableCellEntity, i ->
-                    when (i) {
-                        TimeTableBottomSheetFragment.EDIT -> {
-                            timeTableCellEntity?.let {
-                                removeAddedView()
-                                viewModel.updateTimeTableEntity(timeTableCellEntity)
-                            }
-                        }
-
-                        TimeTableBottomSheetFragment.DELETE -> {
-                            removeAddedView()
-                            viewModel.deleteTimeTableEntity(clickItem.cellId)
-//
-//                            addButtonList.filter {
-//                                it.first == modelId
-//                            }.forEach {
-//                                val view = binding.root.findViewById<FrameLayout>(it.third)
-//                                view.removeView(view.findViewById(it.second))
-//                            }
-                        }
-
-                        else -> Unit
-                    }
-                }.show(requireActivity().supportFragmentManager, TimeTableBottomSheetFragment.TAG)
-
+                showTimeTableInfoAlertDialog(clickItem)
             }
         }
 
@@ -608,30 +582,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                         it.cellId == modelId
                     } ?: return@setOnClickListener
 
-
-                    TimeTableBottomSheetFragment.newInstance(
-                        timeTableWithCell,
-                        clickItem
-                    ) { timeTableCellEntity, i ->
-                        when (i) {
-                            TimeTableBottomSheetFragment.EDIT -> {
-                                timeTableCellEntity?.let {
-                                    removeAddedView()
-                                    viewModel.updateTimeTableEntity(timeTableCellEntity)
-                                }
-                            }
-
-                            TimeTableBottomSheetFragment.DELETE -> {
-                                removeAddedView()
-                                viewModel.deleteTimeTableEntity(clickItem.cellId)
-                     }
-
-                            else -> Unit
-                        }
-                    }.show(
-                        requireActivity().supportFragmentManager,
-                        TimeTableBottomSheetFragment.TAG
-                    )
+                    showTimeTableInfoAlertDialog(clickItem)
                 }
             }
         }
@@ -670,6 +621,80 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         addNoTimeTextList.clear()
         addedGridViewList.clear()
         addedTextViewList.clear()
+    }
+
+
+    private fun showTimeTableInfoAlertDialog(clickItem: TimeTableCellEntity) {
+        val alertDialog = AlertDialog.Builder(context).create()
+
+        val alertDialogView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.time_table_info_alert_dialog, null).apply {
+                var timeStr = ""
+                var locationStr = ""
+                val location = mutableSetOf<String>()
+
+                clickItem.locationAndTimeList.forEach {
+                    timeStr += "${it.getTimeString()}  "
+                    location.add(it.location)
+                }
+
+                location.forEach {
+                    locationStr += "$it  "
+                }
+
+
+                this.findViewById<View>(R.id.titleColorView)
+                    .setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            clickItem.cellColor
+                        )
+                    )
+                this.findViewById<TextView>(R.id.titleTextView).text = clickItem.name
+                this.findViewById<TextView>(R.id.professorNameTextView).text =
+                    clickItem.professorName
+                this.findViewById<TextView>(R.id.timeTextView).text = timeStr
+                this.findViewById<TextView>(R.id.locationTextView).text = locationStr
+
+                this.findViewById<ImageView>(R.id.editButton).setOnClickListener {
+                    TimeTableBottomSheetFragment.newInstance(
+                        timeTableWithCell,
+                        clickItem
+                    ) { timeTableCellEntity, i ->
+                        when (i) {
+                            TimeTableBottomSheetFragment.EDIT -> {
+                                timeTableCellEntity?.let {
+                                    removeAddedView()
+                                    viewModel.updateTimeTableEntity(timeTableCellEntity)
+                                }
+                            }
+
+                            TimeTableBottomSheetFragment.DELETE -> {
+                                removeAddedView()
+                                viewModel.deleteTimeTableEntity(clickItem.cellId)
+//
+//                            addButtonList.filter {
+//                                it.first == modelId
+//                            }.forEach {
+//                                val view = binding.root.findViewById<FrameLayout>(it.third)
+//                                view.removeView(view.findViewById(it.second))
+//                            }
+                            }
+
+                            else -> Unit
+                        }
+                    }.show(
+                        requireActivity().supportFragmentManager,
+                        TimeTableBottomSheetFragment.TAG
+                    )
+
+                    alertDialog.dismiss()
+                }
+            }
+
+
+        alertDialog.setView(alertDialogView)
+        alertDialog.show()
     }
 
 

@@ -7,6 +7,10 @@ import com.example.suwon_university_community.ui.main.home.HomeFragment
 import com.example.suwon_university_community.ui.main.home.HomeFragmentModule
 import com.example.suwon_university_community.ui.main.home.notice.NoticeFragmentModule
 import com.example.suwon_university_community.ui.main.home.notice.NoticeListFragment
+import com.example.suwon_university_community.ui.main.memo.MemoFragment
+import com.example.suwon_university_community.ui.main.memo.MemoFragmentModule
+import com.example.suwon_university_community.ui.main.memo.folder.FolderListFragment
+import com.example.suwon_university_community.ui.main.memo.folder.FolderListFragmentModule
 import com.example.suwon_university_community.ui.main.time_table.TimeTableFragment
 import com.example.suwon_university_community.ui.main.time_table.TimeTableFragmentModule
 import dagger.Module
@@ -27,15 +31,14 @@ abstract class MainActivityModule {
     abstract fun getHomeFragment(): HomeFragment
 
 
-//    @FragmentScope
-//    @ContributesAndroidInjector(
-//        modules = [
-//            ChatFragmentModule::class,
-//            ViewModelBuilder::class
-//        ]
-//    )
-//    abstract fun getChatFragment(): ChatFragment
-
+    @FragmentScope
+    @ContributesAndroidInjector(
+        modules = [
+            MemoFragmentModule::class,
+            ViewModelBuilder::class
+        ]
+    )
+    abstract fun getMemoFragment(): MemoFragment
 
 
     @FragmentScope
@@ -48,7 +51,6 @@ abstract class MainActivityModule {
     abstract fun getTimeTableFragment(): TimeTableFragment
 
 
-
     @FragmentScope
     @ContributesAndroidInjector(
         modules = [
@@ -58,4 +60,13 @@ abstract class MainActivityModule {
     )
     protected abstract fun getNoticeListFragment(): NoticeListFragment
 
+
+    @FragmentScope
+    @ContributesAndroidInjector(
+        modules = [
+            FolderListFragmentModule::class,
+            ViewModelBuilder::class
+        ]
+    )
+    protected abstract fun getFolderListFragment() : FolderListFragment
 }

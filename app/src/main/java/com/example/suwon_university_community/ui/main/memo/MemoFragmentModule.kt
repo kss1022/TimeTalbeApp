@@ -1,4 +1,4 @@
-package com.example.suwon_university_community.ui.main.chat
+package com.example.suwon_university_community.ui.main.memo
 
 import androidx.lifecycle.ViewModel
 import com.example.suwon_university_community.di.ViewModelKey
@@ -7,10 +7,10 @@ import dagger.Module
 import dagger.multibindings.IntoMap
 
 @Module
-abstract class ChatFragmentModule {
+abstract class MemoFragmentModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ChatViewModel::class)
-    abstract fun bindViewModel(viewModel: ChatViewModel): ViewModel
+    @ViewModelKey(MemoViewModel::class)
+    abstract fun bindViewModel(viewModel: MemoViewModel): ViewModel
 }

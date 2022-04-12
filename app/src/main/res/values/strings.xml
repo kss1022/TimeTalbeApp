@@ -4,9 +4,10 @@
     <!-- Toolbar-->
     <string name="suwon_university">수원대학교</string>
     <string name="setting">설정</string>
-    <string name="chatting">채팅</string>
+    <string name="memo">메모</string>
     <string name="time_table">시간표</string>
     <string name="time_table_list">시간표 목록</string>
+    <string name="notice">공지사항</string>
 
     <!-- Start-->
     <string name="loading">Loading...</string>
@@ -81,6 +82,7 @@
 
     <string name="lecture_number">강의 수 :  </string>
     <string name="total_time">총 시간 :  </string>
+    <string name="add_memo_is_empty">등록된 메모가 없습니다.</string>
 
 
     <!-- home-->
@@ -114,6 +116,10 @@
     <string name="start_time_hint">09:00</string>
     <string name="end_time">종료시간</string>
     <string name="end_time_hint">12:00</string>
+
+    <!--folder-->
+    <string name="folder">폴더</string>
+
 
 
 </resources>

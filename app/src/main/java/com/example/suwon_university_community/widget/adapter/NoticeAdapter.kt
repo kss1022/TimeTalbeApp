@@ -1,7 +1,6 @@
 package com.example.suwon_university_community.widget.adapter
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -15,6 +14,7 @@ import com.example.suwon_university_community.util.provider.ResourceProvider
 class NoticeAdapter ( private val resourceProvider: ResourceProvider) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     var data: List<DataItem> = emptyList()
     var onItemClickListener: ((NoticeModel) -> Unit)? = null
+    var onItemLongClickListener: ((NoticeModel) -> Unit)? = null
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
@@ -81,7 +81,6 @@ class NoticeAdapter ( private val resourceProvider: ResourceProvider) : Recycler
 
     class NoticeDateViewHolder(context: Context) : RecyclerView.ViewHolder(
         TextView(context).apply {
-            setTextColor(Color.BLACK)
             setPadding(24.fromDpToPx(), 12.fromDpToPx(), 24.fromDpToPx(), 6.fromDpToPx())
         }) {
 
@@ -98,6 +97,13 @@ class NoticeAdapter ( private val resourceProvider: ResourceProvider) : Recycler
                 (data[adapterPosition].value as? NoticeModel)?.let {
                     onItemClickListener?.invoke(it)
                 }
+            }
+
+            binding.root.setOnLongClickListener {
+                (data[adapterPosition].value as? NoticeModel)?.let {
+                    onItemLongClickListener?.invoke(it)
+                }
+                false
             }
         }
 
