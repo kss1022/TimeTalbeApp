@@ -4,9 +4,84 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_memo.xml"
     app:startDestination="@id/folderListFragment">
+
+
     <fragment
         android:id="@+id/folderListFragment"
         android:name="com.example.suwon_university_community.ui.main.memo.folder.FolderListFragment"
         android:label="@string/folder"
-        tools:layout="@layout/fragment_folder_list" />
+        tools:layout="@layout/fragment_folder_list">
+        <action
+            android:id="@+id/action_folderListFragment_to_memoListFragment"
+            app:destination="@id/memoListFragment" />
+        <action
+            android:id="@+id/action_folderListFragment_to_bookMarkListFragment"
+            app:destination="@id/bookMarkListFragment" />
+        <action
+            android:id="@+id/action_folderListFragment_to_addMemoFragment"
+            app:destination="@id/editMemoFragment" />
+        <action
+            android:id="@+id/action_folderListFragment_to_timeTableMemoListFragment"
+            app:destination="@id/timeTableMemoListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookMarkListFragment"
+        android:name="com.example.suwon_university_community.ui.main.memo.folder.bookmark.BookmarkListFragment"
+        android:label="{folderName}"
+        tools:layout="@layout/fragment_bookmark_list">
+
+        <argument
+            android:name="folderId"
+            app:argType="long" />
+
+        <argument
+            android:name="folderName"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/memoListFragment"
+        android:name="com.example.suwon_university_community.ui.main.memo.folder.memolist.MemoListFragment"
+        android:label="{folderName}"
+        tools:layout="@layout/fragment_memo_list">
+
+
+        <argument
+            android:name="folderId"
+            app:argType="long" />
+
+        <argument
+            android:name="folderName"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_memoListFragment_to_addMemoFragment"
+            app:destination="@id/editMemoFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/editMemoFragment"
+        android:name="com.example.suwon_university_community.ui.main.memo.folder.addmemo.EditMemoFragment"
+        android:label="AddMemoFragment"
+        tools:layout="@layout/fragment_edit_memo"/>
+
+    <fragment
+        android:id="@+id/timeTableMemoListFragment"
+        android:name="com.example.suwon_university_community.ui.main.memo.folder.timetablememolist.TimeTableMemoListFragment"
+        android:label="{folderName}"
+        tools:layout="@layout/fragment_time_table_memo_list">
+
+        <argument
+            android:name="folderId"
+            app:argType="long" />
+
+        <argument
+            android:name="folderName"
+            app:argType="string" />
+
+        <action
+            android:id="@+id/action_timeTableMemoListFragment_to_editMemoFragment"
+            app:destination="@id/editMemoFragment" />
+    </fragment>
 </navigation>

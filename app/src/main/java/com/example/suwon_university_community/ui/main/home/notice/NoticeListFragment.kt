@@ -65,14 +65,14 @@ class NoticeListFragment : BaseFragment<NoticeViewModel, FragmentNoticeListBindi
 
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun handleSuccessState(it: NoticeListState.Success) = with(binding) {
+    private fun handleSuccessState(state: NoticeListState.Success) = with(binding) {
         progressBar.isGone = true
         errorMessageTextView.isGone = true
         recyclerView.visibility = View.VISIBLE
 
 
         (recyclerView.adapter as? NoticeAdapter)?.run {
-            addData(it.noticeDateModelList)
+            addData(state.noticeDateModelList)
             notifyDataSetChanged()
         }
     }

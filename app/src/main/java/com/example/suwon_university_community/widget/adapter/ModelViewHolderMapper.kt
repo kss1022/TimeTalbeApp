@@ -2,11 +2,7 @@ package com.example.suwon_university_community.widget.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
-import com.example.suwon_university_community.databinding.ViewholderEmptyBinding
-import com.example.suwon_university_community.databinding.ViewholderFolderBinding
-import com.example.suwon_university_community.databinding.ViewholderLectureBinding
-import com.example.suwon_university_community.databinding.ViewholderTimeTableBinding
+import com.example.suwon_university_community.databinding.*
 import com.example.suwon_university_community.model.CellType
 import com.example.suwon_university_community.model.Model
 import com.example.suwon_university_community.ui.base.BaseViewModel
@@ -43,6 +39,12 @@ object ModelViewHolderMapper {
             )
             CellType.FOLDER_CELL -> FolderViewHolder(
                 ViewholderFolderBinding.inflate(inflater, parent, false),
+                viewModel,
+                resourcesProvider
+            )
+
+            CellType.MEMO_CELL -> MemoViewHolder(
+                ViewholderMemoBinding.inflate(inflater, parent, false),
                 viewModel,
                 resourcesProvider
             )

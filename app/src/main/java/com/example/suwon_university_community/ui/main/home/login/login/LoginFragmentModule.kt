@@ -1,4 +1,4 @@
-package com.example.suwon_university_community.ui.login.login
+package com.example.suwon_university_community.ui.main.home.login.login
 
 import androidx.lifecycle.ViewModel
 import com.example.suwon_university_community.di.ViewModelKey

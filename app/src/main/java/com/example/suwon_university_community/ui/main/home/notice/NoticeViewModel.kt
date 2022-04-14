@@ -7,6 +7,7 @@ import com.example.suwon_university_community.data.entity.memo.BookMarkNoticeEnt
 import com.example.suwon_university_community.data.entity.notice.NoticeEntity
 import com.example.suwon_university_community.data.repository.memo.MemoRepository
 import com.example.suwon_university_community.data.repository.notice.NoticeRepository
+import com.example.suwon_university_community.model.NoticeDateModel
 import com.example.suwon_university_community.model.NoticeModel
 import com.example.suwon_university_community.ui.base.BaseViewModel
 import com.example.suwon_university_community.util.provider.ResourceProvider
@@ -51,36 +52,7 @@ class NoticeViewModel @Inject constructor(
                 it.toModel()
             }
 
-            val noticeDateModel = mutableListOf<NoticeDateModel>()
-
-
-            val dateSet = mutableSetOf<Triple<Int, Int, Int>>()
-            noticeModelList.forEach {
-                dateSet.add(it.date)
-            }
-
-            val sortedData = dateSet.sortedWith(
-            compareByDescending<Triple<Int, Int, Int>> {  it.first  }
-                .thenByDescending { it.second }
-                .thenByDescending { it.third }
-            )
-
-            sortedData.forEach { sortedDate ->
-                val noticeList = mutableListOf<NoticeModel>()
-
-                noticeModelList.forEach { noticeDate ->
-                    if (sortedDate == noticeDate.date) {
-                        noticeList.add(noticeDate)
-                    }
-                }
-
-                noticeDateModel.add(
-                    NoticeDateModel(
-                        sortedDate,
-                        noticeList.sortedBy { it.category })
-                )
-            }
-
+            val noticeDateModel = toNoticeDateModel(noticeModelList)
 
             noticeListStateLiveData.value = NoticeListState.Success(noticeDateModel)
 
@@ -92,6 +64,7 @@ class NoticeViewModel @Inject constructor(
 
     }
 
+
     fun saveNotice(noticeModel: NoticeModel) = viewModelScope.launch{
         val date  = noticeModel.date
 
@@ -99,10 +72,44 @@ class NoticeViewModel @Inject constructor(
 
             title = noticeModel.title,
             writer = noticeModel.writer,
-            date = "${date.first}년 ${date.second}월 ${date.third}일",
+            date = "${date.first}-${date.second}-${date.third}",
             category = resourceProvider.getString(noticeModel.category.categoryNameId) ,
             url = noticeModel.url,
             noticeFolderId = 1
         ))
+    }
+
+
+    private fun toNoticeDateModel(noticeModelList: List<NoticeModel>): MutableList<NoticeDateModel> {
+        val noticeDateModel = mutableListOf<NoticeDateModel>()
+
+
+        val dateSet = mutableSetOf<Triple<Int, Int, Int>>()
+        noticeModelList.forEach {
+            dateSet.add(it.date)
+        }
+
+        val sortedData = dateSet.sortedWith(
+            compareByDescending<Triple<Int, Int, Int>> { it.first }
+                .thenByDescending { it.second }
+                .thenByDescending { it.third }
+        )
+
+        sortedData.forEach { sortedDate ->
+            val noticeList = mutableListOf<NoticeModel>()
+
+            noticeModelList.forEach { noticeDate ->
+                if (sortedDate == noticeDate.date) {
+                    noticeList.add(noticeDate)
+                }
+            }
+
+            noticeDateModel.add(
+                NoticeDateModel(
+                    sortedDate,
+                    noticeList.sortedBy { it.category })
+            )
+        }
+        return noticeDateModel
     }
 }

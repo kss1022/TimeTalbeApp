@@ -1,6 +1,4 @@
-package com.example.suwon_university_community.ui.main.home.notice
-
-import com.example.suwon_university_community.model.NoticeModel
+package com.example.suwon_university_community.model
 
 data class NoticeDateModel(
     val date: Triple<Int, Int, Int>,

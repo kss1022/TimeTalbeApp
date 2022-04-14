@@ -17,6 +17,9 @@ interface TimeTableDao {
     @Query("SELECT * FROM TimeTableEntity")
     suspend fun getTimeTableList(): List<TimeTableEntity>
 
+    @Query("SELECT COUNT(tableId) FROM TimeTableEntity")
+    suspend fun getTimeTableCount() : Int?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTimeTable(timeTableEntity: TimeTableEntity)
 

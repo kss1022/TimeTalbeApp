@@ -10,6 +10,7 @@ import android.text.InputType
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
@@ -185,6 +186,18 @@ class AddTimeTableCellActivity :
                 }
             }
 
+            setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH){
+                    viewPagerAdapter.fragmentList.forEach {
+                        it.viewModel.setSearchString(searchEditText.text.toString())
+                    }
+                    hideSoftKeyboard()
+                    true
+                }else {
+                    false
+                }
+            }
+
             setOnClickListener {
                 if (isMotionEnd.not()) {
                     inputType = InputType.TYPE_NULL
@@ -300,7 +313,9 @@ class AddTimeTableCellActivity :
         binding.viewPager.unregisterOnPageChangeCallback(viewPagerOnPageChangeCallback)
     }
 
-
+    //todo  추가한 뷰를 viewModel에서 arraylist로 가지고 있는다.
+    //  확인버튼을 만들어서 확인버튼을 누른 경우만 RESULT_OK를 준다.
+    // Toolbar back버튼을 눌르거나 뒤로 가기가 됬을경우 viewModel에서  arraylist에 추가된 뷰들을 삭제해준다.
     private fun showAlertDialog(lectureModel: LectureModel) {
         hideSoftKeyboard()
 

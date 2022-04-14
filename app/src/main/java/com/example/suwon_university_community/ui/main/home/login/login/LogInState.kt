@@ -1,4 +1,4 @@
-package com.example.suwon_university_community.ui.login.login
+package com.example.suwon_university_community.ui.main.home.login.login
 
 import androidx.annotation.StringRes
 

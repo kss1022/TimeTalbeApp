@@ -59,7 +59,4 @@ class StartActivity : BaseActivity<StartActivityViewModel, ActivityStartBinding>
         finish()
     }
 
-
-
-
 }

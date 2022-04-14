@@ -11,6 +11,14 @@ import com.example.suwon_university_community.ui.main.memo.MemoFragment
 import com.example.suwon_university_community.ui.main.memo.MemoFragmentModule
 import com.example.suwon_university_community.ui.main.memo.folder.FolderListFragment
 import com.example.suwon_university_community.ui.main.memo.folder.FolderListFragmentModule
+import com.example.suwon_university_community.ui.main.memo.folder.addmemo.EditMemoFragment
+import com.example.suwon_university_community.ui.main.memo.folder.addmemo.EditMemoFragmentModule
+import com.example.suwon_university_community.ui.main.memo.folder.bookmark.BookmarkListFragment
+import com.example.suwon_university_community.ui.main.memo.folder.bookmark.BookmarkListFragmentModule
+import com.example.suwon_university_community.ui.main.memo.folder.memolist.MemoListFragment
+import com.example.suwon_university_community.ui.main.memo.folder.memolist.MemoListFragmentModule
+import com.example.suwon_university_community.ui.main.memo.folder.timetablememolist.TimeTableMemoListFragment
+import com.example.suwon_university_community.ui.main.memo.folder.timetablememolist.TimeTableMemoListFragmentModule
 import com.example.suwon_university_community.ui.main.time_table.TimeTableFragment
 import com.example.suwon_university_community.ui.main.time_table.TimeTableFragmentModule
 import dagger.Module
@@ -68,5 +76,46 @@ abstract class MainActivityModule {
             ViewModelBuilder::class
         ]
     )
-    protected abstract fun getFolderListFragment() : FolderListFragment
+    protected abstract fun getFolderListFragment(): FolderListFragment
+
+
+
+
+    @FragmentScope
+    @ContributesAndroidInjector(
+        modules = [
+            BookmarkListFragmentModule::class,
+            ViewModelBuilder::class
+        ]
+    )
+    protected abstract fun getBookMarkListFragment(): BookmarkListFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector(
+        modules = [
+            TimeTableMemoListFragmentModule::class,
+            ViewModelBuilder::class
+        ]
+    )
+    protected abstract fun getTimeTableMemoListFragment(): TimeTableMemoListFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector(
+        modules = [
+            MemoListFragmentModule::class,
+            ViewModelBuilder::class
+        ]
+    )
+    protected abstract fun getMemoListFragment(): MemoListFragment
+
+
+    @FragmentScope
+    @ContributesAndroidInjector(
+        modules = [
+            EditMemoFragmentModule::class,
+            ViewModelBuilder::class
+        ]
+    )
+    protected abstract fun getEditMemoFragment(): EditMemoFragment
+
 }

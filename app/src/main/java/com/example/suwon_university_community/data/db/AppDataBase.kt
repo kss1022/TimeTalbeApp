@@ -9,6 +9,7 @@ import com.example.suwon_university_community.data.db.dao.TimeTableDao
 import com.example.suwon_university_community.data.entity.lecture.LectureEntity
 import com.example.suwon_university_community.data.entity.memo.BookMarkNoticeEntity
 import com.example.suwon_university_community.data.entity.memo.FolderEntity
+import com.example.suwon_university_community.data.entity.memo.MemoEntity
 import com.example.suwon_university_community.data.entity.notice.NoticeEntity
 import com.example.suwon_university_community.data.entity.timetable.TimeTableCellEntity
 import com.example.suwon_university_community.data.entity.timetable.TimeTableCrossRefEntity
@@ -20,7 +21,8 @@ import com.example.suwon_university_community.data.entity.timetable.TimeTableEnt
         TimeTableCellEntity::class, TimeTableEntity::class, TimeTableCrossRefEntity::class,
         NoticeEntity::class,
         FolderEntity::class,
-        BookMarkNoticeEntity::class
+        BookMarkNoticeEntity::class,
+        MemoEntity::class
     ],  version = 1, exportSchema = false
 )
 abstract class AppDataBase : RoomDatabase() {

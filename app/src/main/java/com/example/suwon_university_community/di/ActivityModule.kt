@@ -1,8 +1,8 @@
 package com.example.suwon_university_community.di
 
 import com.example.suwon_university_community.di.scope.ActivityScope
-import com.example.suwon_university_community.ui.login.AuthActivity
-import com.example.suwon_university_community.ui.login.AuthActivityModule
+import com.example.suwon_university_community.ui.main.home.login.AuthActivity
+import com.example.suwon_university_community.ui.main.home.login.AuthActivityModule
 import com.example.suwon_university_community.ui.main.MainActivity
 import com.example.suwon_university_community.ui.main.MainActivityModule
 import com.example.suwon_university_community.ui.main.home.setting.SettingActivity

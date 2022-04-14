@@ -21,6 +21,10 @@ class DefaultTimeTableRepository @Inject constructor(
         timeTableDao.getTimeTableList()
     }
 
+    override suspend fun getTimeTableCount(): Int?  = withContext(ioDispatcher){
+        timeTableDao.getTimeTableCount()
+    }
+
     override suspend fun insertTimeTableCellWithTable(
         timeTableId: Long,
         timeTableCellEntity: TimeTableCellEntity

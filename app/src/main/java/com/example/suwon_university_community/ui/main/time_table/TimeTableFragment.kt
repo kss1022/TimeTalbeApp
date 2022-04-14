@@ -1,7 +1,5 @@
 package com.example.suwon_university_community.ui.main.time_table
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
@@ -11,12 +9,13 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.isGone
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,7 +41,6 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
     override val viewModel: TimeTableViewModel by viewModels<TimeTableViewModel> { viewModelFactory }
 
-
     override fun getViewBinding(): FragmentTimeTableBinding =
         FragmentTimeTableBinding.inflate(layoutInflater)
 
@@ -65,6 +63,13 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
     private lateinit var timeTableWithCell: TimeTableWithCell
 
+    private var clicked = false
+    private val rotateAnimationOpen : Animation by lazy { AnimationUtils.loadAnimation(requireContext(), R.anim.button_rotate_open) }
+    private val rotateAnimationClose : Animation by lazy { AnimationUtils.loadAnimation(requireContext(), R.anim.button_rotate_close) }
+    private val slideAnimationUp :Animation  by lazy { AnimationUtils.loadAnimation(requireContext(), R.anim.button_slide_left) }
+    private val slideAnimationDown :Animation  by lazy { AnimationUtils.loadAnimation(requireContext(), R.anim.button_slide_right) }
+
+
 
     override fun initViews() {
         initRecyclerView()
@@ -81,19 +86,22 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
     private fun bindViews() = with(binding) {
         addButton.setOnClickListener {
 
-            directAddButton.isVisible = directAddButton.isVisible.not()
-            searchAddButton.isVisible = searchAddButton.isVisible.not()
+            if(!clicked){
+                directAddButton.visibility = View.VISIBLE
+                searchAddButton.visibility = View.VISIBLE
+                directAddButton.startAnimation(slideAnimationUp)
+                searchAddButton.startAnimation(slideAnimationUp)
+                addButton.startAnimation(rotateAnimationOpen)
+            }else{
+                directAddButton.isGone = true
+                searchAddButton.isGone = true
+                directAddButton.startAnimation(slideAnimationDown)
+                searchAddButton.startAnimation(slideAnimationDown)
+                addButton.startAnimation(rotateAnimationClose)
+            }
 
-            directAddButton.alpha = 0f
-            searchAddButton.alpha = 0f
 
-            searchAddButton.animate().alpha(1f).setDuration(100L).setListener(object :
-                AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: Animator) {
-                    directAddButton.animate().alpha(1f).setDuration(100L).setListener(null)
-                }
-            })
-
+            clicked = !clicked
         }
 
         searchAddButton.setOnClickListener {

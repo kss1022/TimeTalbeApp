@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.login.AuthActivity"
+            android:name=".ui.main.home.login.AuthActivity"
             android:exported="false" />
         <activity
             android:name=".ui.main.MainActivity"

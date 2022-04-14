@@ -1,4 +1,4 @@
-package com.example.suwon_university_community.ui.login.signIn
+package com.example.suwon_university_community.ui.main.home.login.signIn
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -45,11 +45,13 @@ class SignInViewModel @Inject constructor(
                             if (verificationTask.isSuccessful) {
                                 signInStateLiveData.value = SignInState.Success
                             } else {
-                                signInStateLiveData.value = SignInState.Error(R.string.email_send_failed_click_button_please)
+                                signInStateLiveData.value =
+                                    SignInState.Error(R.string.email_send_failed_click_button_please)
                             }
                         }
                 } else{
-                    signInStateLiveData.value = SignInState.Error(R.string.signIn_fail_check_your_email)
+                    signInStateLiveData.value =
+                        SignInState.Error(R.string.signIn_fail_check_your_email)
                 }
             }
     }

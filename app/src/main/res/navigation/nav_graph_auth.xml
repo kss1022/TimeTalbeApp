@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.suwon_university_community.ui.login.login.LoginFragment"
+        android:name="com.example.suwon_university_community.ui.main.home.login.login.LoginFragment"
         android:label="@string/login"
         tools:layout="@layout/fragment_login" >
         <action
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/SignInFragment"
-        android:name="com.example.suwon_university_community.ui.login.signIn.SignInFragment"
+        android:name="com.example.suwon_university_community.ui.main.home.login.signIn.SignInFragment"
         android:label="@string/signIn"
         tools:layout="@layout/fragment_sign_in" />
 

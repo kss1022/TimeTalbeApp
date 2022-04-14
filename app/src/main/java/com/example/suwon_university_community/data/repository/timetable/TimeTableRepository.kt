@@ -11,6 +11,8 @@ interface TimeTableRepository {
 
     suspend fun getTimeTableList() : List<TimeTableEntity>
 
+    suspend fun getTimeTableCount() : Int?
+
     suspend fun insertTimeTableCellWithTable( timeTableId: Long, timeTableCellEntity: TimeTableCellEntity)
 
     suspend fun deleteTimeTableWithCell(timeTableId: Long)

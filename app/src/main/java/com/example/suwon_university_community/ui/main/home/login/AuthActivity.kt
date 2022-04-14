@@ -1,4 +1,4 @@
-package com.example.suwon_university_community.ui.login
+package com.example.suwon_university_community.ui.main.home.login
 
 import android.content.Context
 import android.content.Intent

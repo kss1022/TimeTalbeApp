@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.databinding.ViewholderNoticeBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
 import com.example.suwon_university_community.model.NoticeModel
-import com.example.suwon_university_community.ui.main.home.notice.NoticeDateModel
+import com.example.suwon_university_community.model.NoticeDateModel
 import com.example.suwon_university_community.util.provider.ResourceProvider
 
 class NoticeAdapter ( private val resourceProvider: ResourceProvider) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

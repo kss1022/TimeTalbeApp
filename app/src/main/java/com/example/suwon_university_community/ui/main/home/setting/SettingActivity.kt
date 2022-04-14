@@ -22,7 +22,7 @@ import com.example.suwon_university_community.data.preference.PreferenceManager
 import com.example.suwon_university_community.databinding.ActivitySettingBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
 import com.example.suwon_university_community.ui.base.BaseActivity
-import com.example.suwon_university_community.ui.login.AuthActivity
+import com.example.suwon_university_community.ui.main.home.login.AuthActivity
 import javax.inject.Inject
 
 class SettingActivity : BaseActivity<SettingViewModel, ActivitySettingBinding>() {

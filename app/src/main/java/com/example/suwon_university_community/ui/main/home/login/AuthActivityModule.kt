@@ -1,11 +1,11 @@
-package com.example.suwon_university_community.ui.login
+package com.example.suwon_university_community.ui.main.home.login
 
 import com.example.suwon_university_community.di.ViewModelBuilder
 import com.example.suwon_university_community.di.scope.FragmentScope
-import com.example.suwon_university_community.ui.login.login.LoginFragment
-import com.example.suwon_university_community.ui.login.login.LoginFragmentModule
-import com.example.suwon_university_community.ui.login.signIn.SignInFragment
-import com.example.suwon_university_community.ui.login.signIn.SignInFragmentModule
+import com.example.suwon_university_community.ui.main.home.login.login.LoginFragment
+import com.example.suwon_university_community.ui.main.home.login.login.LoginFragmentModule
+import com.example.suwon_university_community.ui.main.home.login.signIn.SignInFragment
+import com.example.suwon_university_community.ui.main.home.login.signIn.SignInFragmentModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

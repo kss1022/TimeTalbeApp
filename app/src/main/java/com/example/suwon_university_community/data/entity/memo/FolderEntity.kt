@@ -9,5 +9,6 @@ data class FolderEntity(
     val name : String,
     val count : Int = 0,
     val category : FolderCategory,
-    val isDefault : Boolean = false
+    val isDefault : Boolean = false,
+    val timeTableId : Long? = null
 )

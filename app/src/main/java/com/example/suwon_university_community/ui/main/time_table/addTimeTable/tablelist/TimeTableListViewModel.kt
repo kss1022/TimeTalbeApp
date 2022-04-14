@@ -11,6 +11,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+//todo 시간표를 삭제할시 -> 그 폴더를 삭제해줘야한다.
+//  삭제된 시간표에 포함된 메모들을 기본 폴더로 옮겨준다.
+
 class TimeTableListViewModel @Inject constructor(
     private val timeTableRepository: TimeTableRepository,
     private val preferenceManager: PreferenceManager

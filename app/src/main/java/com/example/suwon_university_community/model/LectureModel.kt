@@ -5,7 +5,7 @@ import com.example.suwon_university_community.data.entity.timetable.TimeTableLoc
 import com.example.suwon_university_community.data.entity.timetable.toDayOfTheWeek
 
 
-@Entity
+
 data class LectureModel(
     override val id: Long,
     val cellType: CellType = CellType.LECTURE_CELL,

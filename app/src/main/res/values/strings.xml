@@ -50,7 +50,7 @@
     <string name="password_reset_mail_fail">메일 전송에 실패했습니다. 아이디를 확인해주세요</string>
 
     <!-- 시간표-->
-    <string name="is_not_exist_timetable_please_create_timetable">새로운 시간표를 만들어주세요!!!</string>
+    <string name="is_not_exist_timetable_please_create_timetable">새로운 시간표를 만들어주세요⏰</string>
     <string name="create_new_timetable">새로운 시간표\n만들기</string>
     <string name="timetable_name">시간표 이름</string>
     <string name="please_check_selected_lecture">선택한 강의를 추가하시겠어요?</string>
@@ -119,7 +119,12 @@
 
     <!--folder-->
     <string name="folder">폴더</string>
+    <string name="bookmark">북마크</string>
 
 
+
+    <string name="search">검색</string>
+    <string name="please_create_folder">폴더를 생성해주세요🗂</string>
+    <string name="notice_list_is_empty">저장된 공지사항이 없습니다!</string>
 
 </resources>
