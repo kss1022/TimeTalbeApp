@@ -28,7 +28,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/timeTableNameTextView"
         app:layout_constraintStart_toEndOf="@id/timeTableNameTextView"
-        tools:text="시간표" />
+        tools:text="2022년도 1학기" />
 
 
     <EditText
@@ -52,7 +52,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/timeTableNameTextView" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scrollbars="none"
@@ -61,17 +61,55 @@
         app:layout_constraintStart_toStartOf="@id/searchEditText"
         app:layout_constraintTop_toBottomOf="@id/searchEditText">
 
+
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
             android:layout_marginTop="16dp"
-            android:animateLayoutChanges="true"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:orientation="vertical">
 
-    </ScrollView>
+            <TextView
+                android:id="@+id/lectureTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:text="@string/lecture"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+
+            <TextView
+                android:id="@+id/memoTitleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:text="@string/memo"
+                android:textStyle="bold" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/colorPrimary"
+                app:cardCornerRadius="12dp">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/baseMemoRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/viewholder_memo"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

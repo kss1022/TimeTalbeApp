@@ -1,6 +1,7 @@
 package com.example.suwon_university_community.model
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
 
 
@@ -18,7 +19,7 @@ abstract class Model(
 
             @SuppressLint("DiffUtilEquals")
             override fun areContentsTheSame(oldItem: Model, newItem: Model): Boolean {
-                return  oldItem == newItem
+                return  oldItem === newItem
             }
         }
     }

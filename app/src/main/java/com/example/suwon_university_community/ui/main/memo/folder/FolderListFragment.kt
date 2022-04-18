@@ -23,6 +23,7 @@ import com.example.suwon_university_community.databinding.FragmentFolderListBind
 import com.example.suwon_university_community.extensions.fromDpToPx
 import com.example.suwon_university_community.model.FolderModel
 import com.example.suwon_university_community.model.LectureModel
+import com.example.suwon_university_community.model.MemoModel
 import com.example.suwon_university_community.ui.base.BaseFragment
 import com.example.suwon_university_community.util.provider.ResourceProvider
 import com.example.suwon_university_community.widget.adapter.ModelRecyclerViewAdapter
@@ -31,9 +32,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// todo 시간표에 기본 폴더를 추가해주지 않고(기본 메모 폴더를 2번으로변경)
-//  폴더가 없는경우 -> 폴더를 추가하라는 text와 버튼을 보여준다.
-//  시간표가 추가되지 않은경우 시간표를 추가하라는 text를 보여준다.
+
 class FolderListFragment : BaseFragment<FolderListViewModel, FragmentFolderListBinding>() {
 
     @Inject
@@ -156,13 +155,11 @@ class FolderListFragment : BaseFragment<FolderListViewModel, FragmentFolderListB
 
                 if (timeTableFolder.isNullOrEmpty().not()) {
                     timeTableFolderModelAdapter.submitList(timeTableFolder)
-                    if (timeTableFolder.size == 1) {
-                        timeTableFolderExist = false
-                        binding.timeTableMessageTextView.visibility = View.VISIBLE
-                    } else {
                         timeTableFolderExist = true
                         binding.timeTableMessageTextView.isGone = true
-                    }
+                }else{
+                    timeTableFolderExist = false
+                    binding.timeTableMessageTextView.visibility = View.VISIBLE
                 }
 
                 if (memoFolder.isNullOrEmpty().not()) {
@@ -173,22 +170,23 @@ class FolderListFragment : BaseFragment<FolderListViewModel, FragmentFolderListB
 
 
         viewModel.timeTableCountLiveData.observe(viewLifecycleOwner) {
-            it.first?.let { model ->
-                if (it.second > 0) {
-                    findNavController().navigate(
-                        FolderListFragmentDirections.actionFolderListFragmentToTimeTableMemoListFragment(
-                            model.id,
-                            model.name
-                        )
+            if(it == null) return@observe
+
+            if (it.second > 0) {
+                findNavController().navigate(
+                    FolderListFragmentDirections.actionFolderListFragmentToTimeTableMemoListFragment(
+                        it.first.id,
+                        it.first.name
                     )
-                    viewModel.timeTableCountLiveData.value = null to -1
-                } else if (it.second == 0) {
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.is_not_exist_timetable_please_create_timetable),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+                )
+                viewModel.timeTableCountLiveData.value = null
+            } else if (it.second == 0) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.is_not_exist_timetable_please_create_timetable),
+                    Toast.LENGTH_SHORT
+                ).show()
+                viewModel.timeTableCountLiveData.value = null
             }
         }
     }
@@ -390,8 +388,15 @@ class FolderListFragment : BaseFragment<FolderListViewModel, FragmentFolderListB
 
     private fun addMemoFloatingButtonSetOnCLickListener() = with(binding) {
         addMemoFloatingButton.setOnClickListener {
-            //todo 메모
-            findNavController().navigate(R.id.editMemoFragment)
+            findNavController().navigate(
+                FolderListFragmentDirections.actionFolderListFragmentToEditMemoFragment(
+                    MemoModel(
+                        id = -1,
+                        memoFolderId = 2,
+                    )
+                )
+            )
+
             hideAddFloatingButtons()
         }
     }

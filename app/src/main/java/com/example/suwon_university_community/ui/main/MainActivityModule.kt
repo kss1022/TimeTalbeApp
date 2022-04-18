@@ -11,10 +11,10 @@ import com.example.suwon_university_community.ui.main.memo.MemoFragment
 import com.example.suwon_university_community.ui.main.memo.MemoFragmentModule
 import com.example.suwon_university_community.ui.main.memo.folder.FolderListFragment
 import com.example.suwon_university_community.ui.main.memo.folder.FolderListFragmentModule
-import com.example.suwon_university_community.ui.main.memo.folder.addmemo.EditMemoFragment
-import com.example.suwon_university_community.ui.main.memo.folder.addmemo.EditMemoFragmentModule
 import com.example.suwon_university_community.ui.main.memo.folder.bookmark.BookmarkListFragment
 import com.example.suwon_university_community.ui.main.memo.folder.bookmark.BookmarkListFragmentModule
+import com.example.suwon_university_community.ui.main.memo.folder.editmemo.EditMemoFragment
+import com.example.suwon_university_community.ui.main.memo.folder.editmemo.EditMemoFragmentModule
 import com.example.suwon_university_community.ui.main.memo.folder.memolist.MemoListFragment
 import com.example.suwon_university_community.ui.main.memo.folder.memolist.MemoListFragmentModule
 import com.example.suwon_university_community.ui.main.memo.folder.timetablememolist.TimeTableMemoListFragment

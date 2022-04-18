@@ -1,6 +1,8 @@
 package com.example.suwon_university_community
 
 import org.junit.Test
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -14,25 +16,18 @@ class ExampleUnitTest {
     @Test
     fun addition_isCorrect() {
 
+        val time = System.currentTimeMillis()
+        val date= Date(time)
 
+        val simpleDateFormatDay = SimpleDateFormat("yyyy-MM-dd")
+        val simpleDateFormatTime = SimpleDateFormat("HH:mm:ss")
 
-        val dataSet = mutableListOf<Triple<Int , Int, Int>>()
+        val getDay = simpleDateFormatDay.format(date)
+        val getTime: String = simpleDateFormatTime.format(date)
 
-        for(i in 1..33){
-            dataSet.add(Triple( (1..30).random() , (1..30).random() ,(1..30).random()))
-        }
-
-
-      val sortedData =  dataSet.sortedWith(
-            compareByDescending<Triple<Int, Int, Int>> {  it.first  }
-                .thenByDescending { it.second }
-                .thenByDescending { it.third }
-        )
-
-        for(i in sortedData){
-            System.out.println(i)
-        }
-
+        System.out.println(date.toString())
+        System.out.println(getDay)
+        System.out.println(getTime)
     }
 
 

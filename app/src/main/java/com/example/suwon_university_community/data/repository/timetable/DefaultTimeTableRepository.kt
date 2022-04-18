@@ -34,7 +34,8 @@ class DefaultTimeTableRepository @Inject constructor(
 
     override suspend fun deleteTimeTableWithCell(timeTableId: Long) = withContext(ioDispatcher){
         val cellIdList = timeTableDao.getTimeTableWithCell(timeTableId).timeTableCellList.map { it.cellId }
-        timeTableDao.deleteTImeTableWithCell( timeTableId,cellIdList )
+
+        timeTableDao.deleteTimeTableWithCell( timeTableId,cellIdList )
     }
 
 

@@ -47,6 +47,10 @@ interface MemoDao {
 
 
     //Memo
+    @Query("SELECT * FROM memoentity WHERE memoId=:id" )
+    suspend fun getMemo(id: Long) : MemoEntity
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMemo(memoEntity: MemoEntity)
 
@@ -55,4 +59,5 @@ interface MemoDao {
 
     @Update
     suspend fun updateMemo(memoEntity: MemoEntity)
+
 }

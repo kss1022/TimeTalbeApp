@@ -20,9 +20,10 @@ class DefaultMemoRepository @Inject constructor(
             memoDao.getFolderWithNotice(folderId)
         }
 
-    override suspend fun getFolderWithMemo(folderId: Long): FolderWithMemo = withContext(ioDispatcher){
-        memoDao.getFolderWithMemo(folderId)
-    }
+    override suspend fun getFolderWithMemo(folderId: Long): FolderWithMemo =
+        withContext(ioDispatcher) {
+            memoDao.getFolderWithMemo(folderId)
+        }
 
 
     //Folder
@@ -61,15 +62,8 @@ class DefaultMemoRepository @Inject constructor(
             memoDao.insertBookMarkNotice(bookMarkNoticeEntity)
 
             val noticeFolder = getFolder(bookMarkNoticeEntity.noticeFolderId)
-
             memoDao.updateFolder(
-                FolderEntity(
-                    folderId = noticeFolder.folderId,
-                    name = noticeFolder.name,
-                    count = noticeFolder.count + 1,
-                    category = noticeFolder.category,
-                    isDefault = noticeFolder.isDefault,
-                )
+                noticeFolder.copy(count = noticeFolder.count+1)
             )
         }
 
@@ -77,12 +71,21 @@ class DefaultMemoRepository @Inject constructor(
         memoDao.deleteBookMarkNotice(id)
     }
 
-    //Memo
-    override suspend fun insertMemo(memoEntity: MemoEntity)  = with(ioDispatcher){
-        memoDao.insertMemo(memoEntity)
+    override suspend fun getMemo(id: Long): MemoEntity  = withContext(ioDispatcher){
+        memoDao.getMemo(id)
     }
 
-    override suspend fun updateMemo(memoEntity: MemoEntity) = with(ioDispatcher){
+    //Memo
+    override suspend fun insertMemo(memoEntity: MemoEntity) = withContext(ioDispatcher) {
+        memoDao.insertMemo(memoEntity)
+
+        val memoFolder = getFolder(memoEntity.memoFolderId)
+        memoDao.updateFolder(
+            memoFolder.copy(count = memoFolder.count + 1)
+        )
+    }
+
+    override suspend fun updateMemo(memoEntity: MemoEntity) = withContext(ioDispatcher) {
         memoDao.updateMemo(memoEntity)
     }
 }

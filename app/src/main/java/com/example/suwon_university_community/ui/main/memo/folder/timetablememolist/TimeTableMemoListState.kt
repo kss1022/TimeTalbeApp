@@ -15,8 +15,11 @@ sealed class TimeTableMemoListState {
     ) : TimeTableMemoListState()
 
 
+    data class EditMemo(
+        val memoList: List<MemoModel>
+    ): TimeTableMemoListState()
+
     data class NoTimeTable(
         val timeTableList: List<TimeTableEntity>
     ) : TimeTableMemoListState()
-
 }

@@ -24,7 +24,7 @@ class FolderListViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val memoStateLiveData = MutableLiveData<FolderListState>(FolderListState.Uninitialized)
-    val timeTableCountLiveData = MutableLiveData<Pair<FolderModel?, Int>>()
+    val timeTableCountLiveData = MutableLiveData<Pair<FolderModel, Int>>()
     val folders: MutableStateFlow<List<FolderEntity>> = MutableStateFlow(emptyList())
 
     override fun fetchData(): Job = viewModelScope.launch {

@@ -31,6 +31,8 @@ interface MemoRepository {
     suspend fun deleteBookMarkNotice( id : Long)
 
     //Memo
+    suspend fun getMemo(id : Long) : MemoEntity
+
     suspend fun insertMemo(memoEntity: MemoEntity)
 
     suspend fun updateMemo(memoEntity: MemoEntity)

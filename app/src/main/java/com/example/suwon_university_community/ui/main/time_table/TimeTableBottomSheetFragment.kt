@@ -85,7 +85,7 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
     private fun initViews() = with(binding) {
         lectureNameEditText.setText(editTimeTableCell.name)
         professorNameEditText.setText(editTimeTableCell.professorName)
-        baseColor = ContextCompat.getColor(requireContext(), editTimeTableCell.cellColor)
+        baseColor =  editTimeTableCell.cellColor
         colorButton.setBackgroundColor(
             ContextCompat.getColor(
                 requireContext(),
@@ -182,7 +182,7 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
         AlertDialog.Builder(requireContext())
             .setMessage("정말 삭제하시겠어요?")
             .setPositiveButton("확인") { dialog, _ ->
-                itemClickListener(null, DELETE)
+                itemClickListener(editTimeTableCell, DELETE)
                 dialog.dismiss()
                 this@TimeTableBottomSheetFragment.dismiss()
             }
@@ -198,9 +198,9 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
 
         val colorView = LayoutInflater.from(requireContext())
             .inflate(R.layout.time_table_color_alert_dialog, null).apply {
-                this.findViewById<RecyclerView>(R.id.colorRecyclerVwew).apply {
+                this.findViewById<RecyclerView>(R.id.colorRecyclerView).apply {
                     val colorList = TableColorCategory.values().map { it.colorId }
-                    adapter = ColorAdapter(requireContext(), colorList) {
+                    adapter = ColorAdapter( colorList) {
                         Log.e("Color Id", "$it")
                         binding.colorButton.setBackgroundColor(
                             ContextCompat.getColor(

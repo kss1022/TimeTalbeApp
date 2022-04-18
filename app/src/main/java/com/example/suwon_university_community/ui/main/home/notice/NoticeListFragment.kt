@@ -94,6 +94,7 @@ class NoticeListFragment : BaseFragment<NoticeViewModel, FragmentNoticeListBindi
 
     private fun initRecyclerView() {
         binding.recyclerView.apply {
+            setHasFixedSize(true)
             layoutManager = LinearLayoutManager(context, RecyclerView.VERTICAL, false)
             adapter = NoticeAdapter(resourceProvider)
         }

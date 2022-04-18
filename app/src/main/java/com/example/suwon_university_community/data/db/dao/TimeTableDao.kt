@@ -65,7 +65,7 @@ interface TimeTableDao {
     }
 
     @Transaction
-    suspend fun deleteTImeTableWithCell(tableId: Long , cellIdList : List<Long>){
+    suspend fun deleteTimeTableWithCell(tableId: Long, cellIdList : List<Long>){
         cellIdList.forEach {
             deleteTimeTableCellAtTable(tableId, it)
         }

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.suwon_university_community.data.entity.timetable.TimeTableEntity
 import com.example.suwon_university_community.data.preference.PreferenceManager
 import com.example.suwon_university_community.data.repository.timetable.TimeTableRepository
+import com.example.suwon_university_community.model.TimeTableModel
 import com.example.suwon_university_community.ui.base.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -37,14 +38,15 @@ class TimeTableListViewModel @Inject constructor(
     }
 
     fun saveNewTimeTable(tableName: String, year: Int, semester: Int) = viewModelScope.launch {
-        timeTableRepository.insertTimeTable(
-            TimeTableEntity(
-                tableName = tableName,
-                year = year,
-                semester = semester,
-                isDefault = false
-            )
+
+        val tableEntity =    TimeTableEntity(
+            tableName = tableName,
+            year = year,
+            semester = semester,
+            isDefault = false
         )
+
+        timeTableRepository.insertTimeTable(tableEntity)
         fetchData()
     }
 
@@ -73,8 +75,19 @@ class TimeTableListViewModel @Inject constructor(
         preferenceManager.putMainTimeTableId(timeTableId)
     }
 
-    fun deleteTimeTable(timeTableId: Long) = viewModelScope.launch {
-        timeTableRepository.deleteTimeTableWithCell(timeTableId)
-        fetchData()
+    fun deleteTimeTable(timeTableModel: TimeTableModel) = viewModelScope.launch {
+        timeTableRepository.deleteTimeTableWithCell(timeTableModel.id)
+
+        when(val data = timeTableListStateLiveData.value){
+            is TimeTableListState.Success->{
+                timeTableListStateLiveData.value = data.copy(
+                    data.timeTableModelList.toMutableList().apply {
+                        remove(timeTableModel)
+                    }
+                )
+            }
+
+            else->Unit
+        }
     }
 }

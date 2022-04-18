@@ -4,49 +4,44 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@null"
     android:layout_height="wrap_content">
 
 
     <TextView
         android:id="@+id/titleTextView"
+        android:textStyle="bold"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginHorizontal="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="16dp"
-        tools:text="이번과제는"/>
+        android:ellipsize="none"
+        android:lines="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="이번과제는" />
 
     <TextView
         android:id="@+id/lastEditTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        android:paddingBottom="16dp"
         app:layout_constraintStart_toStartOf="@id/titleTextView"
-        tools:text="2022.03.07"/>
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
+        tools:text="2022.03.07" />
 
     <TextView
         android:id="@+id/memoPreviewTextView"
-        android:layout_marginStart="16dp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:lines="1"
+        android:layout_marginStart="16dp"
         android:ellipsize="none"
-        app:layout_constraintTop_toTopOf="@id/lastEditTextView"
+        android:lines="1"
         app:layout_constraintEnd_toEndOf="@id/titleTextView"
-        app:layout_constraintBottom_toBottomOf="@id/lastEditTextView"
         app:layout_constraintStart_toEndOf="@id/lastEditTextView"
-        tools:text="이것도 해야되고 저것도 해야되고..."/>
-
-
-
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="@id/titleTextView"
-        app:layout_constraintTop_toBottomOf="@id/memoPreviewTextView" />
+        app:layout_constraintTop_toTopOf="@id/lastEditTextView"
+        tools:text="이것도 해야되고 저것도 해야되고..." />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

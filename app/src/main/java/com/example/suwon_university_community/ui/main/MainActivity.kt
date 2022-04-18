@@ -74,6 +74,7 @@ class MainActivity : DaggerAppCompatActivity(), NavigationBarView.OnItemSelected
 
     }
 
+
     companion object {
         fun newIntent(context: Context) = Intent(context, MainActivity::class.java).apply {  }
     }

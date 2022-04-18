@@ -18,7 +18,7 @@
             android:id="@+id/action_folderListFragment_to_bookMarkListFragment"
             app:destination="@id/bookMarkListFragment" />
         <action
-            android:id="@+id/action_folderListFragment_to_addMemoFragment"
+            android:id="@+id/action_folderListFragment_to_editMemoFragment"
             app:destination="@id/editMemoFragment" />
         <action
             android:id="@+id/action_folderListFragment_to_timeTableMemoListFragment"
@@ -55,16 +55,11 @@
             android:name="folderName"
             app:argType="string" />
         <action
-            android:id="@+id/action_memoListFragment_to_addMemoFragment"
+            android:id="@+id/action_memoListFragment_to_editMemoFragment"
             app:destination="@id/editMemoFragment" />
     </fragment>
 
 
-    <fragment
-        android:id="@+id/editMemoFragment"
-        android:name="com.example.suwon_university_community.ui.main.memo.folder.addmemo.EditMemoFragment"
-        android:label="AddMemoFragment"
-        tools:layout="@layout/fragment_edit_memo"/>
 
     <fragment
         android:id="@+id/timeTableMemoListFragment"
@@ -83,5 +78,15 @@
         <action
             android:id="@+id/action_timeTableMemoListFragment_to_editMemoFragment"
             app:destination="@id/editMemoFragment" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/editMemoFragment"
+        android:name="com.example.suwon_university_community.ui.main.memo.folder.editmemo.EditMemoFragment"
+        tools:layout="@layout/fragment_edit_memo">
+
+        <argument android:name="memo"
+            app:argType="com.example.suwon_university_community.model.MemoModel"/>
     </fragment>
 </navigation>

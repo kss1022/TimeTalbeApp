@@ -23,29 +23,18 @@ class TimeTableMemoListViewModel @Inject constructor(
     lateinit var folder: FolderEntity
 
     override fun fetchData(): Job = viewModelScope.launch {
+
         timetableMemoListStateLiveData.value = TimeTableMemoListState.Loading
 
         folder = memoRepository.getFolder(folderId)
-        folder.timeTableId?.let {
-            val timeTableWithCell = timeTableRepository.getTimeTableWithCell(it)
-
-
-//            timeTableWithCell.timeTableCellList.forEach {
-//                memoRepository.insertMemo(
-//                    MemoEntity(
-//                        title = "dfnalfkna;lds",
-//                        memo = "fnasdlnl;asf",
-//                        time = "fnlksadnfl",
-//                        memoFolderId =  folderId,
-//                        timeTableCellId = it.cellId
-//                    )
-//                )
-//            }
-
+        folder.timeTableId?.let { tableId ->
+            val timeTableWithCell = timeTableRepository.getTimeTableWithCell(tableId)
 
             val memos = memoRepository.getFolderWithMemo(folderId).memos.map { memo ->
                 memo.toModel()
-            }
+            }.sortedByDescending { it.time }
+
+
             timetableMemoListStateLiveData.value =
                 TimeTableMemoListState.Success(timeTableWithCell, memos)
         } ?: kotlin.run {
@@ -69,5 +58,32 @@ class TimeTableMemoListViewModel @Inject constructor(
             )
         }
         fetchData()
+    }
+
+    fun replaceMemo(memoId: Long, timeTableCellId: Long?) = viewModelScope.launch {
+        val memo = memoRepository.getMemo(memoId)
+        val updateMemo = memo.copy(timeTableCellId = timeTableCellId)
+        memoRepository.updateMemo(updateMemo)
+
+        when (val data = timetableMemoListStateLiveData.value) {
+            is TimeTableMemoListState.Success -> {
+                val db = data.memoList.toMutableList().apply {
+                    remove(memo.toModel())
+                    add(updateMemo.toModel())
+                }
+
+                timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
+            }
+
+
+            is TimeTableMemoListState.EditMemo -> {
+                val db = data.memoList.toMutableList().apply {
+                    remove(memo.toModel())
+                    add(updateMemo.toModel())
+                }
+
+                timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
+            }
+        }
     }
 }

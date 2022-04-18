@@ -77,7 +77,7 @@ class TimeTableListActivity : BaseActivity<TimeTableListViewModel, ActivityTimeT
                         ).show()
                         return
                     }
-                    deleteAlertDialog(timeTableModel.id)
+                    deleteAlertDialog(timeTableModel)
                 }
             }
         )
@@ -251,11 +251,11 @@ class TimeTableListActivity : BaseActivity<TimeTableListViewModel, ActivityTimeT
     }
 
 
-    private fun deleteAlertDialog(timeTableId: Long) {
+    private fun deleteAlertDialog(timeTableModel: TimeTableModel) {
         AlertDialog.Builder(this)
             .setTitle("정말 삭제하시겠어요?")
             .setPositiveButton("네") { dialog, _ ->
-                viewModel.deleteTimeTable(timeTableId)
+                viewModel.deleteTimeTable(timeTableModel)
                 dialog.dismiss()
             }
             .setNegativeButton("아니요") { dialog, _ ->

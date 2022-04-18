@@ -1,6 +1,5 @@
 package com.example.suwon_university_community.widget.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -8,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.databinding.ViewholderColorBinding
 
 class ColorAdapter(
-    private val context: Context,
     private val colorIdList: List<Int>,
     private val itemCLickListener: (Int) -> Unit
 ) : RecyclerView.Adapter<ColorAdapter.ColorViewHolder>() {

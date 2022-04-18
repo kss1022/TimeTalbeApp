@@ -45,4 +45,5 @@ class ModelRecyclerViewAdapter<M : Model, VM : BaseViewModel>(
         }
         super.submitList(list)
     }
+
 }

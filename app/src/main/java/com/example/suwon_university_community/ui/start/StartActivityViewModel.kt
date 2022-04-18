@@ -35,22 +35,22 @@ class StartActivityViewModel @Inject constructor(
             )
 
 
-            val defaultTimeTableFolder =  FolderEntity(
-                2,
-                "메모",
-                category = FolderCategory.TIME_TABLE,
-                isDefault = true
-            )
+//            val defaultTimeTableFolder =  FolderEntity(
+//                2,
+//                "메모",
+//                category = FolderCategory.TIME_TABLE,
+//                isDefault = true
+//            )
 
             val defaultBaseMemoFolder =  FolderEntity(
-                3,
+                2,
                 "메모",
                 category = FolderCategory.MEMO,
                 isDefault = true
             )
 
             memoRepository.insertFolder(defaultNoticeFolder)
-            memoRepository.insertFolder(defaultTimeTableFolder)
+//            memoRepository.insertFolder(defaultTimeTableFolder)
             memoRepository.insertFolder(defaultBaseMemoFolder)
         }
 

@@ -23,8 +23,10 @@ class MemoFragment : BaseFragment<MemoViewModel, FragmentMemoBinding>() {
     override fun observeData() {}
 
     override fun initViews() {
-        val navigationController = ( childFragmentManager.findFragmentById(R.id.navigationContainerView) as NavHostFragment).navController
-        binding.toolBar.setupWithNavController(navigationController)
+        val navigationController =
+            ( childFragmentManager.findFragmentById(R.id.navigationContainerView) as NavHostFragment).navController
+
+        binding.toolBar.setupWithNavController( navigationController)
     }
 
 

@@ -18,8 +18,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.R
 import com.example.suwon_university_community.data.entity.timetable.DayOfTheWeek
 import com.example.suwon_university_community.data.entity.timetable.TimeTableCellEntity
@@ -72,14 +70,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
 
     override fun initViews() {
-        initRecyclerView()
         bindViews()
-    }
-
-    private fun initRecyclerView() = with(binding) {
-        lectureListRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
-        }
     }
 
 
@@ -678,8 +669,11 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
                             }
 
                             TimeTableBottomSheetFragment.DELETE -> {
-                                removeAddedView()
-                                viewModel.deleteTimeTableEntity(clickItem.cellId)
+
+                                timeTableCellEntity?.let {
+                                    removeAddedView()
+                                    viewModel.deleteTimeTableEntity(timeTableCellEntity)
+                                }
 //
 //                            addButtonList.filter {
 //                                it.first == modelId

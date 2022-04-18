@@ -1,4 +1,4 @@
-package com.example.suwon_university_community.ui.main.memo.folder.addmemo
+package com.example.suwon_university_community.ui.main.memo.folder.editmemo
 
 import androidx.lifecycle.ViewModel
 import com.example.suwon_university_community.di.ViewModelKey
