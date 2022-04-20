@@ -16,6 +16,7 @@ data class BookMarkNoticeEntity(
     val noticeFolderId : Long
 ){
     fun toModel() = NoticeModel(
+        id = noticeId,
         title = title,
         writer = writer,
         date = date.toDate(),

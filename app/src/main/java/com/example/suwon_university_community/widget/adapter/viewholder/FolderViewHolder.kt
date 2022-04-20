@@ -27,6 +27,9 @@ class FolderViewHolder(
             binding.root.setOnClickListener {
                 adapterListener.selectFolder(model)
             }
+
+            binding.editButton.setOnClickListener {  adapterListener.selectEdit(model) }
+            binding.deleteButton.setOnClickListener { adapterListener.selectDelete(model) }
         }
     }
 }

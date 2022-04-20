@@ -24,18 +24,18 @@ class MemoViewHolder(
     override fun bindData(model: MemoModel) = with(binding) {
         super.bindData(model)
 
-        titleTextView.text = model.title
-        memoPreviewTextView.text = model.memo
+        titleTextView.text = model.title.replace(" ", "").replace("\n", "")
 
 
         val modelDate = Date(model.time)
         val currentDate = Date(System.currentTimeMillis())
 
+
         lastEditTextView.text =
             if (modelDate.toReadableDateString() == currentDate.toReadableDateString()) {
-                "${modelDate.toReadableTimeString()} "
+                modelDate.toReadableTimeString()
             } else {
-                modelDate.toString()
+                modelDate.toReadableDateString()
             }
     }
 
@@ -45,18 +45,22 @@ class MemoViewHolder(
                 adapterListener.selectModel(model)
             }
 
-            root.tag = model.id.toString()
+            root.id = model.id.toInt()
 
             root.setOnLongClickListener(longClickListener)
+
+
+            binding.editButton.setOnClickListener { adapterListener.selectEdit(model) }
+            binding.deleteButton.setOnClickListener { adapterListener.selectDelete(model) }
         }
     }
 
-    companion object{
-        val longClickListener = View.OnLongClickListener { v->
-            val item = ClipData.Item(v.tag as? CharSequence)
+    companion object {
+        val longClickListener = View.OnLongClickListener { v ->
+            val item = ClipData.Item(v.id.toString() as? CharSequence)
 
             val dragData = ClipData(
-                v.tag as? CharSequence,
+                v.id.toString() as? CharSequence,
                 arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN),
                 item
             )

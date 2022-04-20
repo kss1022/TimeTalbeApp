@@ -44,10 +44,9 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
 
     private val addTimeTableCellLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
+            if (result.resultCode == Activity.RESULT_OK) {}
                 removeAddedView()
                 viewModel.fetchData()
-            }
         }
 
     private val timeTableListLauncher =
@@ -96,15 +95,15 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         }
 
         searchAddButton.setOnClickListener {
-            addTimeTableCellLauncher.launch(
-                AddTimeTableCellActivity.newIntent(requireContext(), viewModel.mainTimeTable)
-            )
+            if(::timeTableWithCell.isInitialized){
+                addTimeTableCellLauncher.launch(
+                    AddTimeTableCellActivity.newIntent(requireContext(), timeTableWithCell)
+                )
+            }
         }
 
 
         directAddButton.setOnClickListener {
-
-
             TimeTableBottomSheetFragment.newInstance(
                 timeTableWithCell,
                 null

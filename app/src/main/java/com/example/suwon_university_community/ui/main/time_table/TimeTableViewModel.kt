@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
+
 class TimeTableViewModel @Inject constructor(
     private val timeTableRepository: TimeTableRepository,
     private val preferenceManager: PreferenceManager
@@ -65,6 +66,8 @@ class TimeTableViewModel @Inject constructor(
 
 
         when (val data = timeTableStateLiveData.value) {
+
+
             is TimeTableState.Success -> {
                 timeTableStateLiveData.value = data.copy(
                     timeTableWithCell = TimeTableWithCell(

@@ -19,7 +19,7 @@ abstract class Model(
 
             @SuppressLint("DiffUtilEquals")
             override fun areContentsTheSame(oldItem: Model, newItem: Model): Boolean {
-                return  oldItem === newItem
+                return  oldItem == newItem
             }
         }
     }

@@ -11,6 +11,7 @@ import com.example.suwon_university_community.ui.main.memo.MemoFragment
 import com.example.suwon_university_community.ui.main.memo.MemoFragmentModule
 import com.example.suwon_university_community.ui.main.memo.folder.FolderListFragment
 import com.example.suwon_university_community.ui.main.memo.folder.FolderListFragmentModule
+import com.example.suwon_university_community.ui.main.memo.folder.FolderSelectSheetFragment
 import com.example.suwon_university_community.ui.main.memo.folder.bookmark.BookmarkListFragment
 import com.example.suwon_university_community.ui.main.memo.folder.bookmark.BookmarkListFragmentModule
 import com.example.suwon_university_community.ui.main.memo.folder.editmemo.EditMemoFragment
@@ -117,5 +118,9 @@ abstract class MainActivityModule {
         ]
     )
     protected abstract fun getEditMemoFragment(): EditMemoFragment
+
+    @FragmentScope
+    @ContributesAndroidInjector
+    protected abstract fun getFolderSelectBottomFragment(): FolderSelectSheetFragment
 
 }

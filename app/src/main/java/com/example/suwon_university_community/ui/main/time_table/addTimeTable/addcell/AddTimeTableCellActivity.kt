@@ -61,6 +61,7 @@ class AddTimeTableCellActivity :
     private var isMotionEnd = false
     private var currentPage = 0
 
+
     private val viewPagerOnPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
 
@@ -99,6 +100,12 @@ class AddTimeTableCellActivity :
     override fun observeData() {
         sharedViewModel.lectureEntityLiveData.observe(this) {
             showAlertDialog(it)
+        }
+
+        viewModel.deleteState.observe(this){
+            if(it){
+                finish()
+            }
         }
     }
 
@@ -162,6 +169,11 @@ class AddTimeTableCellActivity :
     private fun bindViews() = with(binding) {
 
         toolBar.setNavigationOnClickListener {
+            hideSoftKeyboard()
+            viewModel.deleteLecture( timetableWithCell.timeTable.tableId,)
+        }
+
+        saveButton.setOnClickListener{
             hideSoftKeyboard()
             setResult(Activity.RESULT_OK)
             finish()
@@ -313,9 +325,11 @@ class AddTimeTableCellActivity :
         binding.viewPager.unregisterOnPageChangeCallback(viewPagerOnPageChangeCallback)
     }
 
-    //todo  추가한 뷰를 viewModel에서 arraylist로 가지고 있는다.
-    //  확인버튼을 만들어서 확인버튼을 누른 경우만 RESULT_OK를 준다.
-    // Toolbar back버튼을 눌르거나 뒤로 가기가 됬을경우 viewModel에서  arraylist에 추가된 뷰들을 삭제해준다.
+    override fun onBackPressed() {
+        viewModel.deleteLecture(timetableWithCell.timeTable.tableId)
+    }
+
+
     private fun showAlertDialog(lectureModel: LectureModel) {
         hideSoftKeyboard()
 

@@ -10,9 +10,9 @@
         android:id="@+id/swipeView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:layout_marginHorizontal="16dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,10 +22,11 @@
             android:id="@+id/folderImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:tint="@color/yellow"
             android:src="@drawable/ic_outline_folder_24"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/yellow" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/folderNameTextView"
@@ -39,55 +40,20 @@
             app:layout_constraintTop_toTopOf="@id/folderImageView"
             tools:text="메모" />
 
-        <TextView
-            android:id="@+id/folderCountTextView"
+        <ImageView
+            android:id="@+id/checkboxImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@color/text_gray"
-            app:drawableEndCompat="@drawable/ic_baseline_keyboard_arrow_right_24"
-            app:drawableTint="@color/text_gray"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_baseline_check_24"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/folderImageView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/folderImageView"
-            tools:text="21" />
+            tools:visibility="visible" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:id="@+id/buttonContainer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/editButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/blue_light"
-            android:gravity="center"
-            android:lines="1"
-            android:text="@string/edit"
-            android:textColor="@color/white" />
-
-
-        <TextView
-            android:id="@+id/deleteButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@color/red_light"
-            android:gravity="center"
-            android:lines="1"
-            android:text="@string/delete"
-            android:textColor="@color/white" />
-
-    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

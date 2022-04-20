@@ -1,5 +1,6 @@
-package com.example.suwon_university_community.widget.adapter
+package com.example.suwon_university_community.widget.adapter.CustomAdapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,8 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.databinding.ViewholderNoticeBinding
 import com.example.suwon_university_community.extensions.fromDpToPx
-import com.example.suwon_university_community.model.NoticeModel
 import com.example.suwon_university_community.model.NoticeDateModel
+import com.example.suwon_university_community.model.NoticeModel
 import com.example.suwon_university_community.util.provider.ResourceProvider
 
 class NoticeAdapter ( private val resourceProvider: ResourceProvider) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -19,12 +20,12 @@ class NoticeAdapter ( private val resourceProvider: ResourceProvider) : Recycler
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
         when(viewType){
-            ITEM_VIEW_TYPE_DATE->{
+            ITEM_VIEW_TYPE_DATE ->{
                 NoticeDateViewHolder(parent.context)
             }
 
 
-            ITEM_VIEW_TYPE_CONTENT->{
+            ITEM_VIEW_TYPE_CONTENT ->{
                 NoticeModelViewHolder(
                     ViewholderNoticeBinding.inflate(LayoutInflater.from(parent.context),parent, false )
                 )
@@ -60,6 +61,7 @@ class NoticeAdapter ( private val resourceProvider: ResourceProvider) : Recycler
     override fun getItemCount(): Int = data.size
 
 
+    @SuppressLint("NotifyDataSetChanged")
     fun addData(noticeDateModelList: List<NoticeDateModel>) {
         val newData = mutableListOf<DataItem>()
 
@@ -76,6 +78,7 @@ class NoticeAdapter ( private val resourceProvider: ResourceProvider) : Recycler
         }
 
         data = newData
+        notifyDataSetChanged()
     }
 
 

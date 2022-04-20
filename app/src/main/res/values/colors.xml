@@ -15,6 +15,12 @@
 
     <color name="red">#F83B3B</color>
     <color name="blue">#0C0CE0</color>
+    <color name="yellow">#FFEB3B</color>
+
+    <color name="blue_light">#3F51B5</color>
+    <color name="red_light">#E91E63</color>
+
+    <color name="notice_category">#82B1FF</color>
 
     <color name="colorPrimary">@color/gray</color>
     <color name="colorPrimaryVariant">@color/white</color>

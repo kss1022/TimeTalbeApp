@@ -35,6 +35,14 @@
             android:textStyle="bold"
             tools:text="@string/time_table" />
 
+        <TextView
+            android:id="@+id/saveButton"
+            android:text="@string/save"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
 
     </androidx.appcompat.widget.Toolbar>
 

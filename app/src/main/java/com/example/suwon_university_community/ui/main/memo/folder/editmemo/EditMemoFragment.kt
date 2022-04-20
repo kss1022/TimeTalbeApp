@@ -10,10 +10,14 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.suwon_university_community.R
 import com.example.suwon_university_community.data.entity.memo.MemoEntity
 import com.example.suwon_university_community.databinding.FragmentEditMemoBinding
+import com.example.suwon_university_community.extensions.toReadableDateString
+import com.example.suwon_university_community.extensions.toReadableTimeString
 import com.example.suwon_university_community.model.MemoModel
 import com.example.suwon_university_community.ui.base.BaseFragment
+import java.util.*
 import javax.inject.Inject
 
 //todo 뒤로 가기 했을떄 바로 저장할것인지 물어본다.
@@ -85,6 +89,12 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
             memoEditText.setSelection(memoEditText.length())
         } else {
             memoEditText.isGone = true
+        }
+
+        if(memo.time != 0L ){
+            val date = Date(memo.time)
+            lastUpdatedTextView.visibility = View.VISIBLE
+            lastUpdatedTextView.text = getString(R.string.editTime , date.toReadableDateString() , date.toReadableTimeString())
         }
 
     }

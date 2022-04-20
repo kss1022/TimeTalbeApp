@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.suwon_university_community.data.entity.memo.FolderEntity
 import com.example.suwon_university_community.data.repository.memo.MemoRepository
 import com.example.suwon_university_community.data.repository.timetable.TimeTableRepository
+import com.example.suwon_university_community.model.MemoModel
 import com.example.suwon_university_community.ui.base.BaseViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -32,7 +33,7 @@ class TimeTableMemoListViewModel @Inject constructor(
 
             val memos = memoRepository.getFolderWithMemo(folderId).memos.map { memo ->
                 memo.toModel()
-            }.sortedByDescending { it.time }
+            }
 
 
             timetableMemoListStateLiveData.value =
@@ -80,6 +81,51 @@ class TimeTableMemoListViewModel @Inject constructor(
                 val db = data.memoList.toMutableList().apply {
                     remove(memo.toModel())
                     add(updateMemo.toModel())
+                }
+
+                timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
+            }
+        }
+    }
+
+
+    fun deleteMemo(model: MemoModel) = viewModelScope.launch {
+        memoRepository.deleteMemo(model)
+
+        when (val data = timetableMemoListStateLiveData.value) {
+            is TimeTableMemoListState.Success -> {
+                val db = data.memoList.toMutableList().apply {
+                    remove(model)
+                }
+
+                timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
+            }
+
+            is TimeTableMemoListState.EditMemo -> {
+                val db = data.memoList.toMutableList().apply {
+                    remove(model)
+                }
+
+                timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
+            }
+        }
+    }
+
+    fun changeFolder(model: MemoModel, folderId: Long) = viewModelScope.launch {
+        memoRepository.changeFolder(model, folderId)
+
+        when (val data = timetableMemoListStateLiveData.value) {
+            is TimeTableMemoListState.Success -> {
+                val db = data.memoList.toMutableList().apply {
+                    remove(model)
+                }
+
+                timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
+            }
+
+            is TimeTableMemoListState.EditMemo -> {
+                val db = data.memoList.toMutableList().apply {
+                    remove(model)
                 }
 
                 timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)

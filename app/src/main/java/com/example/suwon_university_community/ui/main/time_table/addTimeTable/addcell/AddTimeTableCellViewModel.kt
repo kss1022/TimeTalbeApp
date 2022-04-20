@@ -1,5 +1,6 @@
 package com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.suwon_university_community.R
 import com.example.suwon_university_community.data.entity.timetable.DayOfTheWeek
@@ -9,14 +10,16 @@ import com.example.suwon_university_community.data.repository.timetable.TimeTabl
 import com.example.suwon_university_community.model.LectureModel
 import com.example.suwon_university_community.ui.base.BaseViewModel
 import com.example.suwon_university_community.ui.main.time_table.TableColorCategory
-import com.example.suwon_university_community.util.provider.ResourceProvider
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class AddTimeTableCellViewModel @Inject constructor(
     private val timeTableRepository: TimeTableRepository,
-    private val resourceProvider: ResourceProvider
 ) : BaseViewModel() {
+
+
+    val deleteState = MutableLiveData<Boolean>()
+    private val currentAddedIdList = mutableListOf<Long>()
 
     fun addLecture(
         timeTableId: Long,
@@ -49,10 +52,13 @@ class AddTimeTableCellViewModel @Inject constructor(
         }
 
 
+        val currentTime= System.currentTimeMillis()
+
+        currentAddedIdList.add(currentTime)
 
         timeTableRepository.insertTimeTableCellWithTable(
             timeTableId, TimeTableCellEntity(
-                cellId = System.currentTimeMillis(),
+                cellId = currentTime,
                 name = lectureModel.name ?: "",
                 distinguish = lectureModel.distinguish ?: "",
                 point = lectureModel.point ?: 0f,
@@ -61,5 +67,13 @@ class AddTimeTableCellViewModel @Inject constructor(
                 cellColor = cellColor
             )
         )
+    }
+
+    fun deleteLecture( tableId: Long) = viewModelScope.launch{
+        currentAddedIdList.forEach { id->
+            timeTableRepository.deleteTimeTableCellAtTable(tableId ,id)
+        }
+
+        deleteState.value = true
     }
 }

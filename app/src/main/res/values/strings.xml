@@ -75,6 +75,7 @@
     <string name="time_format">%s:%s</string>
 
     <string name="positive">확인</string>
+    <string name="save">저장</string>
     <string name="negative">취소</string>
     <string name="modify">수정</string>
     <string name="delete">삭제</string>
@@ -128,5 +129,14 @@
     <string name="search">검색</string>
     <string name="please_create_folder">폴더를 생성해주세요🗂</string>
     <string name="notice_list_is_empty">저장된 공지사항이 없습니다!</string>
+    <string name="edit">수정</string>
+
+
+    <string name="folder_memo">memo</string>
+    <string name="folder_notice">notice</string>
+    <string name="folder_time_table">timetable</string>
+    <string name="editTime">"%s %s  수정됨"</string>
+
+
 
 </resources>

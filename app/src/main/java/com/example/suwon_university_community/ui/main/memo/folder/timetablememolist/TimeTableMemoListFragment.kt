@@ -10,7 +10,6 @@ import android.view.Gravity
 import android.view.View
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -19,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.R
@@ -28,12 +28,15 @@ import com.example.suwon_university_community.databinding.FragmentTimeTableMemoL
 import com.example.suwon_university_community.extensions.fromDpToPx
 import com.example.suwon_university_community.model.MemoModel
 import com.example.suwon_university_community.ui.base.BaseFragment
+import com.example.suwon_university_community.ui.main.memo.folder.FolderSelectSheetFragment
 import com.example.suwon_university_community.ui.main.memo.folder.memolist.MemoListFragmentArgs
+import com.example.suwon_university_community.util.SwipeHelperCallback
 import com.example.suwon_university_community.util.provider.ResourceProvider
 import com.example.suwon_university_community.widget.adapter.ModelRecyclerViewAdapter
 import com.example.suwon_university_community.widget.adapter.listener.MemoListAdapterListener
-import com.google.android.material.card.MaterialCardView
 import javax.inject.Inject
+
+//todo 메모도 접을수 있게 하자~
 
 class TimeTableMemoListFragment :
     BaseFragment<TimeTableMemoListViewModel, FragmentTimeTableMemoListBinding>() {
@@ -72,6 +75,11 @@ class TimeTableMemoListFragment :
         callback.remove()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        adapterList.clear()
+        swipeHelperList.clear()
+    }
 
     override fun observeData() =
         viewModel.timetableMemoListStateLiveData.observe(viewLifecycleOwner) {
@@ -99,28 +107,18 @@ class TimeTableMemoListFragment :
     private fun handleLoadingState() = with(binding) {
         progressBar.visibility = View.VISIBLE
         addMemoFloatingButton.isGone = true
-        searchEditText.isGone = true
         linearLayout.isGone = true
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun handleSuccessState(state: TimeTableMemoListState.Success) = with(binding) {
         progressBar.isGone = true
         addMemoFloatingButton.visibility = View.VISIBLE
-        searchEditText.visibility = View.VISIBLE
         linearLayout.visibility = View.VISIBLE
 
-        timeTableNameTextView.text =
-            state.timeTableWithCell.timeTable.tableName.ifEmpty { getString(R.string.time_table) }
-        timeTableSeasonTextView.text = getString(
-            R.string.timetable_season,
-            state.timeTableWithCell.timeTable.year,
-            state.timeTableWithCell.timeTable.semester
-        )
-
         createTimeTableCellList(state.timeTableWithCell.timeTableCellList)
-        submitMemoList(state.memoList)
-
+        submitMemoList(state.memoList.sortedByDescending { it.time })
     }
 
 
@@ -144,10 +142,30 @@ class TimeTableMemoListFragment :
     private fun initBaseMemoRecyclerView() = with(binding) {
         memoTitleTextView.apply {
             getDragListener(null)
+
+            setOnClickListener {
+                if (baseMemoRecyclerView.isVisible) {
+                    baseMemoRecyclerView.isGone = true
+                    setCompoundDrawablesWithIntrinsicBounds(
+                        null,
+                        null,
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_right_24),
+                        null
+                    )
+                } else {
+                    baseMemoRecyclerView.visibility = View.VISIBLE
+                    setCompoundDrawablesWithIntrinsicBounds(
+                        null,
+                        null,
+                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_down_24),
+                        null
+                    )
+                }
+            }
         }
 
-        cardContainer.apply {
-            getDragListener(null)
+        baseMemoRecyclerView.apply {
+
         }
 
         baseMemoRecyclerView.apply {
@@ -168,9 +186,26 @@ class TimeTableMemoListFragment :
                         )
 
                     }
+
+                    override fun selectEdit(model: MemoModel) {
+                        showEditBottomSheet(model)
+                    }
+
+                    override fun selectDelete(model: MemoModel) {
+                        showDeleteAlertDialog(model)
+                    }
                 }
             )
+
+            getDragListener(null)
         }
+
+        val swipeHelperCallback = SwipeHelperCallback()
+
+        ItemTouchHelper(swipeHelperCallback).attachToRecyclerView(baseMemoRecyclerView)
+
+
+        swipeHelperList.add(swipeHelperCallback to baseMemoRecyclerView)
     }
 
 
@@ -197,80 +232,76 @@ class TimeTableMemoListFragment :
     private val adapterList =
         arrayListOf<Pair<ModelRecyclerViewAdapter<MemoModel, TimeTableMemoListViewModel>, Long>>()
 
-    @SuppressLint("InflateParams")
-    private fun createTimeTableCellList(timeTableCellList: List<TimeTableCellEntity>) {
-        if (timeTableCellList.isNullOrEmpty()) {
-            binding.lectureTitleTextView.isGone = true
-            return
-        }
-        binding.lectureTitleTextView.visibility = View.VISIBLE
+    private val swipeHelperList = arrayListOf< Pair<SwipeHelperCallback , RecyclerView>>()
 
+    @SuppressLint("InflateParams", "ClickableViewAccessibility")
+    private fun createTimeTableCellList(timeTableCellList: List<TimeTableCellEntity>) =
+        with(binding) {
 
-        val downArrow = ContextCompat.getDrawable(
-            requireContext(),
-            R.drawable.ic_baseline_keyboard_arrow_down_24
-        )
+            val downArrow = ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.ic_baseline_keyboard_arrow_down_24
+            )
 
-        val rightArrow = ContextCompat.getDrawable(
-            requireContext(),
-            R.drawable.ic_baseline_keyboard_arrow_right_24
-        )
+            val rightArrow = ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.ic_baseline_keyboard_arrow_right_24
+            )
 
-        timeTableCellList.forEach { cell ->
+            timeTableCellList.forEach { cell ->
 
 //            if(adapterList.find { it.second == cell.cellId } != null) return@forEach
 
 
-            val titleTextView = getTitleTextView(cell, downArrow)
-            val memoRecyclerView = getMemoRecyclerView(cell)
+                val titleTextView = getTitleTextView(cell, downArrow)
+                val memoRecyclerView = getMemoRecyclerView(cell)
 
 
-
-
-
-            titleTextView.also {
-                it.getDragListener(cell)
-                it.setOnClickListener {
-                    if (memoRecyclerView.isVisible) {
-                        memoRecyclerView.isGone = true
-                        titleTextView.setCompoundDrawablesWithIntrinsicBounds(
-                            null,
-                            null,
-                            rightArrow,
-                            null
-                        )
-                    } else {
-                        memoRecyclerView.visibility = View.VISIBLE
-                        titleTextView.setCompoundDrawablesWithIntrinsicBounds(
-                            null,
-                            null,
-                            downArrow,
-                            null
-                        )
+                titleTextView.also {
+                    it.getDragListener(cell)
+                    it.setOnClickListener {
+                        if (memoRecyclerView.isVisible) {
+                            memoRecyclerView.isGone = true
+                            titleTextView.setCompoundDrawablesWithIntrinsicBounds(
+                                null,
+                                null,
+                                rightArrow,
+                                null
+                            )
+                        } else {
+                            memoRecyclerView.visibility = View.VISIBLE
+                            titleTextView.setCompoundDrawablesWithIntrinsicBounds(
+                                null,
+                                null,
+                                downArrow,
+                                null
+                            )
+                        }
                     }
                 }
+
+
+
+                memoRecyclerView.getDragListener(cell)
+
+                linearLayout.addView(memoRecyclerView, 0)
+                linearLayout.addView(titleTextView, 0)
             }
 
-
-            val cardView = MaterialCardView(requireContext()).apply {
-                radius = 12.fromDpToPx().toFloat()
-                addView(memoRecyclerView)
-                setCardBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.colorPrimary
-                    )
-                )
-
-                this.getDragListener(cell)
+            touchView.setOnTouchListener { _, _ ->
+                swipeHelperList.forEach {
+                    it.first.removePreviousClamp(it.second)
+                }
+                false
             }
 
-
-
-            binding.linearLayout.addView(cardView, 1)
-            binding.linearLayout.addView(titleTextView, 1)
+            addMemoFloatingButton.setOnTouchListener { _, _ ->
+                swipeHelperList.forEach {
+                    it.first.removePreviousClamp(it.second)
+                }
+                false
+            }
         }
-    }
 
 
     private fun getTitleTextView(
@@ -280,7 +311,9 @@ class TimeTableMemoListFragment :
         TextView(requireContext()).apply {
 
             text = cell.name
-            textSize = 14f
+            textSize = 12f
+
+
             setCompoundDrawablesWithIntrinsicBounds(
                 null,
                 null,
@@ -289,7 +322,7 @@ class TimeTableMemoListFragment :
 
             )
 
-            setPadding(0, 14.fromDpToPx(), 0, 14.fromDpToPx())
+            setPadding(16.fromDpToPx(), 6.fromDpToPx(), 16.fromDpToPx(), 3.fromDpToPx())
 
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -300,8 +333,8 @@ class TimeTableMemoListFragment :
         }
 
 
-    private fun getMemoRecyclerView(cell: TimeTableCellEntity): RecyclerView =
-        RecyclerView(requireContext()).apply {
+    private fun getMemoRecyclerView(cell: TimeTableCellEntity): RecyclerView {
+        val recyclerView = RecyclerView(requireContext()).apply {
             val lp = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -312,8 +345,22 @@ class TimeTableMemoListFragment :
             addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
 
             adapter = createModelAdapter(cell.cellId)
+
+            setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.colorPrimaryVariant
+                )
+            )
         }
 
+        val swipeHelperCallback = SwipeHelperCallback()
+        ItemTouchHelper(swipeHelperCallback).attachToRecyclerView(recyclerView)
+
+        swipeHelperList.add(swipeHelperCallback to recyclerView)
+
+        return recyclerView
+    }
 
     private fun createModelAdapter(cellId: Long): ModelRecyclerViewAdapter<MemoModel, TimeTableMemoListViewModel> {
 
@@ -328,6 +375,14 @@ class TimeTableMemoListFragment :
                             model
                         )
                     )
+                }
+
+                override fun selectEdit(model: MemoModel) {
+                    showEditBottomSheet(model)
+                }
+
+                override fun selectDelete(model: MemoModel) {
+                    showDeleteAlertDialog(model)
                 }
             }
         )
@@ -346,27 +401,64 @@ class TimeTableMemoListFragment :
                 }
 
                 DragEvent.ACTION_DRAG_ENTERED -> {
-                    (view as? CardView)?.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
-                    view.invalidate()
+                    (view as? RecyclerView)?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.colorPrimary
+                        )
+                    )
+                    (view as? TextView)?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.colorPrimaryVariant
+                        )
+                    )
+
+                    view?.invalidate()
                     true
                 }
 
                 DragEvent.ACTION_DRAG_LOCATION -> true
 
                 DragEvent.ACTION_DRAG_EXITED -> {
-                    (view as? CardView)?.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
-                    view.invalidate()
+                    (view as? RecyclerView)?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.colorPrimaryVariant
+                        )
+                    )
+                    (view as? TextView)?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.colorPrimary
+                        )
+                    )
+
+                    view?.invalidate()
                     true
                 }
 
                 DragEvent.ACTION_DROP -> {
-                    val item = event.clipData.getItemAt(0)
 
-                    val dragData = item.text.toString()
+
+                    val item = event.clipData.getItemAt(0) ?: return@setOnDragListener false
+
+                    val dragData = item.text?.toString() ?: return@setOnDragListener false
                     viewModel.replaceMemo(dragData.toLong(), cell?.cellId)
 
-                    (view as? CardView)?.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
-                    view.invalidate()
+                    (view as? RecyclerView)?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.colorPrimaryVariant
+                        )
+                    )
+                    (view as? TextView)?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.colorPrimary
+                        )
+                    )
+                    view?.invalidate()
 
                     //val v = event.localState as ConstraintLayout
                     //val owner = v.parent as ViewGroup
@@ -378,8 +470,20 @@ class TimeTableMemoListFragment :
                 }
 
                 DragEvent.ACTION_DRAG_ENDED -> {
-                    (view as? CardView)?.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
-                    view.invalidate()
+                    (view as? RecyclerView)?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.colorPrimaryVariant
+                        )
+                    )
+                    (view as? TextView)?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.colorPrimary
+                        )
+                    )
+
+                    view?.invalidate()
                     true
                 }
 
@@ -405,6 +509,31 @@ class TimeTableMemoListFragment :
             this.submitList(baseMemoList)
         }
 
+    }
+
+
+    private fun showDeleteAlertDialog(model: MemoModel) {
+        AlertDialog.Builder(requireContext())
+            .setMessage("선택한 메모를 삭제하기겠습니까?")
+            .setPositiveButton("확인") { dialog, _ ->
+                viewModel.deleteMemo(model)
+                dialog.dismiss()
+            }
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun showEditBottomSheet(model: MemoModel) {
+        FolderSelectSheetFragment.newInstance(arguments.folderId) {
+            if (model.memoFolderId != it) {
+                viewModel.changeFolder(model, it)
+            }
+        }.show(
+            requireActivity().supportFragmentManager,
+            FolderSelectSheetFragment.TAG
+        )
     }
 
 

@@ -1,13 +1,15 @@
 package com.example.suwon_university_community.data.repository.memo
 
-import com.example.suwon_university_community.data.entity.memo.*
+import com.example.suwon_university_community.data.entity.memo.BookMarkNoticeEntity
+import com.example.suwon_university_community.data.entity.memo.FolderEntity
+import com.example.suwon_university_community.data.entity.memo.FolderWithMemo
+import com.example.suwon_university_community.data.entity.memo.MemoEntity
+import com.example.suwon_university_community.model.MemoModel
 import kotlinx.coroutines.flow.Flow
 
 interface MemoRepository {
 
     //FolderWith
-    suspend fun getFolderWithNotice( folderId : Long) : FolderWithNotice
-
     suspend fun getFolderWithMemo( folderId: Long) : FolderWithMemo
 
 
@@ -26,6 +28,8 @@ interface MemoRepository {
 
 
     //Bookmark
+    fun getBookMarkList() : Flow<List<BookMarkNoticeEntity>>
+
     suspend fun insertBookMarkNotice(bookMarkNoticeEntity: BookMarkNoticeEntity)
 
     suspend fun deleteBookMarkNotice( id : Long)
@@ -36,4 +40,8 @@ interface MemoRepository {
     suspend fun insertMemo(memoEntity: MemoEntity)
 
     suspend fun updateMemo(memoEntity: MemoEntity)
+
+    suspend fun changeFolder(memoEntity: MemoModel, folderId: Long)
+
+    suspend fun deleteMemo(memoModel: MemoModel)
 }

@@ -1,6 +1,6 @@
 package com.example.suwon_university_community.ui.main.memo.folder.bookmark
 
-import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.net.Uri
 import android.view.View
@@ -9,15 +9,21 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.coroutineScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.databinding.FragmentBookmarkListBinding
+import com.example.suwon_university_community.model.NoticeDateModel
+import com.example.suwon_university_community.model.NoticeModel
 import com.example.suwon_university_community.ui.base.BaseFragment
 import com.example.suwon_university_community.util.provider.ResourceProvider
-import com.example.suwon_university_community.widget.adapter.NoticeAdapter
+import com.example.suwon_university_community.widget.adapter.CustomAdapter.NoticeAdapter
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+
 
 class BookmarkListFragment : BaseFragment<BookmarkListViewModel, FragmentBookmarkListBinding>() {
 
@@ -54,34 +60,42 @@ class BookmarkListFragment : BaseFragment<BookmarkListViewModel, FragmentBookmar
     }
 
 
-    override fun observeData() = viewModel.bookmarkListStateLiveData.observe(viewLifecycleOwner) {
-        when (it) {
-            is BookmarkListState.Loading -> {
-                handleLoadingState()
-            }
-            is BookmarkListState.Success -> {
-                handleSuccessState(it)
-            }
+    override fun observeData() {
+        viewModel.bookmarkListStateLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+                is BookmarkListState.Loading -> {
+                    handleLoadingState()
+                }
+                is BookmarkListState.Success -> {
+                    handleSuccessState()
+                }
 
-            else -> Unit
+                else -> Unit
+            }
+        }
+
+        lifecycle.coroutineScope.launch {
+            viewModel.bookmarks.collect { bookMarkList ->
+                if (bookMarkList.isNullOrEmpty()) {
+                    binding.messageTextView.visibility = View.VISIBLE
+                }
+
+
+                (binding.recyclerView.adapter as? NoticeAdapter)?.run {
+                    binding.messageTextView.isGone = true
+                    addData(toNoticeDateModel(bookMarkList.map { it.toModel() }))
+                }
+            }
         }
     }
 
-    private fun handleLoadingState() {
-
+    private fun handleLoadingState() = with(binding) {
+        progressBar.visibility = View.VISIBLE
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun handleSuccessState(state: BookmarkListState.Success) = with(binding) {
-        if(state.noticeList.isNullOrEmpty()){
-            messageTextView.visibility = View.VISIBLE
-        }else{
-            (recyclerView.adapter as? NoticeAdapter)?.run {
-                messageTextView.isGone = true
-                addData(state.noticeList)
-                notifyDataSetChanged()
-            }
-        }
+
+    private fun handleSuccessState() = with(binding) {
+        progressBar.isGone = true
     }
 
 
@@ -107,9 +121,59 @@ class BookmarkListFragment : BaseFragment<BookmarkListViewModel, FragmentBookmar
                     it.launchUrl(requireContext(), url)
                 }
             }
+
+            onItemLongClickListener = { noticeModel ->
+                showBookMarkAlertDialog(noticeModel)
+            }
+
         }
     }
 
+    private fun showBookMarkAlertDialog(noticeModel: NoticeModel) {
+        AlertDialog.Builder(requireContext())
+            .setMessage("해당 공지를 북마크에서 제거하시겠습니까?")
+            .setPositiveButton("확인"){ dialog, _ ->
+                viewModel.deleteBookmark(noticeModel)
+                dialog.dismiss()
+            }.setNegativeButton("취소"){ dialog, _ ->
+                dialog.dismiss()
+            }.show()
+    }
+
+
+
+
+    private fun toNoticeDateModel(noticeModelList: List<NoticeModel>): MutableList<NoticeDateModel> {
+        val noticeDateModel = mutableListOf<NoticeDateModel>()
+
+        val dateSet = mutableSetOf<Triple<Int, Int, Int>>()
+        noticeModelList.forEach {
+            dateSet.add(it.date)
+        }
+
+        val sortedData = dateSet.sortedWith(
+            compareByDescending<Triple<Int, Int, Int>> { it.first }
+                .thenByDescending { it.second }
+                .thenByDescending { it.third }
+        )
+
+        sortedData.forEach { sortedDate ->
+            val noticeList = mutableListOf<NoticeModel>()
+
+            noticeModelList.forEach { noticeDate ->
+                if (sortedDate == noticeDate.date) {
+                    noticeList.add(noticeDate)
+                }
+            }
+
+            noticeDateModel.add(
+                NoticeDateModel(
+                    sortedDate,
+                    noticeList.sortedBy { it.category })
+            )
+        }
+        return noticeDateModel
+    }
 
 
 }

@@ -1,7 +1,11 @@
 package com.example.suwon_university_community.data.repository.memo
 
 import com.example.suwon_university_community.data.db.dao.MemoDao
-import com.example.suwon_university_community.data.entity.memo.*
+import com.example.suwon_university_community.data.entity.memo.BookMarkNoticeEntity
+import com.example.suwon_university_community.data.entity.memo.FolderEntity
+import com.example.suwon_university_community.data.entity.memo.FolderWithMemo
+import com.example.suwon_university_community.data.entity.memo.MemoEntity
+import com.example.suwon_university_community.model.MemoModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -15,11 +19,6 @@ class DefaultMemoRepository @Inject constructor(
 ) : MemoRepository {
 
     //FolderWith
-    override suspend fun getFolderWithNotice(folderId: Long): FolderWithNotice =
-        withContext(ioDispatcher) {
-            memoDao.getFolderWithNotice(folderId)
-        }
-
     override suspend fun getFolderWithMemo(folderId: Long): FolderWithMemo =
         withContext(ioDispatcher) {
             memoDao.getFolderWithMemo(folderId)
@@ -52,8 +51,16 @@ class DefaultMemoRepository @Inject constructor(
     }
 
     override suspend fun deleteFolder(id: Long) = withContext(ioDispatcher) {
+        val memos = memoDao.getFolderWithMemo(id).memos
+
+        memos.forEach { memoDao.deleteMemo(it.memoId) }
         memoDao.deleteFolder(id)
     }
+
+    override fun getBookMarkList(): Flow<List<BookMarkNoticeEntity>> =
+        memoDao.getBookMarkList()
+            .distinctUntilChanged()
+            .flowOn(ioDispatcher)
 
 
     //Bookmark
@@ -69,6 +76,11 @@ class DefaultMemoRepository @Inject constructor(
 
     override suspend fun deleteBookMarkNotice(id: Long) = withContext(ioDispatcher) {
         memoDao.deleteBookMarkNotice(id)
+
+        val noticeFolder = getFolder(1)
+        memoDao.updateFolder(
+            noticeFolder.copy(count = noticeFolder.count -1)
+        )
     }
 
     override suspend fun getMemo(id: Long): MemoEntity  = withContext(ioDispatcher){
@@ -87,5 +99,31 @@ class DefaultMemoRepository @Inject constructor(
 
     override suspend fun updateMemo(memoEntity: MemoEntity) = withContext(ioDispatcher) {
         memoDao.updateMemo(memoEntity)
+    }
+
+    override suspend fun changeFolder(memoModel: MemoModel, folderId: Long) {
+        memoDao.updateMemo(MemoEntity(
+            memoId = memoModel.id,
+            title = memoModel.title,
+            memo = memoModel.memo,
+            time = memoModel.time,
+            memoFolderId = folderId,
+            timeTableCellId = memoModel.timeTableCellId
+        ))
+
+        val currentFolder = getFolder(memoModel.memoFolderId)
+        val changeFolder  = getFolder(folderId)
+
+        memoDao.updateFolder(currentFolder.copy(count = currentFolder.count-1))
+        memoDao.updateFolder(changeFolder.copy(count = changeFolder.count+1))
+    }
+
+    override suspend fun deleteMemo(memoModel: MemoModel) {
+        memoDao.deleteMemo(memoModel.id)
+
+        val memoFolder = memoDao.getFolder(memoModel.memoFolderId)
+        memoDao.updateFolder(
+            memoFolder.copy(count = memoFolder.count-1)
+        )
     }
 }

@@ -34,7 +34,9 @@ class ModelRecyclerViewAdapter<M : Model, VM : BaseViewModel>(
         }
     }
 
-    override fun getItemCount(): Int = modelList.size
+    override fun getItemCount(): Int {
+        return modelList.size
+    }
 
     override fun getItemViewType(position: Int): Int = modelList[position].type.ordinal
 
@@ -46,4 +48,8 @@ class ModelRecyclerViewAdapter<M : Model, VM : BaseViewModel>(
         super.submitList(list)
     }
 
+    fun removeAll() {
+        modelList = listOf()
+        super.submitList(listOf())
+    }
 }

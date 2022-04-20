@@ -1,7 +1,10 @@
 package com.example.suwon_university_community.data.db.dao
 
 import androidx.room.*
-import com.example.suwon_university_community.data.entity.memo.*
+import com.example.suwon_university_community.data.entity.memo.BookMarkNoticeEntity
+import com.example.suwon_university_community.data.entity.memo.FolderEntity
+import com.example.suwon_university_community.data.entity.memo.FolderWithMemo
+import com.example.suwon_university_community.data.entity.memo.MemoEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -9,9 +12,6 @@ interface MemoDao {
 
 
     //FolderWith
-    @Transaction
-    @Query("SELECT * FROM FolderEntity WHERE folderId=:folderId")
-    suspend fun getFolderWithNotice( folderId: Long) : FolderWithNotice
 
     @Transaction
     @Query("SELECT * FROM folderentity WHERE folderId=:folderId" )
@@ -24,6 +24,9 @@ interface MemoDao {
 
     @Query("SELECT * FROM folderentity WHERE folderId=:id")
     suspend fun getFolder(id : Long) : FolderEntity
+
+    @Query("SELECT * FROM folderentity WHERE timeTableId=:timeTableId")
+    suspend fun getFolderList(timeTableId : Long) : List<FolderEntity>
 
     @Query("SELECT COUNT(folderId) FROM folderentity")
     suspend fun getFolderCount (): Int?
@@ -38,6 +41,9 @@ interface MemoDao {
     suspend fun deleteFolder(id : Long)
 
     //Bookmark
+    @Query("SELECT * FROM BookMarkNoticeEntity")
+    fun getBookMarkList() : Flow<List<BookMarkNoticeEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBookMarkNotice(bookMarkNoticeEntity: BookMarkNoticeEntity)
 
@@ -49,6 +55,9 @@ interface MemoDao {
     //Memo
     @Query("SELECT * FROM memoentity WHERE memoId=:id" )
     suspend fun getMemo(id: Long) : MemoEntity
+
+    @Query("SELECT * FROM memoentity WHERE timeTableCellId=:timeTableCellId" )
+    suspend fun getMemoList(timeTableCellId : Long) : List<MemoEntity>
 
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

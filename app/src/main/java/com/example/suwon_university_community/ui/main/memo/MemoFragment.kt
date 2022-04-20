@@ -1,5 +1,6 @@
 package com.example.suwon_university_community.ui.main.memo
 
+import android.os.Bundle
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
@@ -22,6 +23,10 @@ class MemoFragment : BaseFragment<MemoViewModel, FragmentMemoBinding>() {
 
     override fun observeData() {}
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
     override fun initViews() {
         val navigationController =
             ( childFragmentManager.findFragmentById(R.id.navigationContainerView) as NavHostFragment).navController
@@ -35,4 +40,7 @@ class MemoFragment : BaseFragment<MemoViewModel, FragmentMemoBinding>() {
 
         const val TAG = "MemoFragment"
     }
+
+
+
 }

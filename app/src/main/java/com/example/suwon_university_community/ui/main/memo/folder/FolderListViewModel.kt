@@ -47,4 +47,22 @@ class FolderListViewModel @Inject constructor(
             timeTableCountLiveData.value = model to it
         }
     }
+
+    fun deleteFolder(model: FolderModel) = viewModelScope.launch {
+        memoRepository.deleteFolder(model.id)
+    }
+
+    fun changeFolderName(model: FolderModel, name: String) = viewModelScope.launch{
+        val updateFolder =
+            FolderEntity(
+                folderId = model.id,
+                name = name,
+                count = model.count,
+                category = model.category,
+                isDefault = model.isDefault,
+                timeTableId = model.timeTableId
+            )
+
+        memoRepository.updateFolder(updateFolder)
+    }
 }

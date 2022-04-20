@@ -7,7 +7,7 @@ import com.example.suwon_university_community.ui.main.home.notice.NoticeCategory
 
 @Entity
 data class NoticeEntity(
-    @PrimaryKey(autoGenerate = true) val id : Long = 0,
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
     val writer: String,
     val date: String,
@@ -15,6 +15,7 @@ data class NoticeEntity(
     val url: String
 ) {
     fun toModel() = NoticeModel(
+        id = id,
         title = title,
         writer = writer,
         date = date.toDate(),

@@ -1,5 +1,7 @@
 package com.example.suwon_university_community.ui.main.memo.folder.memolist
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -8,11 +10,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.databinding.FragmentMemoListBinding
 import com.example.suwon_university_community.model.MemoModel
 import com.example.suwon_university_community.ui.base.BaseFragment
+import com.example.suwon_university_community.ui.main.memo.folder.FolderSelectSheetFragment
+import com.example.suwon_university_community.util.SwipeHelperCallback
 import com.example.suwon_university_community.util.provider.ResourceProvider
 import com.example.suwon_university_community.widget.adapter.ModelRecyclerViewAdapter
 import com.example.suwon_university_community.widget.adapter.listener.MemoListAdapterListener
@@ -48,6 +54,13 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
+    override fun onDestroyView() {
+        (binding.recyclerView.adapter as ModelRecyclerViewAdapter<*, *>).run {
+            this.removeAll()
+        }
+        super.onDestroyView()
+    }
+
 
     override fun onDetach() {
         super.onDetach()
@@ -72,7 +85,6 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
     private fun handleLoadingState() = with(binding) {
         progressBar.visibility = View.VISIBLE
         addMemoFloatingButton.isGone = true
-        searchEditText.isGone = true
         linearLayout.isGone = true
     }
 
@@ -80,19 +92,12 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
     private fun handleSuccessState(state: MemoListState.Success) = with((binding)) {
         progressBar.isGone = true
         addMemoFloatingButton.visibility = View.VISIBLE
-        searchEditText.visibility = View.VISIBLE
         linearLayout.visibility = View.VISIBLE
 
-        if(state.memoList.isNullOrEmpty().not()){
-            (recyclerView.adapter as ModelRecyclerViewAdapter<*,*>).run {
-                this.submitList(state.memoList)
-            }
 
-            memoTitleTextView.visibility =View.VISIBLE
-        }else{
-            memoTitleTextView.isGone= true
+        (recyclerView.adapter as ModelRecyclerViewAdapter<*, *>).run {
+            this.submitList(state.memoList)
         }
-
     }
 
     override fun initViews() {
@@ -102,9 +107,11 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
     }
 
 
-    private fun initRecyclerView() {
-        binding.recyclerView.apply {
+    @SuppressLint("ClickableViewAccessibility")
+    private fun initRecyclerView() =with(binding){
+        recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+            addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
             adapter = ModelRecyclerViewAdapter<MemoModel, MemoListViewModel>(
                 modelList = listOf(),
                 viewModel,
@@ -117,8 +124,30 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
                             )
                         )
                     }
+
+                    override fun selectEdit(model: MemoModel) {
+                        showEditBottomSheet(model)
+                    }
+
+                    override fun selectDelete(model: MemoModel) {
+                        showDeleteAlertDialog(model)
+                    }
                 }
             )
+        }
+
+        val swipeHelperCallback = SwipeHelperCallback()
+
+        ItemTouchHelper(swipeHelperCallback).attachToRecyclerView(recyclerView)
+
+        touchView.setOnTouchListener { _, _ ->
+            swipeHelperCallback.removePreviousClamp(recyclerView)
+                 false
+        }
+
+        addMemoFloatingButton.setOnTouchListener { _, _ ->
+            swipeHelperCallback.removePreviousClamp(recyclerView)
+                 false
         }
     }
 
@@ -134,5 +163,31 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
                 )
             )
         }
+    }
+
+
+
+    private fun showDeleteAlertDialog(model: MemoModel) {
+        AlertDialog.Builder(requireContext())
+            .setMessage("선택한 메모를 삭제하기겠습니까?")
+            .setPositiveButton("확인") { dialog, _ ->
+                viewModel.deleteMemo(model)
+                dialog.dismiss()
+            }
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun showEditBottomSheet(model: MemoModel) {
+        FolderSelectSheetFragment.newInstance( arguments.folderId){
+            if(model.memoFolderId != it){
+                viewModel.changeFolder(model, it)
+            }
+        }.show(
+            requireActivity().supportFragmentManager,
+            FolderSelectSheetFragment.TAG
+        )
     }
 }

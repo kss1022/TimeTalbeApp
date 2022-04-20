@@ -16,7 +16,7 @@ import com.example.suwon_university_community.databinding.FragmentNoticeListBind
 import com.example.suwon_university_community.model.NoticeModel
 import com.example.suwon_university_community.ui.base.BaseFragment
 import com.example.suwon_university_community.util.provider.ResourceProvider
-import com.example.suwon_university_community.widget.adapter.NoticeAdapter
+import com.example.suwon_university_community.widget.adapter.CustomAdapter.NoticeAdapter
 import javax.inject.Inject
 
 class NoticeListFragment : BaseFragment<NoticeViewModel, FragmentNoticeListBinding>() {

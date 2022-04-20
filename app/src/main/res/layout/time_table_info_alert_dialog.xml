@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingHorizontal="24dp"
     tools:layout_width="300dp">
@@ -72,23 +72,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:textColor="@color/text_gray"
+        android:paddingBottom="30dp"
         tools:text="장소" />
-
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/memo"
-        android:textSize="14sp"
-        android:textStyle="bold" />
-
-
-    <EditText
-        android:id="@+id/memoEditText"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="@null"
-        android:hint="@string/add_memo_is_empty" />
 
 </LinearLayout>
