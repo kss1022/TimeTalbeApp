@@ -28,9 +28,7 @@ import com.example.suwon_university_community.widget.adapter.listener.TimeTableL
 import javax.inject.Inject
 
 
-// TODO: 메인 테이블도 삭제할수 있도록변경한다 시간표 리스트의 버튼을 수정버튼 한개로만 두고
-//   수정 버튼을 클릭한경우 AletDialog 시간표의 정보를 보여준다.
-//   이제 오른쪽위에 설정 버튼을 두고 수정하거나 삭제할수 있도록한다
+
 
 class TimeTableListActivity : BaseActivity<TimeTableListViewModel, ActivityTimeTableListBinding>() {
 

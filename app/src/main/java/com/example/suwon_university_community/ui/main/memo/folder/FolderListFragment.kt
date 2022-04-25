@@ -14,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -32,10 +33,15 @@ import com.example.suwon_university_community.util.SwipeHelperCallback
 import com.example.suwon_university_community.util.provider.ResourceProvider
 import com.example.suwon_university_community.widget.adapter.ModelRecyclerViewAdapter
 import com.example.suwon_university_community.widget.adapter.listener.FolderListAdapterListener
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+
+// TODO: 폴더 수정을 할떄 폴더 색상도 변경 가능하도록 해준다.
+//  FolderEntity,Model Color  추가, ViewHodler에서 색상 변경.
+//  수정시 색상도 같이 선택할수 있도록 해준다.
 
 class FolderListFragment : BaseFragment<FolderListViewModel, FragmentFolderListBinding>() {
 
@@ -232,14 +238,22 @@ class FolderListFragment : BaseFragment<FolderListViewModel, FragmentFolderListB
         ItemTouchHelper(memoSwipeHelper).attachToRecyclerView(memoRecyclerView)
 
         touchView.setOnTouchListener { _, _ ->
-            timeTableSwipeHelper.removePreviousClamp(timeTableMemoRecyclerView)
-            memoSwipeHelper.removePreviousClamp(memoRecyclerView)
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                timeTableSwipeHelper.removePreviousClamp(timeTableMemoRecyclerView)
+                memoSwipeHelper.removePreviousClamp(memoRecyclerView)
+            }
+
             false
         }
 
         addFloatingButton.setOnTouchListener { _, _ ->
-            timeTableSwipeHelper.removePreviousClamp(timeTableMemoRecyclerView)
-            memoSwipeHelper.removePreviousClamp(memoRecyclerView)
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                timeTableSwipeHelper.removePreviousClamp(timeTableMemoRecyclerView)
+                memoSwipeHelper.removePreviousClamp(memoRecyclerView)
+            }
+
             false
         }
     }
@@ -368,6 +382,7 @@ class FolderListFragment : BaseFragment<FolderListViewModel, FragmentFolderListB
         memoTitleTextView.setOnClickListener {
             if (memoRecyclerView.isVisible) {
                 memoRecyclerView.isGone = true
+                memoDefaultFolder.baseFolderContainer.isGone = true
                 val downArrow = ContextCompat.getDrawable(
                     requireContext(),
                     R.drawable.ic_baseline_keyboard_arrow_right_24
@@ -380,6 +395,7 @@ class FolderListFragment : BaseFragment<FolderListViewModel, FragmentFolderListB
                 )
             } else {
                 memoRecyclerView.visibility = View.VISIBLE
+                memoDefaultFolder.baseFolderContainer.visibility = View.VISIBLE
                 val rightArrow = ContextCompat.getDrawable(
                     requireContext(),
                     R.drawable.ic_baseline_keyboard_arrow_down_24

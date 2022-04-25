@@ -137,6 +137,7 @@
     <string name="folder_time_table">timetable</string>
     <string name="editTime">"%s %s  수정됨"</string>
 
+    <string name="add">추가</string>
 
 
 </resources>

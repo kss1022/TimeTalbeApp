@@ -5,6 +5,7 @@ import androidx.annotation.ColorRes
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.example.suwon_university_community.R
 import com.example.suwon_university_community.model.TimeTableCellModel
 import com.example.suwon_university_community.util.converter.RoomTypeConverter
 import kotlinx.parcelize.Parcelize
@@ -19,7 +20,8 @@ data class TimeTableCellEntity(
     val point : Float,
     val locationAndTimeList: List<TimeTableLocationAndTime>,
     val professorName: String,
-    @ColorRes val cellColor : Int
+    @ColorRes val cellColor : Int = R.color.colorPrimary,
+    @ColorRes val textColor : Int = R.color.colorPrimaryVariant
 ) : Parcelable {
-    fun toModel() = TimeTableCellModel(cellId, name, locationAndTimeList, professorName, cellColor)
+    fun toModel() = TimeTableCellModel(cellId, name, locationAndTimeList, professorName, cellColor, textColor)
 }

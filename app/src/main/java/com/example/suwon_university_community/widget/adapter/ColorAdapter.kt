@@ -1,5 +1,6 @@
 package com.example.suwon_university_community.widget.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -7,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.databinding.ViewholderColorBinding
 
 class ColorAdapter(
-    private val colorIdList: List<Int>,
+    private var colorIdList: List<Int>,
     private val itemCLickListener: (Int) -> Unit
 ) : RecyclerView.Adapter<ColorAdapter.ColorViewHolder>() {
 
@@ -41,5 +42,11 @@ class ColorAdapter(
                 setBackgroundColor(ContextCompat.getColor(context, colorId))
             }
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun submitColor(colorIdList: List<Int>){
+        this.colorIdList = colorIdList
+        notifyDataSetChanged()
     }
 }

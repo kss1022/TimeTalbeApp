@@ -33,11 +33,30 @@
             android:layout_marginEnd="34dp"
             android:src="@drawable/ic_baseline_delete_24"
             app:layout_constraintBottom_toBottomOf="@id/cancelButton"
-            app:layout_constraintEnd_toStartOf="@id/colorButton"
+            app:layout_constraintEnd_toStartOf="@id/textColorButton"
             app:layout_constraintTop_toTopOf="@id/cancelButton" />
 
+
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/colorButton"
+            android:id="@+id/textColorButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginEnd="34dp"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
+            android:elevation="12dp"
+            app:cornerRadius="50dp"
+            app:layout_constraintBottom_toBottomOf="@id/confirmButton"
+            app:layout_constraintDimensionRatio="W,1:1"
+            app:layout_constraintEnd_toStartOf="@id/tableColorButton"
+            app:layout_constraintTop_toTopOf="@id/confirmButton"
+            app:rippleColor="@null" />
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/tableColorButton"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginEnd="34dp"

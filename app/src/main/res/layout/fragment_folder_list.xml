@@ -9,12 +9,12 @@
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/colorPrimary"
         android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/colorPrimary">
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -45,9 +45,9 @@
                     app:drawableEndCompat="@drawable/ic_baseline_keyboard_arrow_down_24" />
 
 
-               <include
-                   android:id="@+id/noticeDefaultFolder"
-                   layout="@layout/layout_folder" />
+                <include
+                    android:id="@+id/noticeDefaultFolder"
+                    layout="@layout/layout_folder" />
 
                 <TextView
                     android:id="@+id/timeTableTitleTextView"
@@ -66,21 +66,20 @@
                     android:id="@+id/timeTableMemoRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimaryVariant"
-                    tools:listitem="@layout/viewholder_folder" />
+                    android:background="@color/colorPrimaryVariant" />
 
                 <TextView
                     android:id="@+id/timeTableMessageTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:background="@color/colorPrimaryVariant"
                     android:gravity="center"
                     android:paddingTop="16dp"
                     android:paddingBottom="16dp"
                     android:text="@string/please_create_folder"
-                    android:background="@color/colorPrimaryVariant"
                     android:visibility="gone"
-                    tools:visibility="visible"/>
+                    tools:visibility="visible" />
 
 
                 <TextView
@@ -104,8 +103,7 @@
                     android:id="@+id/memoRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimaryVariant"
-                    tools:listitem="@layout/viewholder_folder" />
+                    android:background="@color/colorPrimaryVariant" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
@@ -125,9 +123,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/colorPrimary"
+        android:backgroundTint="@color/notice_category"
+        android:contentDescription="@string/add"
         android:focusable="true"
-        android:tint="@color/colorPrimaryVariant"
         android:visibility="gone"
         app:borderWidth="@null"
         app:fabSize="mini"
@@ -136,6 +134,7 @@
         app:layout_constraintStart_toStartOf="@+id/addFloatingButton"
         app:rippleColor="@null"
         app:srcCompat="@drawable/ic_baseline_edit_24"
+        app:tint="@color/colorPrimaryVariant"
         tools:visibility="visible" />
 
 
@@ -144,9 +143,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/colorPrimary"
+        android:backgroundTint="@color/notice_category"
+        android:contentDescription="@string/add"
         android:focusable="true"
-        android:tint="@color/colorPrimaryVariant"
         android:visibility="gone"
         app:borderWidth="@null"
         app:fabSize="mini"
@@ -155,6 +154,7 @@
         app:layout_constraintStart_toStartOf="@+id/addFloatingButton"
         app:rippleColor="@null"
         app:srcCompat="@drawable/ic_outline_folder_24"
+        app:tint="@color/colorPrimaryVariant"
         tools:visibility="visible" />
 
 
@@ -164,14 +164,15 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
-        android:backgroundTint="@color/colorPrimary"
+        android:backgroundTint="@color/notice_category"
+        android:contentDescription="@string/add"
         android:focusable="true"
-        android:tint="@color/colorPrimaryVariant"
         app:borderWidth="@null"
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_add_24" />
+        app:srcCompat="@drawable/ic_baseline_add_24"
+        app:tint="@color/colorPrimaryVariant" />
 
 
     <View
@@ -191,8 +192,7 @@
         android:layout_marginBottom="15dp"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/addFloatingButton"
-        app:layout_constraintEnd_toEndOf="@id/addFloatingButton"
-        tools:visibility="visible">
+        app:layout_constraintEnd_toEndOf="@id/addFloatingButton">
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -60,7 +60,6 @@
     </fragment>
 
 
-
     <fragment
         android:id="@+id/timeTableMemoListFragment"
         android:name="com.example.suwon_university_community.ui.main.memo.folder.timetablememolist.TimeTableMemoListFragment"
@@ -84,9 +83,11 @@
     <fragment
         android:id="@+id/editMemoFragment"
         android:name="com.example.suwon_university_community.ui.main.memo.folder.editmemo.EditMemoFragment"
+        android:label=""
         tools:layout="@layout/fragment_edit_memo">
 
-        <argument android:name="memo"
-            app:argType="com.example.suwon_university_community.model.MemoModel"/>
+        <argument
+            android:name="memo"
+            app:argType="com.example.suwon_university_community.model.MemoModel" />
     </fragment>
 </navigation>

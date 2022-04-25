@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-// TODO: Container가 닫히거나 열린 상태값을 Preference에 저장한다.
 
 class FolderListViewModel @Inject constructor(
     private val memoRepository: MemoRepository,

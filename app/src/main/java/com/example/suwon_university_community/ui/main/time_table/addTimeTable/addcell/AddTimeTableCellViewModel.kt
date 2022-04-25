@@ -44,10 +44,11 @@ class AddTimeTableCellViewModel @Inject constructor(
                 }
             }
 
-            if(colorList.isEmpty()){
-                cellColor = TableColorCategory.values().random().colorId
+            cellColor = if(colorList.isEmpty()){
+                TableColorCategory.values().random().colorId
             }else{
-                cellColor = colorList.first().colorId
+                //cellColor = colorList[Random.nextInt(colorList.size)].colorId
+                colorList.first().colorId
             }
         }
 

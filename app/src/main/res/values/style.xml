@@ -25,7 +25,7 @@
     <style name="Widget.Suwon_University_Community.BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowSoftInputMode">adjustResize|stateVisible</item>
+        <item name="android:windowSoftInputMode">adjustResize|stateAlwaysHidden</item>
         <item name="android:windowIsFloating">false</item>
     </style>
 

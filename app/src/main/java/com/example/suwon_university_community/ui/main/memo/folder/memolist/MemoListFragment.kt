@@ -8,6 +8,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -22,6 +23,8 @@ import com.example.suwon_university_community.util.SwipeHelperCallback
 import com.example.suwon_university_community.util.provider.ResourceProvider
 import com.example.suwon_university_community.widget.adapter.ModelRecyclerViewAdapter
 import com.example.suwon_university_community.widget.adapter.listener.MemoListAdapterListener
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding>() {
@@ -108,7 +111,7 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
 
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun initRecyclerView() =with(binding){
+    private fun initRecyclerView() = with(binding) {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
             addItemDecoration(DividerItemDecoration(requireContext(), RecyclerView.VERTICAL))
@@ -141,13 +144,19 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
         ItemTouchHelper(swipeHelperCallback).attachToRecyclerView(recyclerView)
 
         touchView.setOnTouchListener { _, _ ->
-            swipeHelperCallback.removePreviousClamp(recyclerView)
-                 false
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                swipeHelperCallback.removePreviousClamp(recyclerView)
+            }
+            false
         }
 
         addMemoFloatingButton.setOnTouchListener { _, _ ->
-            swipeHelperCallback.removePreviousClamp(recyclerView)
-                 false
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                swipeHelperCallback.removePreviousClamp(recyclerView)
+            }
+            false
         }
     }
 
@@ -166,7 +175,6 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
     }
 
 
-
     private fun showDeleteAlertDialog(model: MemoModel) {
         AlertDialog.Builder(requireContext())
             .setMessage("선택한 메모를 삭제하기겠습니까?")
@@ -181,8 +189,8 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
     }
 
     private fun showEditBottomSheet(model: MemoModel) {
-        FolderSelectSheetFragment.newInstance( arguments.folderId){
-            if(model.memoFolderId != it){
+        FolderSelectSheetFragment.newInstance(arguments.folderId) {
+            if (model.memoFolderId != it) {
                 viewModel.changeFolder(model, it)
             }
         }.show(

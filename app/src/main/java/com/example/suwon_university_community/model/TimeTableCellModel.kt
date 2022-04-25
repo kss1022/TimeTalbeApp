@@ -9,5 +9,6 @@ data class TimeTableCellModel(
     val name: String,
     val locationAndTimeList: List<TimeTableLocationAndTime>,
     val professorName: String,
-    @ColorRes val cellColor : Int = R.color.gray
+    @ColorRes val cellColor : Int = R.color.colorPrimary,
+    @ColorRes val textColor : Int = R.color.colorPrimaryVariant
 )

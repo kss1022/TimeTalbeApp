@@ -430,7 +430,7 @@ class TimeTableFragment : BaseFragment<TimeTableViewModel, FragmentTimeTableBind
         time: Pair<Int, Int>
     ): Button = Button(context).apply {
         text = getString(R.string.timetable_cell_title, model.name, location)
-        setTextColor(ContextCompat.getColor(context, R.color.white))
+        setTextColor(ContextCompat.getColor(context, model.textColor))
         typeface = Typeface.DEFAULT_BOLD
         textSize = 10f
         gravity = Gravity.START

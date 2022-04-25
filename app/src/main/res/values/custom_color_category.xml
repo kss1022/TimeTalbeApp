@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--700-->
+    <color name="materialColor700_1">#E53935</color>
+    <color name="materialColor700_2">#D81B60</color>
+    <color name="materialColor700_3">#8E24AA</color>
+    <color name="materialColor700_4">#5E35B1</color>
+    <color name="materialColor700_5">#3949AB</color>
+    <color name="materialColor700_6">#1E88E5</color>
+    <color name="materialColor700_7">#039BE5</color>
+    <color name="materialColor700_8">#00ACC1</color>
+    <color name="materialColor700_9">#00897B</color>
+    <color name="materialColor700_10">#43A047</color>
+    <color name="materialColor700_11">#7CB342</color>
+    <color name="materialColor700_12">#C0CA33</color>
+    <color name="materialColor700_13">#FDD835</color>
+    <color name="materialColor700_14">#FFB300</color>
+    <color name="materialColor700_15">#FB8C00</color>
+    <color name="materialColor700_16">#F4511E</color>
+
+    <!--700-->
+    <color name="materialColorA100_1">#FF8A80</color>
+    <color name="materialColorA100_2">#FF80AB</color>
+    <color name="materialColorA100_3">#EA80FC</color>
+    <color name="materialColorA100_4">#B388FF</color>
+    <color name="materialColorA100_5">#8C9EFF</color>
+    <color name="materialColorA100_6">#82B1FF</color>
+    <color name="materialColorA100_7">#80D8FF</color>
+    <color name="materialColorA100_8">#84FFFF</color>
+    <color name="materialColorA100_9">#A7FFEB</color>
+    <color name="materialColorA100_10">#B9F6CA</color>
+    <color name="materialColorA100_11">#CCFF90</color>
+    <color name="materialColorA100_12">#F4FF81</color>
+    <color name="materialColorA100_13">#FFFF8D</color>
+    <color name="materialColorA100_14">#FFE57F</color>
+    <color name="materialColorA100_15">#FFD180</color>
+    <color name="materialColorA100_16">#FF9E80</color>
+
+
+</resources>

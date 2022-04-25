@@ -12,6 +12,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
+import androidx.core.view.isGone
 import androidx.core.view.size
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
@@ -19,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.suwon_university_community.R
 import com.example.suwon_university_community.data.entity.timetable.*
 import com.example.suwon_university_community.databinding.TimeTableBottomSheetBinding
+import com.example.suwon_university_community.ui.main.time_table.customcolor.CustomTableColorCategory700
+import com.example.suwon_university_community.ui.main.time_table.customcolor.CustomTableColorCategoryA100
 import com.example.suwon_university_community.widget.adapter.ColorAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
@@ -35,7 +38,8 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
         arrayListOf<Triple<TimeTableLocationAndTime, Int, Int>>()
 
 
-    private var baseColor = -1
+    private var baseTableColor = -1
+    private var baseTextColor = R.color.colorPrimaryVariant
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setStyle(
@@ -85,11 +89,19 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
     private fun initViews() = with(binding) {
         lectureNameEditText.setText(editTimeTableCell.name)
         professorNameEditText.setText(editTimeTableCell.professorName)
-        baseColor =  editTimeTableCell.cellColor
-        colorButton.setBackgroundColor(
+        baseTableColor = editTimeTableCell.cellColor
+        baseTextColor = editTimeTableCell.textColor
+
+        tableColorButton.setBackgroundColor(
             ContextCompat.getColor(
                 requireContext(),
                 editTimeTableCell.cellColor
+            )
+        )
+        textColorButton.setBackgroundColor(
+            ContextCompat.getColor(
+                requireContext(),
+                editTimeTableCell.textColor
             )
         )
 
@@ -119,7 +131,11 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
         }
 
 
-        colorButton.setOnClickListener {
+        textColorButton.setOnClickListener{
+            showTextColorAlertDialog()
+        }
+
+        tableColorButton.setOnClickListener {
             showColorAlertDialog()
         }
 
@@ -134,12 +150,14 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
                         locationAndTimeList = addedLocationAndTimeViewList.map { it.first }
                             .sortedBy { it.day }.sortedBy { it.time.first },
                         professorName = professorNameEditText.text.toString(),
-                        cellColor = baseColor
+                        cellColor = baseTableColor,
+                        textColor = baseTextColor
                     ), EDIT
                 )
 
             } else {
-                if (baseColor == -1) {
+                //새로운 강의 추가 - 색상을 고르지 않은 경우
+                if (baseTableColor == -1) {
 
                     val colorList = TableColorCategory.values().toMutableList()
 
@@ -152,9 +170,10 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
                     }
 
                     if (colorList.isEmpty()) {
-                        baseColor = TableColorCategory.values().random().colorId
+                        baseTableColor = TableColorCategory.values().random().colorId
                     } else {
-                        baseColor = colorList.first().colorId
+                        //baseTableColor = colorList[Random.nextInt(colorList.size)].colorId
+                        baseTableColor = colorList.first().colorId
                     }
                 }
 
@@ -166,7 +185,8 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
                         point = 0f,
                         locationAndTimeList = addedLocationAndTimeViewList.map { it.first },
                         professorName = professorNameEditText.text.toString(),
-                        cellColor = baseColor
+                        cellColor = baseTableColor,
+                        textColor =  baseTextColor
                     ), NEW
                 )
             }
@@ -192,26 +212,82 @@ class TimeTableBottomSheetFragment() : BottomSheetDialogFragment() {
     }
 
 
+
+
     private fun showColorAlertDialog() {
         val alertDialog = AlertDialog.Builder(requireContext()).create()
 
 
+        val colorList = mutableListOf<List<Int >>()
+        var position = 0
+
+        colorList.add(TableColorCategory.values().map { it.colorId })
+        colorList.add(CustomTableColorCategory700.values().map { it.colorId })
+        colorList.add(CustomTableColorCategoryA100.values().map { it.colorId })
+
+
+        val colorAdapter = ColorAdapter(colorList[position]) {
+            Log.e("Color Id", "$it")
+            binding.tableColorButton.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    it
+                )
+            )
+            baseTableColor = it
+            alertDialog.dismiss()
+        }
+
         val colorView = LayoutInflater.from(requireContext())
             .inflate(R.layout.time_table_color_alert_dialog, null).apply {
                 this.findViewById<RecyclerView>(R.id.colorRecyclerView).apply {
-                    val colorList = TableColorCategory.values().map { it.colorId }
-                    adapter = ColorAdapter( colorList) {
-                        Log.e("Color Id", "$it")
-                        binding.colorButton.setBackgroundColor(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                it
-                            )
-                        )
-                        baseColor = it
-                        alertDialog.dismiss()
-                    }
+                    adapter = colorAdapter
                 }
+
+                this.findViewById<ImageView>(R.id.rightButton).setOnClickListener {
+                    if(position == colorList.size-1) position = 0 else position++
+                    colorAdapter.submitColor( colorList[position])
+                }
+
+                this.findViewById<ImageView>(R.id.leftButton).setOnClickListener {
+                    if(position == 0) position = colorList.size-1 else position--
+                    colorAdapter.submitColor( colorList[position])
+                }
+            }
+
+        alertDialog.setView(colorView)
+        alertDialog.show()
+    }
+
+
+    private fun showTextColorAlertDialog() {
+        val alertDialog = AlertDialog.Builder(requireContext()).create()
+
+        //todo 글자색상 생각
+        val colorList = listOf<Int>(R.color.black, R.color.white, R.color.gray)
+
+
+        val colorAdapter = ColorAdapter(colorList) {
+            Log.e("Color Id", "$it")
+            binding.textColorButton.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    it
+                )
+            )
+            baseTextColor = it
+            alertDialog.dismiss()
+        }
+
+        val colorView = LayoutInflater.from(requireContext())
+            .inflate(R.layout.time_table_color_alert_dialog, null).apply {
+                this.findViewById<RecyclerView>(R.id.colorRecyclerView).apply {
+                    adapter = colorAdapter
+                }
+
+                this.findViewById<ImageView>(R.id.rightButton).isGone = true
+
+                this.findViewById<ImageView>(R.id.leftButton).isGone = true
             }
 
         alertDialog.setView(colorView)

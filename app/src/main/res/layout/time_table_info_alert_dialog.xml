@@ -55,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:textColor="@color/text_gray"
+        android:textColor="@color/gray_cf"
         tools:text="교수" />
 
     <TextView
@@ -63,7 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:textColor="@color/text_gray"
+        android:textColor="@color/gray_cf"
         tools:text="시간" />
 
     <TextView
@@ -71,7 +71,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:textColor="@color/text_gray"
+        android:textColor="@color/gray_cf"
         android:paddingBottom="30dp"
         tools:text="장소" />
 

@@ -15,6 +15,7 @@ import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -34,9 +35,10 @@ import com.example.suwon_university_community.util.SwipeHelperCallback
 import com.example.suwon_university_community.util.provider.ResourceProvider
 import com.example.suwon_university_community.widget.adapter.ModelRecyclerViewAdapter
 import com.example.suwon_university_community.widget.adapter.listener.MemoListAdapterListener
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-//todo 메모도 접을수 있게 하자~
 
 class TimeTableMemoListFragment :
     BaseFragment<TimeTableMemoListViewModel, FragmentTimeTableMemoListBinding>() {
@@ -149,7 +151,10 @@ class TimeTableMemoListFragment :
                     setCompoundDrawablesWithIntrinsicBounds(
                         null,
                         null,
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_right_24),
+                        ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_baseline_keyboard_arrow_right_24
+                        ),
                         null
                     )
                 } else {
@@ -157,7 +162,10 @@ class TimeTableMemoListFragment :
                     setCompoundDrawablesWithIntrinsicBounds(
                         null,
                         null,
-                        ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_down_24),
+                        ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.ic_baseline_keyboard_arrow_down_24
+                        ),
                         null
                     )
                 }
@@ -232,7 +240,7 @@ class TimeTableMemoListFragment :
     private val adapterList =
         arrayListOf<Pair<ModelRecyclerViewAdapter<MemoModel, TimeTableMemoListViewModel>, Long>>()
 
-    private val swipeHelperList = arrayListOf< Pair<SwipeHelperCallback , RecyclerView>>()
+    private val swipeHelperList = arrayListOf<Pair<SwipeHelperCallback, RecyclerView>>()
 
     @SuppressLint("InflateParams", "ClickableViewAccessibility")
     private fun createTimeTableCellList(timeTableCellList: List<TimeTableCellEntity>) =
@@ -289,15 +297,22 @@ class TimeTableMemoListFragment :
             }
 
             touchView.setOnTouchListener { _, _ ->
-                swipeHelperList.forEach {
-                    it.first.removePreviousClamp(it.second)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    delay(100)
+                    swipeHelperList.forEach {
+                        it.first.removePreviousClamp(it.second)
+                    }
                 }
+
                 false
             }
 
             addMemoFloatingButton.setOnTouchListener { _, _ ->
-                swipeHelperList.forEach {
-                    it.first.removePreviousClamp(it.second)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    delay(100)
+                    swipeHelperList.forEach {
+                        it.first.removePreviousClamp(it.second)
+                    }
                 }
                 false
             }
