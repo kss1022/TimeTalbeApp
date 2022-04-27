@@ -95,4 +95,8 @@ dependencies {
     //Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:2.4.1"
     implementation "androidx.navigation:navigation-ui-ktx:2.4.1"
+
+
+    //Service
+    implementation "androidx.lifecycle:lifecycle-service:2.4.1"
 }

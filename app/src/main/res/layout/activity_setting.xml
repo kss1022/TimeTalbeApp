@@ -43,12 +43,12 @@
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:layout_marginHorizontal="10dp"
-            android:drawablePadding="12dp"
             android:layout_marginTop="12dp"
+            android:drawablePadding="12dp"
             android:gravity="start|center"
-            app:drawableStartCompat="@drawable/ic_outline_person_24"
-            android:text="@string/need_login" />
-
+            android:text="@string/need_login"
+            android:visibility="gone"
+            app:drawableStartCompat="@drawable/ic_outline_person_24" />
 
 
         <com.google.android.material.divider.MaterialDivider
@@ -56,13 +56,9 @@
             android:layout_height="1dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
+            android:visibility="gone"
             app:dividerInsetEnd="16dp"
             app:dividerInsetStart="16dp" />
-
-
-
-
-
 
 
         <TextView
@@ -73,6 +69,7 @@
             android:drawablePadding="12dp"
             android:gravity="start|center"
             android:text="@string/time_table_backup"
+            android:visibility="gone"
             app:drawableStartCompat="@drawable/ic_baseline_event_note_24" />
 
         <TextView
@@ -82,8 +79,9 @@
             android:layout_marginHorizontal="10dp"
             android:drawablePadding="12dp"
             android:gravity="start|center"
-            app:drawableStartCompat="@drawable/ic_baseline_event_note_24"
-            android:text="@string/time_table_restore" />
+            android:text="@string/time_table_restore"
+            android:visibility="gone"
+            app:drawableStartCompat="@drawable/ic_baseline_event_note_24" />
 
 
         <com.google.android.material.divider.MaterialDivider
@@ -93,7 +91,6 @@
             android:layout_marginBottom="8dp"
             app:dividerInsetEnd="16dp"
             app:dividerInsetStart="16dp" />
-
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -109,8 +106,8 @@
                 android:layout_gravity="center"
                 android:drawablePadding="12dp"
                 android:gravity="start|center"
-                app:drawableStartCompat="@drawable/ic_outline_format_paint_24"
                 android:text="@string/theme"
+                app:drawableStartCompat="@drawable/ic_outline_format_paint_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -119,12 +116,12 @@
                 android:id="@+id/themeModeTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/system_setting_mode"
                 android:gravity="center"
+                android:text="@string/system_setting_mode"
                 android:textColor="@color/colorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -139,7 +136,6 @@
             app:dividerInsetStart="16dp" />
 
 
-
         <TextView
             android:id="@+id/logoutTextView"
             android:layout_width="match_parent"
@@ -151,7 +147,7 @@
             android:gravity="start|center"
             android:text="@string/logout"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/changePasswordTextView"
@@ -163,7 +159,7 @@
             android:gravity="start|center"
             android:text="@string/change_password"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/signOutTextView"
@@ -175,6 +171,6 @@
             android:gravity="start|center"
             android:text="@string/signOut"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

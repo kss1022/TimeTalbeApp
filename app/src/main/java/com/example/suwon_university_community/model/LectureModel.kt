@@ -1,6 +1,5 @@
 package com.example.suwon_university_community.model
 
-import androidx.room.Entity
 import com.example.suwon_university_community.data.entity.timetable.TimeTableLocationAndTime
 import com.example.suwon_university_community.data.entity.timetable.toDayOfTheWeek
 

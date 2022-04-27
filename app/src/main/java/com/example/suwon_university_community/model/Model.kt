@@ -1,7 +1,6 @@
 package com.example.suwon_university_community.model
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.recyclerview.widget.DiffUtil
 
 

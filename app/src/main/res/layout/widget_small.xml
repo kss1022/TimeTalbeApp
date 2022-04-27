@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widgetLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_widget"
+    android:gravity="start"
+    android:orientation="vertical"
+    tools:layout_height="100dp"
+    tools:layout_width="130dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/dayTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorOnPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            tools:text="수요일"
+            tools:visibility="visible" />
+
+
+        <TextView
+            android:id="@+id/lectureTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ellipsize="none"
+            android:lines="1"
+            android:textColor="@color/colorOnPrimary"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:text="허브식물학"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/lectureDetailTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorOnPrimary"
+            android:textSize="11sp"
+            android:visibility="gone"
+            tools:ignore="SmallSp"
+            tools:text="10:30~12:40 IT309"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/errorTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="시간표를 생성해주세요🙌"
+            android:textColor="@color/colorOnPrimary"
+            android:textSize="11sp"
+            tools:ignore="HardcodedText,SmallSp" />
+    </FrameLayout>
+
+
+</LinearLayout>

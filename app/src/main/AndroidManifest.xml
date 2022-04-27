@@ -3,17 +3,19 @@
     package="com.example.suwon_university_community">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
 
     <application
-        android:name=".Application"
+        android:name="com.example.suwon_university_community.Application"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_main_icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_main_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Suwon_University_Community">
         <activity
-            android:name=".ui.start.StartActivity"
+            android:name="com.example.suwon_university_community.ui.start.StartActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,17 +24,30 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.main.home.login.AuthActivity"
+            android:name="com.example.suwon_university_community.ui.main.home.login.AuthActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.main.MainActivity"
+            android:name="com.example.suwon_university_community.ui.main.MainActivity"
             android:exported="false" />
 
-        <activity android:name=".ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivity" />
+        <activity android:name="com.example.suwon_university_community.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivity" />
 
-        <activity android:name=".ui.main.time_table.addTimeTable.tablelist.TimeTableListActivity" />
+        <activity android:name="com.example.suwon_university_community.ui.main.time_table.addTimeTable.tablelist.TimeTableListActivity" />
 
-        <activity android:name=".ui.main.home.setting.SettingActivity"/>
+        <activity android:name="com.example.suwon_university_community.ui.main.home.setting.SettingActivity"/>
+
+
+        <receiver android:name="com.example.suwon_university_community.widget.appwidget.SmallWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/widget_small_info"/>
+        </receiver>
+
+        <service android:name="com.example.suwon_university_community.widget.appwidget.SmallWidgetProvider$UpdateWidgetService" />
 
     </application>
 

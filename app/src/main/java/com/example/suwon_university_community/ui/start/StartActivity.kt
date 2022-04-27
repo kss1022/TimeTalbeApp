@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
+import com.example.suwon_university_community.R
 import com.example.suwon_university_community.data.preference.PreferenceManager
 import com.example.suwon_university_community.databinding.ActivityStartBinding
 import com.example.suwon_university_community.ui.base.BaseActivity
@@ -50,7 +51,7 @@ class StartActivity : BaseActivity<StartActivityViewModel, ActivityStartBinding>
 
 
     private fun handleLoadingState() {
-        binding.loadingTextView.text = "로딩 하는 중이요~"
+        binding.loadingTextView.text = getString(R.string.loading)
     }
 
 

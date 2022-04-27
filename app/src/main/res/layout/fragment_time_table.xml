@@ -96,7 +96,7 @@
                 android:layout_marginHorizontal="15dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
-                android:background="@drawable/table_corner"
+                android:background="@drawable/bg_table"
                 android:orientation="vertical"
                 android:padding="3dp"
                 app:layout_constraintBottom_toTopOf="@id/testLayout"
@@ -507,7 +507,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:background="@drawable/table_corner"
+                    android:background="@drawable/bg_table"
                     tools:layout_height="150dp"
                     android:orientation="vertical"/>
 
