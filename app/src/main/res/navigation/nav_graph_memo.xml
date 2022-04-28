@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/folderListFragment"
-        android:name="com.example.suwon_university_community.ui.main.memo.folder.FolderListFragment"
+        android:name="net.suwon.plus.ui.main.memo.folder.FolderListFragment"
         android:label="@string/folder"
         tools:layout="@layout/fragment_folder_list">
         <action
@@ -27,7 +27,7 @@
 
     <fragment
         android:id="@+id/bookMarkListFragment"
-        android:name="com.example.suwon_university_community.ui.main.memo.folder.bookmark.BookmarkListFragment"
+        android:name="net.suwon.plus.ui.main.memo.folder.bookmark.BookmarkListFragment"
         android:label="{folderName}"
         tools:layout="@layout/fragment_bookmark_list">
 
@@ -42,7 +42,7 @@
 
     <fragment
         android:id="@+id/memoListFragment"
-        android:name="com.example.suwon_university_community.ui.main.memo.folder.memolist.MemoListFragment"
+        android:name="net.suwon.plus.ui.main.memo.folder.memolist.MemoListFragment"
         android:label="{folderName}"
         tools:layout="@layout/fragment_memo_list">
 
@@ -62,7 +62,7 @@
 
     <fragment
         android:id="@+id/timeTableMemoListFragment"
-        android:name="com.example.suwon_university_community.ui.main.memo.folder.timetablememolist.TimeTableMemoListFragment"
+        android:name="net.suwon.plus.ui.main.memo.folder.timetablememolist.TimeTableMemoListFragment"
         android:label="{folderName}"
         tools:layout="@layout/fragment_time_table_memo_list">
 
@@ -82,12 +82,12 @@
 
     <fragment
         android:id="@+id/editMemoFragment"
-        android:name="com.example.suwon_university_community.ui.main.memo.folder.editmemo.EditMemoFragment"
+        android:name="net.suwon.plus.ui.main.memo.folder.editmemo.EditMemoFragment"
         android:label=""
         tools:layout="@layout/fragment_edit_memo">
 
         <argument
             android:name="memo"
-            app:argType="com.example.suwon_university_community.model.MemoModel" />
+            app:argType="net.suwon.plus.model.MemoModel" />
     </fragment>
 </navigation>
