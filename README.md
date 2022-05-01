@@ -1,5 +1,7 @@
 # 수플 - 시간표 & 공지사항
 
+https://play.google.com/store/apps/details?id=net.suwon.plus
+
 
 MVVM
 ViewModel - LiveData( State Pattern - ObserveState). , Flow(Coroutine)
