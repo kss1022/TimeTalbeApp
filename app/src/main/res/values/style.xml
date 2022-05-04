@@ -56,4 +56,12 @@
         <item name="android:gravity">center</item>
     </style>
 
+
+    <style name="Widget.Suwon_University_Community.AlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!--<item name="colorAccent">#FFCC00</item>-->
+        <item name="android:textColorPrimary">@color/colorOnPrimary</item>
+        <!--<item name="android:background">#5fa3d0</item>-->
+    </style>
+
+
 </resources>

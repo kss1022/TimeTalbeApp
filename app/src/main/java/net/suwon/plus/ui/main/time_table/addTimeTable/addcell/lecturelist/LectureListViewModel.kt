@@ -12,6 +12,7 @@ import net.suwon.plus.data.repository.lecture.LectureRepository
 import net.suwon.plus.data.repository.timetable.TimeTableRepository
 import net.suwon.plus.model.LectureModel
 import net.suwon.plus.ui.base.BaseViewModel
+import net.suwon.plus.util.lifecycle.SingleLiveEvent
 import net.suwon.plus.util.provider.ResourceProvider
 import javax.inject.Inject
 
@@ -27,7 +28,7 @@ class LectureListViewModel @Inject constructor(
 
 
     val lectureListStateLiveData = MutableLiveData<LectureListState>(LectureListState.Uninitialized)
-    val lectureListLiveData = MutableLiveData<List<LectureEntity>>()
+    val lectureListLiveData = SingleLiveEvent<List<LectureEntity>>()
 
 
     override fun fetchData(): Job = viewModelScope.launch {
@@ -52,13 +53,14 @@ class LectureListViewModel @Inject constructor(
             lectureListLiveData.value = lectureEntityList
             lectureListStateLiveData.value = LectureListState.Success
         } ?: kotlin.run {
-            lectureListStateLiveData.value = LectureListState.Error(R.string.lecture_category_is_null)
+            lectureListStateLiveData.value =
+                LectureListState.Error(R.string.lecture_category_is_null)
         }
 
     }
 
 
-     fun checkTimeTableAndAdd(currentTableId: Long, model: LectureModel) = viewModelScope.launch {
+    fun checkTimeTableAndAdd(currentTableId: Long, model: LectureModel) = viewModelScope.launch {
         val addedList = timeTableRepository.getTimeTableWithCell(currentTableId).timeTableCellList
 
         val overlappingSet = mutableSetOf<TimeTableCellEntity>()
@@ -69,9 +71,10 @@ class LectureListViewModel @Inject constructor(
                 added.locationAndTimeList.forEach { addedLocationAndTime ->
                     if (selected.day == addedLocationAndTime.day) {
 
-                        if( (addedLocationAndTime.time.first > selected.time.second ||
-                                addedLocationAndTime.time.second < selected.time.first ).not()){
-                         overlappingSet.add(added)
+                        if ((addedLocationAndTime.time.first > selected.time.second ||
+                                    addedLocationAndTime.time.second < selected.time.first).not()
+                        ) {
+                            overlappingSet.add(added)
                         }
                     }
                 }
@@ -360,6 +363,4 @@ class LectureListViewModel @Inject constructor(
         lectureListLiveData.value = spinnerList
         return spinnerList
     }
-
-
 }

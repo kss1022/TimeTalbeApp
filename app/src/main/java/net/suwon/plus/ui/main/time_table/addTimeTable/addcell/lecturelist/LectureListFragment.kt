@@ -73,9 +73,15 @@ class LectureListFragment : BaseFragment<LectureListViewModel, FragmentLectureLi
         viewModel.lectureListLiveData.observe(viewLifecycleOwner) { lectureList ->
 
            lifecycleScope.launch {
-               if(lectureList.isNotEmpty()){
-                   modelAdapter.submitList(lectureList.map { it.toLectureModel() })
+               lectureList?.let { list->
+                   if(list.isNotEmpty()){
+                       modelAdapter.submitList(lectureList.map { it.toLectureModel() })
+                   }
                }
+
+//               if(lectureList.isNotEmpty()){
+//                   modelAdapter.submitList(lectureList.map { it.toLectureModel() })
+//               }
            }
 
         }

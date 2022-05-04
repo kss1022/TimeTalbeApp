@@ -24,6 +24,9 @@
             @style/Widget.Suwon_University_Community.Toolbar.WithClose
         </item>
 
+        <!--AlertDialog-->
+        <item name="android:alertDialogTheme">@style/Widget.Suwon_University_Community.AlertDialogStyle</item>
+
         <!--NavigationBarColor  60% WHITE-->
         <item name="android:navigationBarColor">#99FFFFFF</item>
         <item name="android:textColor">@color/black</item>
