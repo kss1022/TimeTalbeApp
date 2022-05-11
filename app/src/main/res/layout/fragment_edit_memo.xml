@@ -10,13 +10,13 @@
         android:id="@+id/lastUpdatedTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/gray_cf"
         android:layout_marginEnd="16dp"
+        android:textColor="@color/gray_cf"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone"
-        tools:visibility="visible"
-        tools:text="2022.4.14 14:19 수정됨" />
+        tools:text="2022.4.14 14:19 수정됨"
+        tools:visibility="visible" />
 
     <EditText
         android:id="@+id/titleEditText"
@@ -30,8 +30,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lastUpdatedTextView"
-        tools:text="메모 제목입니다."
-        tools:layout_height="wrap_content"/>
+        tools:layout_height="wrap_content"
+        tools:text="메모 제목입니다." />
 
     <EditText
         android:id="@+id/memoEditText"
@@ -44,4 +44,47 @@
         app:layout_constraintEnd_toEndOf="@id/titleEditText"
         app:layout_constraintStart_toStartOf="@id/titleEditText"
         app:layout_constraintTop_toBottomOf="@id/titleEditText" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/gray">
+
+        <ImageView
+            android:id="@+id/galleryButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:padding="8sp"
+            android:src="@drawable/ic_outline_image_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/cameraButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8sp"
+            android:src="@drawable/ic_outline_camera_alt_24"
+            app:layout_constraintBottom_toBottomOf="@id/galleryButton"
+            app:layout_constraintStart_toEndOf="@id/galleryButton"
+            app:layout_constraintTop_toTopOf="@id/galleryButton" />
+
+
+        <TextView
+            android:id="@+id/textCountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8sp"
+            app:layout_constraintBottom_toBottomOf="@id/galleryButton"
+            app:layout_constraintStart_toEndOf="@id/cameraButton"
+            app:layout_constraintTop_toTopOf="@id/galleryButton"
+            tools:text="32" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

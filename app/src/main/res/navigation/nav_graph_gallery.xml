@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_gallery"
+    app:startDestination="@id/mediaFragment">
+
+    <fragment
+        android:id="@+id/mediaFragment"
+        android:name="net.suwon.plus.ui.main.memo.folder.editmemo.gallery.media.MediaFragment"
+        android:label="MediaFragment"
+        tools:layout="@layout/fragment_media">
+        <action
+            android:id="@+id/action_mediaFragment_to_albumFragment"
+            app:destination="@id/albumFragment" />
+
+        <action
+            android:id="@+id/action_mediaFragment_to_mediaDetailFragment"
+            app:destination="@id/mediaDetailFragment" >
+            <argument
+                android:name="media"
+                app:argType="net.suwon.plus.data.entity.media.Media" />
+            <argument
+                android:name="position"
+                app:argType="integer"
+                android:defaultValue="0" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/albumFragment"
+        android:name="net.suwon.plus.ui.main.memo.folder.editmemo.gallery.album.AlbumFragment"
+        android:label="AlbumFragment"
+        tools:layout="@layout/fragment_album"/>
+
+
+    <fragment
+        android:id="@+id/mediaDetailFragment"
+        android:name="net.suwon.plus.ui.main.memo.folder.editmemo.gallery.detail.MediaDetailFragment"
+        android:label="MediaDetailFragment"
+        tools:layout="@layout/fragment_media_detail"/>
+</navigation>

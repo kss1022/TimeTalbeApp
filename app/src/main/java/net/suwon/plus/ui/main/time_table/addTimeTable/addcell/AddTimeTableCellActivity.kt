@@ -191,7 +191,7 @@ class AddTimeTableCellActivity :
                 val elapsedTime: Long = currentClickTime - lastClickTime
                 lastClickTime = currentClickTime
 
-                if (elapsedTime > 50) {
+                if (elapsedTime > 150) {
                     viewPagerAdapter.fragmentList.forEach {
                         it.viewModel.setSearchString(searchEditText.text.toString())
                     }

@@ -140,4 +140,9 @@
     <string name="add">추가</string>
 
 
+    <!--gallery-->
+    <string name="please_check_storage_permission">[애플리케이션 정보 > 권한]에서 [저장소] 권한을 허용하고 다시 해보세요</string>
+    <string name="detail_setting">상세설정</string>
+    <string name="complete">완료</string>
+    <string name="album">앨범</string>
 </resources>

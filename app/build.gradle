@@ -14,8 +14,8 @@ android {
         applicationId "net.suwon.plus"
         minSdk 24
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -99,4 +99,8 @@ dependencies {
 
     //Service
     implementation "androidx.lifecycle:lifecycle-service:2.4.1"
+
+
+    //Paging
+    implementation "androidx.paging:paging-runtime-ktx:3.1.1"
 }

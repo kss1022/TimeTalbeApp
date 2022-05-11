@@ -1,9 +1,16 @@
 package net.suwon.plus.ui.main.memo.folder.editmemo
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.view.KeyEvent
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
@@ -17,6 +24,7 @@ import net.suwon.plus.extensions.toReadableDateString
 import net.suwon.plus.extensions.toReadableTimeString
 import net.suwon.plus.model.MemoModel
 import net.suwon.plus.ui.base.BaseFragment
+import net.suwon.plus.ui.main.memo.folder.editmemo.gallery.GalleryActivity
 import java.util.*
 import javax.inject.Inject
 
@@ -40,6 +48,14 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     private val argument: EditMemoFragmentArgs by navArgs()
 
     private lateinit var memo: MemoModel
+
+    private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){granted->
+        if(granted){
+            startActivity(GalleryActivity.newIntent(requireContext()))
+        }else{
+            showSystemSettingDialog(requireActivity())
+        }
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -130,7 +146,9 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
             }
         }
 
-
+        galleryButton.setOnClickListener {
+            permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
     }
 
 
@@ -178,6 +196,20 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         val lp = titleEditText.layoutParams
         lp.height =ConstraintLayout.LayoutParams.WRAP_CONTENT
         titleEditText.layoutParams = lp
+    }
+
+
+    private fun showSystemSettingDialog(activity: Activity) {
+        AlertDialog.Builder(activity)
+            .setMessage(getString(R.string.please_check_storage_permission))
+            .setPositiveButton(getString(R.string.detail_setting)) { _, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                val uri: Uri = Uri.fromParts("package", activity.packageName, null)
+                intent.data = uri
+                activity.startActivity(intent)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 
 

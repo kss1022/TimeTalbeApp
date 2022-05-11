@@ -1,3 +1,7 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="gallery_column_width">105dp</dimen>
+    <dimen name="gallery_folder_corner_radius">15dp</dimen>
+    <dimen name="gallery_folder_outline_width">1px</dimen>
 </resources>
