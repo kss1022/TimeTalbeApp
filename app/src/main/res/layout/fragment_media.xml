@@ -7,25 +7,37 @@
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
+        style="@style/Widget.Suwon_University_Community.Toolbar.WithArrow"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/Widget.Suwon_University_Community.Toolbar.WithArrow">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/toolBarTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="최근항목"/>
+            android:textStyle="bold"
+            tools:text="최근항목" />
+
 
         <TextView
-            android:text="@string/complete"
+            android:id="@+id/completeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginEnd="16dp"
+            android:text="@string/complete" />
+
+        <TextView
+            android:id="@+id/countTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="16dp"
+            android:textColor="@color/blue_light"
+            tools:text="3" />
 
     </androidx.appcompat.widget.Toolbar>
 

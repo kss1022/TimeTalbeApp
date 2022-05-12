@@ -4,20 +4,30 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.View
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
 import net.suwon.plus.R
+import net.suwon.plus.data.entity.media.Media
 import net.suwon.plus.data.entity.memo.MemoEntity
 import net.suwon.plus.databinding.FragmentEditMemoBinding
 import net.suwon.plus.extensions.toReadableDateString
@@ -25,6 +35,10 @@ import net.suwon.plus.extensions.toReadableTimeString
 import net.suwon.plus.model.MemoModel
 import net.suwon.plus.ui.base.BaseFragment
 import net.suwon.plus.ui.main.memo.folder.editmemo.gallery.GalleryActivity
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 
@@ -43,7 +57,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         FragmentEditMemoBinding.inflate(layoutInflater)
 
 
-    private lateinit var callback: OnBackPressedCallback
+    private lateinit var backPressCallback: OnBackPressedCallback
 
     private val argument: EditMemoFragmentArgs by navArgs()
 
@@ -51,29 +65,41 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
 
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){granted->
         if(granted){
-            startActivity(GalleryActivity.newIntent(requireContext()))
+            galleryLauncher.launch(GalleryActivity.newIntent(requireContext()))
         }else{
             showSystemSettingDialog(requireActivity())
         }
     }
 
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
+        if(result.resultCode == Activity.RESULT_OK){
+            result.data?.let { intent->
+                val mediaArray : ArrayList<Media> = intent.getParcelableArrayListExtra(GET_IMAGE) ?: ArrayList()
+                saveFile(mediaArray)
+            }
+        }
+
+    }
+
+
+
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        callback = object : OnBackPressedCallback(true) {
+        backPressCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 findNavController().popBackStack()
             }
         }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+        requireActivity().onBackPressedDispatcher.addCallback(this, backPressCallback)
     }
-
 
 
 
 
     override fun onDetach() {
         super.onDetach()
-        callback.remove()
+        backPressCallback.remove()
     }
 
 
@@ -149,7 +175,18 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         galleryButton.setOnClickListener {
             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
+
+        showRecyclerViewButton.setOnClickListener {
+            if(recyclerView.isVisible){
+                hideRecyclerView()
+            }else{
+                showRecyclerView()
+
+            }
+        }
     }
+
+
 
 
     private fun saveMemo() {
@@ -176,7 +213,8 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
                         memo = memoStr,
                         time = System.currentTimeMillis(),
                         memoFolderId = memo.memoFolderId,
-                        timeTableCellId = memo.timeTableCellId
+                        timeTableCellId = memo.timeTableCellId,
+//                        imageUrlList = memo.imageUrlList
                     )
                 )
             }
@@ -199,6 +237,83 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     }
 
 
+    private fun showRecyclerView() = with(binding){
+        recyclerView.visibility = View.VISIBLE
+        showRecyclerViewButton.setImageDrawable(
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_up_24)
+        )
+    }
+
+    private fun hideRecyclerView() = with(binding){
+        recyclerView.isGone = true
+        showRecyclerViewButton.setImageDrawable(
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_down_24)
+        )
+    }
+
+
+
+    private fun saveFile(mediaArray: ArrayList<Media>) {
+        mediaArray.forEach { media->
+            saveFile(media.getUri(), media.name)
+        }
+        showRecyclerView()
+    }
+
+    private fun saveFile(uri: Uri , name :String) {
+        val bimMap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            ImageDecoder.decodeBitmap(ImageDecoder.createSource(requireActivity().contentResolver, uri))
+        } else {
+            MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri)
+        }
+
+
+        if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
+
+            //Create folder if is not exists
+            val file = createExternalFolder()
+            try {
+                val imageFile = File(file, "${name}.png")
+
+                val stream = FileOutputStream(imageFile)
+                bimMap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+
+                stream.flush()
+                stream.close()
+
+                viewModel.saveImageUrl(imageFile.absolutePath)
+
+                Glide.with(binding.showRecyclerViewButton)
+                    .load(imageFile.absolutePath)
+                    .into(binding.showRecyclerViewButton)
+
+            } catch (e: FileNotFoundException) {
+                e.printStackTrace()
+                Toast.makeText(requireContext(), "Save Failed", Toast.LENGTH_SHORT).show()
+                return
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Toast.makeText(requireContext(), "Save Failed", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+        } else {
+            Toast.makeText(requireContext(), "Directory can't use", Toast.LENGTH_SHORT).show()
+        }
+
+    }
+
+    private fun createExternalFolder(): File {
+        val file = File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/memo")
+
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+
+        return file
+    }
+
+
     private fun showSystemSettingDialog(activity: Activity) {
         AlertDialog.Builder(activity)
             .setMessage(getString(R.string.please_check_storage_permission))
@@ -212,5 +327,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
             .show()
     }
 
-
+    companion object{
+        const val GET_IMAGE = "get_image"
+    }
 }

@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import net.suwon.plus.model.MemoModel
 
 @Entity
+//@TypeConverters(RoomTypeConverter::class)
 data class MemoEntity (
     @PrimaryKey(autoGenerate = true)
     val memoId : Long = 0,
@@ -12,7 +13,8 @@ data class MemoEntity (
     val memo : String,
     val time : Long = System.currentTimeMillis(),
     val memoFolderId : Long,
-    val timeTableCellId : Long? = null
+    val timeTableCellId : Long? = null,
+//    val imageUrlList : List<String> = listOf()
 ) {
     fun toModel(): MemoModel = MemoModel(
         id = memoId,
@@ -21,5 +23,6 @@ data class MemoEntity (
         time= time,
         memoFolderId =memoFolderId,
         timeTableCellId = timeTableCellId,
+//        imageUrlList =  imageUrlList
     )
 }

@@ -1,11 +1,14 @@
 package net.suwon.plus.ui.main.memo.folder.editmemo.gallery.media
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -19,6 +22,7 @@ import kotlinx.coroutines.launch
 import net.suwon.plus.R
 import net.suwon.plus.data.entity.media.MediaItem
 import net.suwon.plus.databinding.FragmentMediaBinding
+import net.suwon.plus.ui.main.memo.folder.editmemo.EditMemoFragment
 import net.suwon.plus.ui.main.memo.folder.editmemo.gallery.GallerySharedViewModel
 import net.suwon.plus.util.DeviceUtil
 import net.suwon.plus.util.GridSpaceDecoration
@@ -57,9 +61,11 @@ class MediaFragment : DaggerFragment() {
 
             override fun checkBoxClick(item: MediaItem) {
                 sharedViewModel.onCheckBoxClick(item)
+                setCountTextView()
             }
         })
     }
+
 
 
     override fun onCreateView(
@@ -90,6 +96,7 @@ class MediaFragment : DaggerFragment() {
 
 
         observeData()
+        setCountTextView()
     }
 
 
@@ -161,6 +168,14 @@ class MediaFragment : DaggerFragment() {
         binding.toolbar.setNavigationOnClickListener {
             requireActivity().finish()
         }
+
+        binding.completeButton.setOnClickListener {
+            requireActivity().setResult(Activity.RESULT_OK, Intent().apply {
+                putParcelableArrayListExtra(EditMemoFragment.GET_IMAGE,
+                    ArrayList(sharedViewModel.getSelectedMediaList()))
+            })
+            requireActivity().finish()
+        }
     }
 
 
@@ -210,5 +225,18 @@ class MediaFragment : DaggerFragment() {
             }
         })
     }
+
+    private fun setCountTextView(){
+       sharedViewModel.selection.getCount().value?.let { count->
+           if(count > 0){
+               binding.completeButton.setTextColor( ContextCompat.getColor(requireContext(), R.color.blue_light))
+               binding.countTextView.text = count.toString()
+           }else{
+               binding.completeButton.setTextColor( ContextCompat.getColor(requireContext(), R.color.colorOnPrimary))
+               binding.countTextView.text = ""
+           }
+       }
+    }
+
 
 }

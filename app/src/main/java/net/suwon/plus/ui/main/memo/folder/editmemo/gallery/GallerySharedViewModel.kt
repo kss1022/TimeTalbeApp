@@ -1,6 +1,7 @@
 package net.suwon.plus.ui.main.memo.folder.editmemo.gallery
 
 import android.app.Application
+import android.net.Uri
 import android.view.View
 import androidx.lifecycle.*
 import androidx.paging.PagingData
@@ -18,6 +19,7 @@ import net.suwon.plus.data.repository.media.MediaPagingSource
 import net.suwon.plus.data.repository.media.MediaRepository
 import net.suwon.plus.util.PagingConstants
 import net.suwon.plus.util.lifecycle.SingleLiveEvent
+import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
@@ -63,4 +65,20 @@ class GallerySharedViewModel @Inject constructor(
         selection.toggle(item.getId(), item.media)
     }
 
+
+
+    fun getSelectedMediaList(): List<Media> {
+        return selection.toList()
+            .filter { media -> validateIfExist(media.getUri()) }
+    }
+
+    private fun validateIfExist(uri: Uri): Boolean {
+        return try {
+            app.contentResolver.openInputStream(uri)?.use { it.close() }
+            true
+        } catch (e: IOException) {
+            e.printStackTrace()
+            false
+        }
+    }
 }

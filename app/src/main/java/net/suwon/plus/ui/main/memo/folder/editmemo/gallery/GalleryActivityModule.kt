@@ -29,11 +29,6 @@ abstract class GalleryActivityModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(GalleryViewModel::class)
-    abstract fun bindViewModel(viewModel: GalleryViewModel): ViewModel
-
-    @Binds
-    @IntoMap
     @ViewModelKey(GallerySharedViewModel::class)
     abstract fun bindSharedViewModel(viewModel: GallerySharedViewModel): ViewModel
 

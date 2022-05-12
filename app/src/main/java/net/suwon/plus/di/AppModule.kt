@@ -129,6 +129,7 @@ object AppModule {
     fun provideAppDataBase(context: Context, typeConverter: RoomTypeConverter): AppDataBase =
         Room.databaseBuilder(context, AppDataBase::class.java, AppDataBase.APP_DATABASE_NAME)
             .addTypeConverter(typeConverter)
+//            .addMigrations(AppDataBase.MIGRATION_1_2)
             .build()
 
 

@@ -13,13 +13,8 @@ class MediaDetailViewModel @Inject constructor(
     val isChecked = MutableLiveData<Boolean>()
     var currentMediaItem: MediaItem? = null
     val checkBoxClickEvent = SingleLiveEvent<MediaItem?>()
-//    val fullScreen = MutableLiveData<Boolean>(false)
 
     fun onCheckBoxClick() {
         checkBoxClickEvent.value = currentMediaItem
     }
-
-//    fun crossfade() {
-//        fullScreen.value = !(fullScreen.value ?: true)
-//    }
 }

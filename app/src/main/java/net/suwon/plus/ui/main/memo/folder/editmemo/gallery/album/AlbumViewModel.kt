@@ -19,7 +19,7 @@ class AlbumViewModel @Inject constructor(
  ) : AndroidViewModel(app) {
 
     val items = MutableLiveData<List<AlbumItem>>()
-    val  repositoryDefault = DefaultAlbumRepository(app)
+    private val  repositoryDefault = DefaultAlbumRepository(app)
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

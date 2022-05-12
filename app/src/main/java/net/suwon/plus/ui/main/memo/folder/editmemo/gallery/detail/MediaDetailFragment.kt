@@ -1,11 +1,13 @@
 package net.suwon.plus.ui.main.memo.folder.editmemo.gallery.detail
 
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -18,6 +20,7 @@ import dagger.android.support.DaggerFragment
 import kotlinx.coroutines.flow.collectLatest
 import net.suwon.plus.R
 import net.suwon.plus.databinding.FragmentMediaDetailBinding
+import net.suwon.plus.ui.main.memo.folder.editmemo.EditMemoFragment
 import net.suwon.plus.ui.main.memo.folder.editmemo.gallery.GallerySharedViewModel
 import net.suwon.plus.widget.adapter.mediaadpater.DetailAdapter
 import javax.inject.Inject
@@ -71,12 +74,12 @@ class MediaDetailFragment : DaggerFragment() {
         detailAdapter.selection = sharedViewModel.selection
 
         bindViews()
+        setCountTextView()
     }
 
     private fun observeData() {
         viewModelMedia.checkBoxClickEvent.observe(viewLifecycleOwner) { item ->
             item?.let {
-                Log.e("Clicked", item.media.name)
                 sharedViewModel.selection.toggle(item.getId(), item.media)
                 viewModelMedia.isChecked.value = sharedViewModel.selection.isSelected(item.getId())
                 setCheckedImage()
@@ -97,10 +100,20 @@ class MediaDetailFragment : DaggerFragment() {
     private fun bindViews() {
         binding.checked.setOnClickListener {
             viewModelMedia.onCheckBoxClick()
+            setCountTextView()
         }
 
         binding.toolbar.setNavigationOnClickListener {
             findNavController().navigateUp()
+        }
+
+        binding.completeButton.setOnClickListener {
+            requireActivity().setResult(Activity.RESULT_OK, Intent().apply {
+                putParcelableArrayListExtra(
+                    EditMemoFragment.GET_IMAGE,
+                    ArrayList(sharedViewModel.getSelectedMediaList()))
+            })
+            requireActivity().finish()
         }
     }
 
@@ -184,6 +197,18 @@ class MediaDetailFragment : DaggerFragment() {
                 binding.checked.setImageResource(R.drawable.check_circle_on_24)
             } else {
                 binding.checked.setImageResource(R.drawable.check_circle_off_24)
+            }
+        }
+    }
+
+    private fun setCountTextView(){
+        sharedViewModel.selection.getCount().value?.let { count->
+            if(count > 0){
+                binding.completeButton.setTextColor( ContextCompat.getColor(requireContext(), R.color.blue_light))
+                binding.countTextView.text = count.toString()
+            }else{
+                binding.completeButton.setTextColor( ContextCompat.getColor(requireContext(), R.color.colorOnPrimary))
+                binding.countTextView.text = ""
             }
         }
     }

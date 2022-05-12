@@ -20,4 +20,14 @@ class RoomTypeConverter @Inject constructor(
     fun stringToList(value: String?): List<TimeTableLocationAndTime>? =
         gson.fromJson(value, Array<TimeTableLocationAndTime>::class.java).toList()
 
+
+
+//    @TypeConverter
+//    fun urlListToString(value: List<String>?): String? = gson.toJson(value)
+//
+//
+//    @TypeConverter
+//    fun urlStringToList(value: String?): List<String>? =
+//        gson.fromJson(value, Array<String>::class.java).toList()
+
 }

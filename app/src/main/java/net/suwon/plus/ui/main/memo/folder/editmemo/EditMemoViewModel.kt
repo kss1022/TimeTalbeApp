@@ -22,4 +22,11 @@ class EditMemoViewModel @Inject constructor(
     fun updateMemo( memoEntity: MemoEntity) = viewModelScope.launch {
         memoRepository.updateMemo(memoEntity)
     }
+
+    fun saveImageUrl(url: String) {
+    }
+
+
+
+
 }
