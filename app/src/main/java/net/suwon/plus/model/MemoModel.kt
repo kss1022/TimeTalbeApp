@@ -13,5 +13,5 @@ data class MemoModel (
     val time : Long = 0L,
     val memoFolderId : Long,
     val timeTableCellId : Long? = null,
-//    val imageUrlList : List<String> = listOf()
+    val imageUrlList : List<String> = listOf()
 ) : Model(id , type) , Parcelable

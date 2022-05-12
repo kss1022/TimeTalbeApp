@@ -22,12 +22,12 @@ class RoomTypeConverter @Inject constructor(
 
 
 
-//    @TypeConverter
-//    fun urlListToString(value: List<String>?): String? = gson.toJson(value)
-//
-//
-//    @TypeConverter
-//    fun urlStringToList(value: String?): List<String>? =
-//        gson.fromJson(value, Array<String>::class.java).toList()
+    @TypeConverter
+    fun urlListToString(value: List<String>?): String? = gson.toJson(value)
+
+
+    @TypeConverter
+    fun urlStringToList(value: String?): List<String>? =
+        gson.fromJson(value, Array<String>::class.java).toList()
 
 }

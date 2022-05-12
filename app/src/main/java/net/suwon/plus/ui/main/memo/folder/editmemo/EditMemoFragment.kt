@@ -214,7 +214,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
                         time = System.currentTimeMillis(),
                         memoFolderId = memo.memoFolderId,
                         timeTableCellId = memo.timeTableCellId,
-//                        imageUrlList = memo.imageUrlList
+                        imageUrlList = memo.imageUrlList
                     )
                 )
             }

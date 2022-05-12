@@ -2,10 +2,12 @@ package net.suwon.plus.data.entity.memo
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import net.suwon.plus.model.MemoModel
+import net.suwon.plus.util.converter.RoomTypeConverter
 
 @Entity
-//@TypeConverters(RoomTypeConverter::class)
+@TypeConverters(RoomTypeConverter::class)
 data class MemoEntity (
     @PrimaryKey(autoGenerate = true)
     val memoId : Long = 0,
@@ -14,7 +16,7 @@ data class MemoEntity (
     val time : Long = System.currentTimeMillis(),
     val memoFolderId : Long,
     val timeTableCellId : Long? = null,
-//    val imageUrlList : List<String> = listOf()
+    val imageUrlList : List<String> = listOf()
 ) {
     fun toModel(): MemoModel = MemoModel(
         id = memoId,
