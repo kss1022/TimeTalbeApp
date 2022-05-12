@@ -25,9 +25,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.GridLayoutManager
 import net.suwon.plus.R
 import net.suwon.plus.data.entity.media.Media
+import net.suwon.plus.data.entity.media.MediaItem
 import net.suwon.plus.data.entity.memo.MemoEntity
 import net.suwon.plus.databinding.FragmentEditMemoBinding
 import net.suwon.plus.extensions.toReadableDateString
@@ -35,6 +36,9 @@ import net.suwon.plus.extensions.toReadableTimeString
 import net.suwon.plus.model.MemoModel
 import net.suwon.plus.ui.base.BaseFragment
 import net.suwon.plus.ui.main.memo.folder.editmemo.gallery.GalleryActivity
+import net.suwon.plus.util.PagingConstants
+import net.suwon.plus.widget.adapter.mediaadpater.MediaImageClickListener
+import net.suwon.plus.widget.adapter.mediaadpater.MemoImageAdapter
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -62,26 +66,34 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     private val argument: EditMemoFragmentArgs by navArgs()
 
     private lateinit var memo: MemoModel
+    private var needSave = true
 
-    private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){granted->
-        if(granted){
-            galleryLauncher.launch(GalleryActivity.newIntent(requireContext()))
-        }else{
-            showSystemSettingDialog(requireActivity())
-        }
+    private val imageUrlList by lazy {
+        memo.imageUrlList.toMutableSet()
     }
 
-    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
-        if(result.resultCode == Activity.RESULT_OK){
-            result.data?.let { intent->
-                val mediaArray : ArrayList<Media> = intent.getParcelableArrayListExtra(GET_IMAGE) ?: ArrayList()
-                saveFile(mediaArray)
+    private val permissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (granted) {
+                needSave = false
+                galleryLauncher.launch(GalleryActivity.newIntent(requireContext()))
+            } else {
+                showSystemSettingDialog(requireActivity())
             }
         }
 
-    }
+    private val galleryLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.let { intent ->
+                    needSave = true
+                    val mediaArray: ArrayList<Media> =
+                        intent.getParcelableArrayListExtra(GET_IMAGE) ?: ArrayList()
+                    saveFile(mediaArray)
+                }
+            }
 
-
+        }
 
 
     override fun onAttach(context: Context) {
@@ -95,8 +107,6 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     }
 
 
-
-
     override fun onDetach() {
         super.onDetach()
         backPressCallback.remove()
@@ -107,7 +117,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     }
 
     override fun onStop() {
-        saveMemo()
+        if (needSave) saveMemo()
         super.onStop()
     }
 
@@ -133,18 +143,23 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
             memoEditText.isGone = true
         }
 
-        if(memo.time != 0L ){
+        if (memo.time != 0L) {
             val date = Date(memo.time)
             lastUpdatedTextView.visibility = View.VISIBLE
-            lastUpdatedTextView.text = getString(R.string.editTime , date.toReadableDateString() , date.toReadableTimeString())
+            lastUpdatedTextView.text = getString(
+                R.string.editTime,
+                date.toReadableDateString(),
+                date.toReadableTimeString()
+            )
         }
 
     }
 
     private fun bindViews() = with(binding) {
         titleEditText.setOnKeyListener { _, keyCode, event ->
-            if ( (titleEditText.selectionStart == titleEditText.length() || titleEditText.selectionEnd == titleEditText.length()) &&
-                keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
+            if ((titleEditText.selectionStart == titleEditText.length() || titleEditText.selectionEnd == titleEditText.length()) &&
+                keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN
+            ) {
                 changeHeightMinTitleTextView()
 
                 memoEditText.visibility = View.VISIBLE
@@ -157,13 +172,14 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         }
 
         memoEditText.setOnKeyListener { _, keyCode, event ->
-            if ( (memoEditText.selectionStart == 0 || memoEditText.selectionEnd == 0)&&
+            if ((memoEditText.selectionStart == 0 || memoEditText.selectionEnd == 0) &&
                 keyCode == KeyEvent.KEYCODE_DEL &&
-                event.action == KeyEvent.ACTION_DOWN) {
+                event.action == KeyEvent.ACTION_DOWN
+            ) {
                 titleEditText.requestFocus()
                 titleEditText.setSelection(titleEditText.length())
 
-                if(memoEditText.length() == 0){
+                if (memoEditText.length() == 0) {
                     changeHeightMaxTitleTextView()
                 }
                 true
@@ -177,9 +193,9 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         }
 
         showRecyclerViewButton.setOnClickListener {
-            if(recyclerView.isVisible){
+            if (recyclerView.isVisible) {
                 hideRecyclerView()
-            }else{
+            } else {
                 showRecyclerView()
 
             }
@@ -187,25 +203,24 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     }
 
 
-
-
     private fun saveMemo() {
         val titleStr = binding.titleEditText.text.toString()
-        val memoStr  =binding.memoEditText.text.toString()
+        val memoStr = binding.memoEditText.text.toString()
 
         if (memo.id == -1L) {
-            if( (titleStr.isEmpty() && memoStr.isEmpty()).not() ){
+            if ((titleStr.isEmpty() && memoStr.isEmpty()).not()) {
                 viewModel.insertMemo(
                     MemoEntity(
                         title = titleStr,
                         memo = memoStr,
                         time = System.currentTimeMillis(),
                         memoFolderId = memo.memoFolderId,
+                        imageUrlList = imageUrlList.toMutableList()
                     )
                 )
             }
         } else {
-            if( (titleStr==memo.title && memoStr == memo.memo).not()){
+            if ((titleStr == memo.title && memoStr == memo.memo).not()) {
                 viewModel.updateMemo(
                     MemoEntity(
                         memoId = memo.id,
@@ -214,7 +229,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
                         time = System.currentTimeMillis(),
                         memoFolderId = memo.memoFolderId,
                         timeTableCellId = memo.timeTableCellId,
-                        imageUrlList = memo.imageUrlList
+                        imageUrlList = imageUrlList.toMutableList()
                     )
                 )
             }
@@ -222,47 +237,84 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     }
 
 
-
-    private fun changeHeightMaxTitleTextView() = with(binding){
+    private fun changeHeightMaxTitleTextView() = with(binding) {
         val lp = titleEditText.layoutParams
         lp.height = ConstraintLayout.LayoutParams.MATCH_PARENT
         titleEditText.layoutParams = lp
     }
 
 
-    private fun changeHeightMinTitleTextView() = with(binding){
+    private fun changeHeightMinTitleTextView() = with(binding) {
         val lp = titleEditText.layoutParams
-        lp.height =ConstraintLayout.LayoutParams.WRAP_CONTENT
+        lp.height = ConstraintLayout.LayoutParams.WRAP_CONTENT
         titleEditText.layoutParams = lp
     }
 
 
-    private fun showRecyclerView() = with(binding){
+    private fun showRecyclerView() = with(binding) {
         recyclerView.visibility = View.VISIBLE
+        recyclerView.layoutManager = GridLayoutManager(context, PagingConstants.DEFAULT_SPAN_COUNT)
+
+        val adapter = MemoImageAdapter(object : MediaImageClickListener {
+            override fun itemClick(view: View, item: MediaItem, position: Int) {
+            }
+        })
+
+        adapter.setUrlList(imageUrlList.toMutableList())
+        recyclerView.adapter = adapter
+
+        showRecyclerViewButton.setImageDrawable(
+            ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.ic_baseline_keyboard_arrow_down_24
+            )
+        )
+    }
+
+    private fun hideRecyclerView() = with(binding) {
+        recyclerView.isGone = true
         showRecyclerViewButton.setImageDrawable(
             ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_up_24)
         )
     }
 
-    private fun hideRecyclerView() = with(binding){
-        recyclerView.isGone = true
-        showRecyclerViewButton.setImageDrawable(
-            ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_down_24)
-        )
-    }
-
-
 
     private fun saveFile(mediaArray: ArrayList<Media>) {
-        mediaArray.forEach { media->
+        mediaArray.forEach { media ->
             saveFile(media.getUri(), media.name)
         }
+
+
+        val titleStr = binding.titleEditText.text.toString()
+        val memoStr = binding.memoEditText.text.toString()
+
+        if (memo.id != -1L) {
+            viewModel.updateMemo(
+                MemoEntity(
+                    memoId = memo.id,
+                    title = titleStr,
+                    memo = memoStr,
+                    time = System.currentTimeMillis(),
+                    memoFolderId = memo.memoFolderId,
+                    timeTableCellId = memo.timeTableCellId,
+                    imageUrlList = imageUrlList.toMutableList()
+                )
+            )
+        }
+
+
+
         showRecyclerView()
     }
 
-    private fun saveFile(uri: Uri , name :String) {
+    private fun saveFile(uri: Uri, name: String) {
         val bimMap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ImageDecoder.decodeBitmap(ImageDecoder.createSource(requireActivity().contentResolver, uri))
+            ImageDecoder.decodeBitmap(
+                ImageDecoder.createSource(
+                    requireActivity().contentResolver,
+                    uri
+                )
+            )
         } else {
             MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri)
         }
@@ -281,12 +333,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
                 stream.flush()
                 stream.close()
 
-                viewModel.saveImageUrl(imageFile.absolutePath)
-
-                Glide.with(binding.showRecyclerViewButton)
-                    .load(imageFile.absolutePath)
-                    .into(binding.showRecyclerViewButton)
-
+                imageUrlList.add(imageFile.absolutePath)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
                 Toast.makeText(requireContext(), "Save Failed", Toast.LENGTH_SHORT).show()
@@ -304,7 +351,8 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     }
 
     private fun createExternalFolder(): File {
-        val file = File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/memo")
+        val file =
+            File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/memo")
 
         if (!file.exists()) {
             file.mkdirs();
@@ -327,7 +375,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
             .show()
     }
 
-    companion object{
+    companion object {
         const val GET_IMAGE = "get_image"
     }
 }

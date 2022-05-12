@@ -48,10 +48,10 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:background="@color/gray">
+        app:layout_constraintStart_toStartOf="parent">
 
         <ImageView
             android:id="@+id/galleryButton"
@@ -100,11 +100,12 @@
             android:id="@+id/recyclerView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/galleryButton"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:visibility="gone"/>
+            app:layout_constraintHeight_max="300dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/galleryButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

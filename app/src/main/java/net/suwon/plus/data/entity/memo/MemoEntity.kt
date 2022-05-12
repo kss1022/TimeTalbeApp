@@ -25,6 +25,6 @@ data class MemoEntity (
         time= time,
         memoFolderId =memoFolderId,
         timeTableCellId = timeTableCellId,
-//        imageUrlList =  imageUrlList
+        imageUrlList =  imageUrlList
     )
 }
