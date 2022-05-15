@@ -23,7 +23,7 @@ class MemoImageAdapter(private val clickListener: MediaImageClickListener) :
 
     override fun onBindViewHolder(holder: MemoImageViewHolder, position: Int) {
             holder.bindData(urlList[position])
-            holder.bindView(urlList[position], clickListener)
+            holder.bindView(position, clickListener)
     }
 
 
@@ -33,8 +33,11 @@ class MemoImageAdapter(private val clickListener: MediaImageClickListener) :
                 .load(url)
                 .into(binding.image)
         }
-        fun bindView(url : String, clickListener: MediaImageClickListener){
 
+        fun bindView(position: Int , clickListener: MediaImageClickListener){
+            binding.root.setOnClickListener {
+                clickListener.itemClick(position)
+            }
         }
     }
 

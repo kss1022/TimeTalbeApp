@@ -28,13 +28,13 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import net.suwon.plus.R
 import net.suwon.plus.data.entity.media.Media
-import net.suwon.plus.data.entity.media.MediaItem
 import net.suwon.plus.data.entity.memo.MemoEntity
 import net.suwon.plus.databinding.FragmentEditMemoBinding
 import net.suwon.plus.extensions.toReadableDateString
 import net.suwon.plus.extensions.toReadableTimeString
 import net.suwon.plus.model.MemoModel
 import net.suwon.plus.ui.base.BaseFragment
+import net.suwon.plus.ui.main.memo.folder.editmemo.editimage.EditImageDetailActivity
 import net.suwon.plus.ui.main.memo.folder.editmemo.gallery.GalleryActivity
 import net.suwon.plus.util.PagingConstants
 import net.suwon.plus.widget.adapter.mediaadpater.MediaImageClickListener
@@ -69,7 +69,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     private var needSave = true
 
     private val imageUrlList by lazy {
-        memo.imageUrlList.toMutableSet()
+        memo.imageUrlList.toMutableList()
     }
 
     private val permissionLauncher =
@@ -92,8 +92,21 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
                     saveFile(mediaArray)
                 }
             }
-
         }
+
+    private val editImageDetailLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
+            if(result.resultCode == Activity.RESULT_OK){
+                result.data?.let { intent->
+                    needSave = true
+                    val mediaArray: ArrayList<String> =
+                        intent.getStringArrayListExtra(DELETE_IMAGE) ?: ArrayList()
+                    deleteFile(mediaArray)
+                }
+            }
+        }
+
+
 
 
     override fun onAttach(context: Context) {
@@ -208,14 +221,14 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         val memoStr = binding.memoEditText.text.toString()
 
         if (memo.id == -1L) {
-            if ((titleStr.isEmpty() && memoStr.isEmpty()).not()) {
+            if ((titleStr.isEmpty() && memoStr.isEmpty()).not() || imageUrlList.isNullOrEmpty().not()) {
                 viewModel.insertMemo(
                     MemoEntity(
                         title = titleStr,
                         memo = memoStr,
                         time = System.currentTimeMillis(),
                         memoFolderId = memo.memoFolderId,
-                        imageUrlList = imageUrlList.toMutableList()
+                        imageUrlList = imageUrlList
                     )
                 )
             }
@@ -229,7 +242,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
                         time = System.currentTimeMillis(),
                         memoFolderId = memo.memoFolderId,
                         timeTableCellId = memo.timeTableCellId,
-                        imageUrlList = imageUrlList.toMutableList()
+                        imageUrlList = imageUrlList
                     )
                 )
             }
@@ -256,11 +269,15 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         recyclerView.layoutManager = GridLayoutManager(context, PagingConstants.DEFAULT_SPAN_COUNT)
 
         val adapter = MemoImageAdapter(object : MediaImageClickListener {
-            override fun itemClick(view: View, item: MediaItem, position: Int) {
+            override fun itemClick(position: Int) {
+                editImageDetailLauncher.launch(EditImageDetailActivity.newIntent(requireContext()).apply {
+                    putExtra(EXTRA_IMAGE_LIST , ArrayList(imageUrlList))
+                    putExtra(EXTRA_IMAGE_POSITION, position)
+                })
             }
         })
 
-        adapter.setUrlList(imageUrlList.toMutableList())
+        adapter.setUrlList(imageUrlList)
         recyclerView.adapter = adapter
 
         showRecyclerViewButton.setImageDrawable(
@@ -297,7 +314,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
                     time = System.currentTimeMillis(),
                     memoFolderId = memo.memoFolderId,
                     timeTableCellId = memo.timeTableCellId,
-                    imageUrlList = imageUrlList.toMutableList()
+                    imageUrlList = imageUrlList
                 )
             )
         }
@@ -325,7 +342,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
             //Create folder if is not exists
             val file = createExternalFolder()
             try {
-                val imageFile = File(file, "${name}.png")
+                val imageFile = File(file, "${name}.${System.currentTimeMillis()}.png")
 
                 val stream = FileOutputStream(imageFile)
                 bimMap.compress(Bitmap.CompressFormat.PNG, 100, stream)
@@ -349,6 +366,17 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         }
 
     }
+
+
+    private fun deleteFile(mediaArray: ArrayList<String>) {
+        mediaArray.forEach { url->
+            imageUrlList.remove(url)
+            File(url).delete()
+        }
+
+        showRecyclerView()
+    }
+
 
     private fun createExternalFolder(): File {
         val file =
@@ -377,5 +405,9 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
 
     companion object {
         const val GET_IMAGE = "get_image"
+        const val DELETE_IMAGE = "delete_image"
+
+        const val EXTRA_IMAGE_LIST ="image_list"
+        const val EXTRA_IMAGE_POSITION ="image_position"
     }
 }

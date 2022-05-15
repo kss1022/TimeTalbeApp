@@ -11,6 +11,7 @@ import net.suwon.plus.data.entity.memo.FolderEntity
 import net.suwon.plus.data.entity.memo.FolderWithMemo
 import net.suwon.plus.data.entity.memo.MemoEntity
 import net.suwon.plus.model.MemoModel
+import java.io.File
 import javax.inject.Inject
 
 class DefaultMemoRepository @Inject constructor(
@@ -70,7 +71,7 @@ class DefaultMemoRepository @Inject constructor(
 
             val noticeFolder = getFolder(bookMarkNoticeEntity.noticeFolderId)
             memoDao.updateFolder(
-                noticeFolder.copy(count = noticeFolder.count+1)
+                noticeFolder.copy(count = noticeFolder.count + 1)
             )
         }
 
@@ -79,11 +80,11 @@ class DefaultMemoRepository @Inject constructor(
 
         val noticeFolder = getFolder(1)
         memoDao.updateFolder(
-            noticeFolder.copy(count = noticeFolder.count -1)
+            noticeFolder.copy(count = noticeFolder.count - 1)
         )
     }
 
-    override suspend fun getMemo(id: Long): MemoEntity = withContext(ioDispatcher){
+    override suspend fun getMemo(id: Long): MemoEntity = withContext(ioDispatcher) {
         memoDao.getMemo(id)
     }
 
@@ -102,28 +103,35 @@ class DefaultMemoRepository @Inject constructor(
     }
 
     override suspend fun changeFolder(model: MemoModel, folderId: Long) {
-        memoDao.updateMemo(MemoEntity(
-            memoId = model.id,
-            title = model.title,
-            memo = model.memo,
-            time = model.time,
-            memoFolderId = folderId,
-            timeTableCellId = model.timeTableCellId
-        ))
+        memoDao.updateMemo(
+            MemoEntity(
+                memoId = model.id,
+                title = model.title,
+                memo = model.memo,
+                time = model.time,
+                memoFolderId = folderId,
+                timeTableCellId = model.timeTableCellId
+            )
+        )
 
         val currentFolder = getFolder(model.memoFolderId)
-        val changeFolder  = getFolder(folderId)
+        val changeFolder = getFolder(folderId)
 
-        memoDao.updateFolder(currentFolder.copy(count = currentFolder.count-1))
-        memoDao.updateFolder(changeFolder.copy(count = changeFolder.count+1))
+        memoDao.updateFolder(currentFolder.copy(count = currentFolder.count - 1))
+        memoDao.updateFolder(changeFolder.copy(count = changeFolder.count + 1))
     }
 
     override suspend fun deleteMemo(memoModel: MemoModel) {
         memoDao.deleteMemo(memoModel.id)
 
+        memoModel.imageUrlList.forEach { url ->
+            File(url).delete()
+        }
+
+
         val memoFolder = memoDao.getFolder(memoModel.memoFolderId)
         memoDao.updateFolder(
-            memoFolder.copy(count = memoFolder.count-1)
+            memoFolder.copy(count = memoFolder.count - 1)
         )
     }
 }

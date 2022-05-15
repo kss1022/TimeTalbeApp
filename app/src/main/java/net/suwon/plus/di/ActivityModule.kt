@@ -9,6 +9,8 @@ import net.suwon.plus.ui.main.home.login.AuthActivity
 import net.suwon.plus.ui.main.home.login.AuthActivityModule
 import net.suwon.plus.ui.main.home.setting.SettingActivity
 import net.suwon.plus.ui.main.home.setting.SettingActivityModule
+import net.suwon.plus.ui.main.memo.folder.editmemo.editimage.EditImageDetailActivity
+import net.suwon.plus.ui.main.memo.folder.editmemo.editimage.EditImageDetailActivityModule
 import net.suwon.plus.ui.main.memo.folder.editmemo.gallery.GalleryActivity
 import net.suwon.plus.ui.main.memo.folder.editmemo.gallery.GalleryActivityModule
 import net.suwon.plus.ui.main.time_table.addTimeTable.addcell.AddTimeTableCellActivity
@@ -82,4 +84,12 @@ abstract class ActivityModule {
     abstract fun getGalleryActivity() : GalleryActivity
 
 
+    @ActivityScope
+    @ContributesAndroidInjector(
+        modules = [
+            EditImageDetailActivityModule::class,
+            ViewModelBuilder::class
+        ]
+    )
+    abstract fun getEditImageDetailActivity() : EditImageDetailActivity
 }
