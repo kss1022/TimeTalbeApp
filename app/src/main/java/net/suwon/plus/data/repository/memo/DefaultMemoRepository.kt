@@ -89,13 +89,15 @@ class DefaultMemoRepository @Inject constructor(
     }
 
     //Memo
-    override suspend fun insertMemo(memoEntity: MemoEntity) = withContext(ioDispatcher) {
-        memoDao.insertMemo(memoEntity)
+    override suspend fun insertMemo(memoEntity: MemoEntity) : Long = withContext(ioDispatcher) {
+        val id = memoDao.insertMemo(memoEntity)
 
         val memoFolder = getFolder(memoEntity.memoFolderId)
         memoDao.updateFolder(
             memoFolder.copy(count = memoFolder.count + 1)
         )
+
+        id
     }
 
     override suspend fun updateMemo(memoEntity: MemoEntity) = withContext(ioDispatcher) {
@@ -123,6 +125,22 @@ class DefaultMemoRepository @Inject constructor(
 
     override suspend fun deleteMemo(memoModel: MemoModel) {
         memoDao.deleteMemo(memoModel.id)
+
+        memoModel.imageUrlList.forEach { url ->
+            File(url).delete()
+        }
+
+
+        val memoFolder = memoDao.getFolder(memoModel.memoFolderId)
+        memoDao.updateFolder(
+            memoFolder.copy(count = memoFolder.count - 1)
+        )
+    }
+
+    override suspend fun deleteMemo(id: Long) {
+        val memoModel = memoDao.getMemo(id)
+
+        memoDao.deleteMemo(id)
 
         memoModel.imageUrlList.forEach { url ->
             File(url).delete()

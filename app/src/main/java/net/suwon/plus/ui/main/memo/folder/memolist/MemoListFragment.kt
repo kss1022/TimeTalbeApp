@@ -6,6 +6,7 @@ import android.content.Context
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isGone
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 import net.suwon.plus.databinding.FragmentMemoListBinding
 import net.suwon.plus.model.MemoModel
 import net.suwon.plus.ui.base.BaseFragment
+import net.suwon.plus.ui.main.MainActivitySharedViewModel
 import net.suwon.plus.ui.main.memo.folder.FolderSelectSheetFragment
 import net.suwon.plus.util.SwipeHelperCallback
 import net.suwon.plus.util.provider.ResourceProvider
@@ -33,6 +35,8 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
     override lateinit var viewModelFactory: ViewModelProvider.Factory
 
     override val viewModel: MemoListViewModel by viewModels { viewModelFactory }
+    private val sharedViewModel: MainActivitySharedViewModel by activityViewModels { viewModelFactory }
+
 
     override fun getViewBinding(): FragmentMemoListBinding =
         FragmentMemoListBinding.inflate(layoutInflater)
@@ -71,16 +75,22 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
     }
 
 
-    override fun observeData() = viewModel.memoListStateLiveData.observe(viewLifecycleOwner) {
-        when (it) {
-            is MemoListState.Loading -> {
-                handleLoadingState()
-            }
-            is MemoListState.Success -> {
-                handleSuccessState(it)
-            }
+    override fun observeData() {
+        viewModel.memoListStateLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+                is MemoListState.Loading -> {
+                    handleLoadingState()
+                }
+                is MemoListState.Success -> {
+                    handleSuccessState(it)
+                }
 
-            else -> Unit
+                else -> Unit
+            }
+        }
+
+        sharedViewModel.memoUpdateLiveData.observe(viewLifecycleOwner){
+            viewModel.fetchData()
         }
     }
 

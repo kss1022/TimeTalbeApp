@@ -37,11 +37,13 @@ interface MemoRepository {
     //Memo
     suspend fun getMemo(id : Long) : MemoEntity
 
-    suspend fun insertMemo(memoEntity: MemoEntity)
+    suspend fun insertMemo(memoEntity: MemoEntity) : Long
 
     suspend fun updateMemo(memoEntity: MemoEntity)
 
     suspend fun changeFolder(memoEntity: MemoModel, folderId: Long)
 
     suspend fun deleteMemo(memoModel: MemoModel)
+
+    suspend fun deleteMemo(id: Long)
 }

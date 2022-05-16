@@ -56,4 +56,36 @@ class MemoListViewModel @Inject constructor(
         }
     }
 
+
+    fun updateMemo(memoId: Long ) = viewModelScope.launch {
+        if(memoId == -1L){
+            when (val data = memoListStateLiveData.value) {
+                is MemoListState.Success -> {
+                    val db = data.memoList.toMutableList().apply {
+                        removeIf { it.id == memoId }
+                    }
+
+
+                    memoListStateLiveData.value = MemoListState.Success(db)
+                }
+            }
+            return@launch
+        }
+
+        val memo = memoRepository.getMemo(memoId).toModel()
+
+        when (val data = memoListStateLiveData.value) {
+            is MemoListState.Success -> {
+                val db = data.memoList.toMutableList().apply {
+                    removeIf { it.id == memoId }
+                    add(memo)
+                }
+
+
+                memoListStateLiveData.value = MemoListState.Success(db)
+            }
+        }
+    }
+
+
 }

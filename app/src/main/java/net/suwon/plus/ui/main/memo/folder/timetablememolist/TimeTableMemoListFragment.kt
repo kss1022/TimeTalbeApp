@@ -13,6 +13,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -31,6 +32,7 @@ import net.suwon.plus.databinding.FragmentTimeTableMemoListBinding
 import net.suwon.plus.extensions.fromDpToPx
 import net.suwon.plus.model.MemoModel
 import net.suwon.plus.ui.base.BaseFragment
+import net.suwon.plus.ui.main.MainActivitySharedViewModel
 import net.suwon.plus.ui.main.memo.folder.FolderSelectSheetFragment
 import net.suwon.plus.ui.main.memo.folder.memolist.MemoListFragmentArgs
 import net.suwon.plus.util.SwipeHelperCallback
@@ -47,6 +49,7 @@ class TimeTableMemoListFragment :
     override lateinit var viewModelFactory: ViewModelProvider.Factory
 
     override val viewModel: TimeTableMemoListViewModel by viewModels { viewModelFactory }
+    private val sharedViewModel: MainActivitySharedViewModel by activityViewModels { viewModelFactory }
 
 
     override fun getViewBinding(): FragmentTimeTableMemoListBinding =
@@ -83,7 +86,7 @@ class TimeTableMemoListFragment :
         swipeHelperList.clear()
     }
 
-    override fun observeData() =
+    override fun observeData() {
         viewModel.timetableMemoListStateLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is TimeTableMemoListState.Loading -> {
@@ -105,6 +108,13 @@ class TimeTableMemoListFragment :
             }
         }
 
+
+        sharedViewModel.memoUpdateLiveData.observe(viewLifecycleOwner){
+            it?.let {
+                viewModel.updateMemo(it)
+            }
+        }
+    }
 
     private fun handleLoadingState() = with(binding) {
         progressBar.visibility = View.VISIBLE

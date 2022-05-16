@@ -26,7 +26,12 @@ abstract class ActivityModule {
 
 
     @ActivityScope
-    @ContributesAndroidInjector(modules = [(MainActivityModule::class)])
+    @ContributesAndroidInjector(
+        modules = [
+            MainActivityModule::class,
+            ViewModelBuilder::class
+        ]
+    )
     abstract fun getMainActivity(): MainActivity
 
 
@@ -72,7 +77,7 @@ abstract class ActivityModule {
             ViewModelBuilder::class
         ]
     )
-    abstract fun getSettingActivity() : SettingActivity
+    abstract fun getSettingActivity(): SettingActivity
 
     @ActivityScope
     @ContributesAndroidInjector(
@@ -81,7 +86,7 @@ abstract class ActivityModule {
             ViewModelBuilder::class
         ]
     )
-    abstract fun getGalleryActivity() : GalleryActivity
+    abstract fun getGalleryActivity(): GalleryActivity
 
 
     @ActivityScope
@@ -91,5 +96,5 @@ abstract class ActivityModule {
             ViewModelBuilder::class
         ]
     )
-    abstract fun getEditImageDetailActivity() : EditImageDetailActivity
+    abstract fun getEditImageDetailActivity(): EditImageDetailActivity
 }

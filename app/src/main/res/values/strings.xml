@@ -138,11 +138,14 @@
     <string name="editTime">"%s %s  수정됨"</string>
 
     <string name="add">추가</string>
-
+    <string name="save_image">사진을 저장중입니다. ( %d / %d )</string>
+    <string name="save_image_with_count">사진을 저장중입니다. ( %d / %d )</string>
+    <string name="save_image_is_not_finish">사진 저장이 완료되지 않았습니다</string>
 
     <!--gallery-->
     <string name="please_check_storage_permission">[애플리케이션 정보 > 권한]에서 [저장소] 권한을 허용하고 다시 해보세요</string>
     <string name="detail_setting">상세설정</string>
     <string name="complete">완료</string>
     <string name="album">앨범</string>
+
 </resources>

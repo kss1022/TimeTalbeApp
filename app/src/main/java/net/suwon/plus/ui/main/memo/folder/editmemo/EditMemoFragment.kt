@@ -4,16 +4,10 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.View
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -21,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -34,20 +29,15 @@ import net.suwon.plus.extensions.toReadableDateString
 import net.suwon.plus.extensions.toReadableTimeString
 import net.suwon.plus.model.MemoModel
 import net.suwon.plus.ui.base.BaseFragment
+import net.suwon.plus.ui.main.MainActivitySharedViewModel
 import net.suwon.plus.ui.main.memo.folder.editmemo.editimage.EditImageDetailActivity
 import net.suwon.plus.ui.main.memo.folder.editmemo.gallery.GalleryActivity
 import net.suwon.plus.util.PagingConstants
 import net.suwon.plus.widget.adapter.mediaadpater.MediaImageClickListener
 import net.suwon.plus.widget.adapter.mediaadpater.MemoImageAdapter
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
 import java.util.*
 import javax.inject.Inject
 
-//todo 뒤로 가기 했을떄 바로 저장할것인지 물어본다.
-// 설정에서 Auto Save 할 것인지 설정가능하게 만든다.
 
 
 class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding>() {
@@ -56,6 +46,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     override lateinit var viewModelFactory: ViewModelProvider.Factory
 
     override val viewModel: EditMemoViewModel by viewModels { viewModelFactory }
+    private val sharedViewModel: MainActivitySharedViewModel by activityViewModels { viewModelFactory }
 
     override fun getViewBinding(): FragmentEditMemoBinding =
         FragmentEditMemoBinding.inflate(layoutInflater)
@@ -68,14 +59,14 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     private lateinit var memo: MemoModel
     private var needSave = true
 
-    private val imageUrlList by lazy {
-        memo.imageUrlList.toMutableList()
-    }
+    private lateinit var imageUrlList: MutableList<String>
+
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            needSave = false
+
             if (granted) {
-                needSave = false
                 galleryLauncher.launch(GalleryActivity.newIntent(requireContext()))
             } else {
                 showSystemSettingDialog(requireActivity())
@@ -84,29 +75,32 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
 
     private val galleryLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            needSave = true
+
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.let { intent ->
-                    needSave = true
                     val mediaArray: ArrayList<Media> =
                         intent.getParcelableArrayListExtra(GET_IMAGE) ?: ArrayList()
-                    saveFile(mediaArray)
+
+                    sharedViewModel.setSaveImageList(mediaArray)
+                    invalidImageUrl(mediaArray)
                 }
             }
         }
 
+
     private val editImageDetailLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()){ result->
-            if(result.resultCode == Activity.RESULT_OK){
-                result.data?.let { intent->
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.let { intent ->
                     needSave = true
                     val mediaArray: ArrayList<String> =
                         intent.getStringArrayListExtra(DELETE_IMAGE) ?: ArrayList()
+                    sharedViewModel.setDeleteImageList(mediaArray)
                     deleteFile(mediaArray)
                 }
             }
         }
-
-
 
 
     override fun onAttach(context: Context) {
@@ -127,16 +121,27 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
 
 
     override fun observeData() {
+        viewModel.insertMemoState.observe(viewLifecycleOwner) { memoModel ->
+            memoModel?.let {
+                memo = memoModel
+                imageUrlList = memo.imageUrlList.toMutableList()
+            }
+        }
     }
 
-    override fun onStop() {
-        if (needSave) saveMemo()
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
+        if (needSave) {
+            updateMemo()
+        }
     }
 
 
     override fun initViews() {
         memo = argument.memo
+        viewModel.memo = memo
+        imageUrlList = memo.imageUrlList.toMutableList()
+
 
         initMemo()
         bindViews()
@@ -165,7 +170,6 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
                 date.toReadableTimeString()
             )
         }
-
     }
 
     private fun bindViews() = with(binding) {
@@ -202,6 +206,7 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         }
 
         galleryButton.setOnClickListener {
+            needSave =false
             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
@@ -216,25 +221,16 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     }
 
 
-    private fun saveMemo() {
+    private fun updateMemo() {
         val titleStr = binding.titleEditText.text.toString()
         val memoStr = binding.memoEditText.text.toString()
 
-        if (memo.id == -1L) {
-            if ((titleStr.isEmpty() && memoStr.isEmpty()).not() || imageUrlList.isNullOrEmpty().not()) {
-                viewModel.insertMemo(
-                    MemoEntity(
-                        title = titleStr,
-                        memo = memoStr,
-                        time = System.currentTimeMillis(),
-                        memoFolderId = memo.memoFolderId,
-                        imageUrlList = imageUrlList
-                    )
-                )
-            }
+
+        if ((titleStr.isEmpty() && memoStr.isEmpty()) && imageUrlList.isNullOrEmpty()) {
+            sharedViewModel.deleteMemo(memo.id)
         } else {
-            if ((titleStr == memo.title && memoStr == memo.memo).not()) {
-                viewModel.updateMemo(
+            if ((titleStr == memo.title && memoStr == memo.memo && imageUrlList.toList() == memo.imageUrlList).not()) {
+                sharedViewModel.updateMemo(
                     MemoEntity(
                         memoId = memo.id,
                         title = titleStr,
@@ -242,9 +238,10 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
                         time = System.currentTimeMillis(),
                         memoFolderId = memo.memoFolderId,
                         timeTableCellId = memo.timeTableCellId,
-                        imageUrlList = imageUrlList
                     )
                 )
+
+                sharedViewModel.invalidMemo(memo.id, imageUrlList)
             }
         }
     }
@@ -266,14 +263,18 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
 
     private fun showRecyclerView() = with(binding) {
         recyclerView.visibility = View.VISIBLE
-        recyclerView.layoutManager = GridLayoutManager(context, PagingConstants.DEFAULT_SPAN_COUNT)
+        recyclerView.layoutManager =
+            GridLayoutManager(context, PagingConstants.DEFAULT_SPAN_COUNT)
+
 
         val adapter = MemoImageAdapter(object : MediaImageClickListener {
             override fun itemClick(position: Int) {
-                editImageDetailLauncher.launch(EditImageDetailActivity.newIntent(requireContext()).apply {
-                    putExtra(EXTRA_IMAGE_LIST , ArrayList(imageUrlList))
-                    putExtra(EXTRA_IMAGE_POSITION, position)
-                })
+                needSave = false
+                editImageDetailLauncher.launch(
+                    EditImageDetailActivity.newIntent(requireContext()).apply {
+                        putExtra(EXTRA_IMAGE_LIST, ArrayList(imageUrlList))
+                        putExtra(EXTRA_IMAGE_POSITION, position)
+                    })
             }
         })
 
@@ -291,102 +292,28 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
     private fun hideRecyclerView() = with(binding) {
         recyclerView.isGone = true
         showRecyclerViewButton.setImageDrawable(
-            ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_keyboard_arrow_up_24)
+            ContextCompat.getDrawable(
+                requireContext(),
+                R.drawable.ic_baseline_keyboard_arrow_up_24
+            )
         )
     }
 
 
-    private fun saveFile(mediaArray: ArrayList<Media>) {
+    private fun invalidImageUrl(mediaArray: ArrayList<Media>) {
         mediaArray.forEach { media ->
-            saveFile(media.getUri(), media.name)
+            imageUrlList.add(media.getUri().toString())
         }
-
-
-        val titleStr = binding.titleEditText.text.toString()
-        val memoStr = binding.memoEditText.text.toString()
-
-        if (memo.id != -1L) {
-            viewModel.updateMemo(
-                MemoEntity(
-                    memoId = memo.id,
-                    title = titleStr,
-                    memo = memoStr,
-                    time = System.currentTimeMillis(),
-                    memoFolderId = memo.memoFolderId,
-                    timeTableCellId = memo.timeTableCellId,
-                    imageUrlList = imageUrlList
-                )
-            )
-        }
-
-
-
         showRecyclerView()
-    }
-
-    private fun saveFile(uri: Uri, name: String) {
-        val bimMap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ImageDecoder.decodeBitmap(
-                ImageDecoder.createSource(
-                    requireActivity().contentResolver,
-                    uri
-                )
-            )
-        } else {
-            MediaStore.Images.Media.getBitmap(requireActivity().contentResolver, uri)
-        }
-
-
-        if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-
-            //Create folder if is not exists
-            val file = createExternalFolder()
-            try {
-                val imageFile = File(file, "${name}.${System.currentTimeMillis()}.png")
-
-                val stream = FileOutputStream(imageFile)
-                bimMap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-
-                stream.flush()
-                stream.close()
-
-                imageUrlList.add(imageFile.absolutePath)
-            } catch (e: FileNotFoundException) {
-                e.printStackTrace()
-                Toast.makeText(requireContext(), "Save Failed", Toast.LENGTH_SHORT).show()
-                return
-            } catch (e: IOException) {
-                e.printStackTrace()
-                Toast.makeText(requireContext(), "Save Failed", Toast.LENGTH_SHORT).show()
-                return
-            }
-
-        } else {
-            Toast.makeText(requireContext(), "Directory can't use", Toast.LENGTH_SHORT).show()
-        }
-
     }
 
 
     private fun deleteFile(mediaArray: ArrayList<String>) {
-        mediaArray.forEach { url->
+        mediaArray.forEach { url ->
             imageUrlList.remove(url)
-            File(url).delete()
         }
 
         showRecyclerView()
-    }
-
-
-    private fun createExternalFolder(): File {
-        val file =
-            File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/memo")
-
-        if (!file.exists()) {
-            file.mkdirs();
-        }
-
-        return file
     }
 
 
@@ -407,7 +334,9 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         const val GET_IMAGE = "get_image"
         const val DELETE_IMAGE = "delete_image"
 
-        const val EXTRA_IMAGE_LIST ="image_list"
-        const val EXTRA_IMAGE_POSITION ="image_position"
+        const val EXTRA_IMAGE_LIST = "image_list"
+        const val EXTRA_IMAGE_POSITION = "image_position"
     }
 }
+
+

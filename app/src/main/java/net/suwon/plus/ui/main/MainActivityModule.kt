@@ -1,9 +1,15 @@
 package net.suwon.plus.ui.main
 
 
+import android.app.Application
+import androidx.lifecycle.ViewModel
+import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.android.ContributesAndroidInjector
+import dagger.multibindings.IntoMap
 import net.suwon.plus.di.ViewModelBuilder
+import net.suwon.plus.di.ViewModelKey
 import net.suwon.plus.di.scope.FragmentScope
 import net.suwon.plus.ui.main.home.HomeFragment
 import net.suwon.plus.ui.main.home.HomeFragmentModule
@@ -28,6 +34,13 @@ import net.suwon.plus.ui.main.time_table.TimeTableFragmentModule
 
 @Module()
 abstract class MainActivityModule {
+
+    companion object {
+        @Provides
+        fun provideApplication(activity: MainActivity): Application {
+            return activity.application
+        }
+    }
 
 
     @FragmentScope
@@ -122,5 +135,13 @@ abstract class MainActivityModule {
     @FragmentScope
     @ContributesAndroidInjector
     protected abstract fun getFolderSelectBottomFragment(): FolderSelectSheetFragment
+
+
+
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(MainActivitySharedViewModel::class)
+    abstract fun bindViewModel(viewModel: MainActivitySharedViewModel): ViewModel
 
 }
