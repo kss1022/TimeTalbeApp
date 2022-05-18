@@ -16,7 +16,7 @@ data class MemoEntity (
     val time : Long = System.currentTimeMillis(),
     val memoFolderId : Long,
     val timeTableCellId : Long? = null,
-    val imageUrlList : List<String> = listOf()
+    val imageUrlList : List<MemoImage> = listOf()
 ) {
     fun toModel(): MemoModel = MemoModel(
         id = memoId,

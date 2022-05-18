@@ -14,6 +14,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.suwon.plus.data.entity.media.Media
 import net.suwon.plus.data.entity.memo.MemoEntity
+import net.suwon.plus.data.entity.memo.MemoImage
+import net.suwon.plus.data.preference.PreferenceManager
 import net.suwon.plus.data.repository.memo.MemoRepository
 import net.suwon.plus.ui.base.BaseViewModel
 import net.suwon.plus.util.lifecycle.SingleLiveEvent
@@ -24,83 +26,83 @@ import java.io.IOException
 import javax.inject.Inject
 
 
-
-
 class MainActivitySharedViewModel @Inject constructor(
     private val app: Application,
-    private val memoRepository: MemoRepository
+    private val memoRepository: MemoRepository,
+    private val preferenceManager: PreferenceManager
 ) : BaseViewModel() {
 
-    private lateinit var imageUrlList: MutableList<String>
 
-    private var saveImageList = mutableListOf<Media>()
-    private var deleteImageList = mutableListOf<String>()
     val memoUpdateLiveData = SingleLiveEvent<Long>()
 
+    private lateinit var file: File
 
-    fun updateMemo( memoEntity: MemoEntity) = viewModelScope.launch {
+    fun updateMemo(
+        memoEntity: MemoEntity,
+        addImageList: MutableList<Media>,
+        deleteImageList: MutableList<String>
+    ) = viewModelScope.launch {
         memoRepository.updateMemo(memoEntity)
         memoUpdateLiveData.value = memoEntity.memoId
+
+        updateImage(
+            memoEntity,
+            addImageList,
+            deleteImageList
+        )
     }
 
-    fun deleteMemo(id: Long) = viewModelScope.launch{
+
+    fun deleteMemo(id: Long) = viewModelScope.launch {
         memoRepository.deleteMemo(id)
         memoUpdateLiveData.value = -1
     }
 
-    fun invalidMemo(id: Long, list: MutableList<String>) = viewModelScope.launch{
-        if(id == -1L) return@launch
-        if(saveImageList.isEmpty() && deleteImageList.isEmpty()) return@launch
+    private fun updateImage(
+        memoEntity: MemoEntity,
+        addImageList: MutableList<Media>,
+        deleteImageList: MutableList<String>
+    ) = viewModelScope.launch {
+        if (memoEntity.memoId == -1L) return@launch
+        if (addImageList.isEmpty() && deleteImageList.isEmpty()) return@launch
 
-        val memo = memoRepository.getMemo(id)
-        val defaultUrlList = memo.imageUrlList.toMutableList()
-
-
-        memoRepository.updateMemo(memo.copy(imageUrlList = list))
-        memoUpdateLiveData.value = id
-
-
-        deleteImageList.forEach { delete->
-            val findDefault = defaultUrlList.find { it == delete }
-            val findSave = saveImageList.find { it.getUri().toString() == delete }
-
-
-            findDefault?.let {
-                File(findDefault).delete()
-                defaultUrlList.remove(findDefault)
-            }
-            findSave?.let{ saveImageList.remove(findSave)
-            }
+        if (::file.isInitialized.not()) {
+            file = createExternalFolder()
         }
 
-        imageUrlList = mutableListOf()
-        withContext(Dispatchers.IO){
-            saveImageList.forEach { media ->
-                saveFile(media.getUri(), media.name)
+
+        val savedImageList =  memoEntity.imageUrlList.toMutableList()
+
+        if(deleteImageList.isNullOrEmpty().not()){
+            deleteImageList.forEach {
+                addImageList.forEach { add->
+                    if( add.name == it){
+                        deleteImageList.remove(it)
+                    }
+                }
+            }
+
+            deleteImageList.forEach {
+                File(file.absolutePath +"/"+ it).delete()
             }
         }
 
-        imageUrlList.forEach {
-            defaultUrlList.add(it)
+        if(savedImageList.isNullOrEmpty().not()){
+            withContext(Dispatchers.IO) {
+                for(i in 0 until savedImageList.size){
+                    if(savedImageList[i].isSaved.not()){
+                        saveFile( Uri.parse("${savedImageList[i].url}"),  savedImageList[i].name)
+                        savedImageList[i] = MemoImage(savedImageList[i].name , savedImageList[i].url, true)
+                    }
+                }
+            }
         }
 
-        memoRepository.updateMemo(memo.copy(imageUrlList = defaultUrlList))
-        saveImageList = mutableListOf()
-        deleteImageList = mutableListOf()
-        memoUpdateLiveData.value = id
+        memoRepository.updateMemo(memoEntity.copy(imageUrlList = savedImageList))
+        memoUpdateLiveData.value = memoEntity.memoId
     }
 
 
-
-    fun setSaveImageList(mediaArray: ArrayList<Media>) = viewModelScope.launch {
-        saveImageList = mediaArray
-
-    }
-
-
-    fun setDeleteImageList(mediaArray: ArrayList<String>) = viewModelScope.launch {
-        deleteImageList = mediaArray
-    }
 
 
     private fun saveFile(uri: Uri, name: String) {
@@ -119,17 +121,14 @@ class MainActivitySharedViewModel @Inject constructor(
         if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
 
             //Create folder if is not exists
-            val file = createExternalFolder()
             try {
-                val imageFile = File(file, "${name}.${System.currentTimeMillis()}.png")
+                val imageFile = File(file, name)
 
                 val stream = FileOutputStream(imageFile)
                 bimMap.compress(Bitmap.CompressFormat.PNG, 100, stream)
 
                 stream.flush()
                 stream.close()
-
-                imageUrlList.add(imageFile.absolutePath)
             } catch (e: FileNotFoundException) {
                 e.printStackTrace()
             } catch (e: IOException) {
@@ -143,15 +142,26 @@ class MainActivitySharedViewModel @Inject constructor(
 
 
     private fun createExternalFolder(): File {
-        val file =
-            File(app.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "/memo")
+        val dir = preferenceManager.geFileDir()
 
-        if (!file.exists()) {
-            file.mkdirs();
+        return if (dir == null) {
+            val file =
+                File(app.getExternalFilesDir(Environment.DIRECTORY_PICTURES), DEFAULT_MEMO_DIR)
+
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            preferenceManager.putFileDir(file.absolutePath)
+            file
+        } else {
+            File(dir)
         }
-
-        return file
     }
 
+
+
+    companion object {
+        const val DEFAULT_MEMO_DIR = "/memo"
+    }
 
 }

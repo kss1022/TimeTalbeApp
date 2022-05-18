@@ -2,6 +2,7 @@ package net.suwon.plus.model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import net.suwon.plus.data.entity.memo.MemoImage
 
 
 @Parcelize
@@ -13,5 +14,5 @@ data class MemoModel (
     val time : Long = 0L,
     val memoFolderId : Long,
     val timeTableCellId : Long? = null,
-    val imageUrlList : List<String> = listOf()
+    val imageUrlList : List<MemoImage> = listOf()
 ) : Model(id , type) , Parcelable

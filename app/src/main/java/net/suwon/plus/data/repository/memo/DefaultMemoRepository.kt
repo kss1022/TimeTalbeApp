@@ -10,12 +10,14 @@ import net.suwon.plus.data.entity.memo.BookMarkNoticeEntity
 import net.suwon.plus.data.entity.memo.FolderEntity
 import net.suwon.plus.data.entity.memo.FolderWithMemo
 import net.suwon.plus.data.entity.memo.MemoEntity
+import net.suwon.plus.data.preference.PreferenceManager
 import net.suwon.plus.model.MemoModel
 import java.io.File
 import javax.inject.Inject
 
 class DefaultMemoRepository @Inject constructor(
     private val memoDao: MemoDao,
+    private val preferenceManager: PreferenceManager,
     private val ioDispatcher: CoroutineDispatcher
 ) : MemoRepository {
 
@@ -89,7 +91,7 @@ class DefaultMemoRepository @Inject constructor(
     }
 
     //Memo
-    override suspend fun insertMemo(memoEntity: MemoEntity) : Long = withContext(ioDispatcher) {
+    override suspend fun insertMemo(memoEntity: MemoEntity): Long = withContext(ioDispatcher) {
         val id = memoDao.insertMemo(memoEntity)
 
         val memoFolder = getFolder(memoEntity.memoFolderId)
@@ -126,8 +128,14 @@ class DefaultMemoRepository @Inject constructor(
     override suspend fun deleteMemo(memoModel: MemoModel) {
         memoDao.deleteMemo(memoModel.id)
 
-        memoModel.imageUrlList.forEach { url ->
-            File(url).delete()
+        val defaultUrl = preferenceManager.geFileDir()
+
+        if (defaultUrl != null) {
+            memoModel.imageUrlList.forEach { model ->
+                if (model.isSaved) {
+                    File(defaultUrl + "/" + model.name).delete()
+                }
+            }
         }
 
 
@@ -142,10 +150,15 @@ class DefaultMemoRepository @Inject constructor(
 
         memoDao.deleteMemo(id)
 
-        memoModel.imageUrlList.forEach { url ->
-            File(url).delete()
-        }
+        val defaultUrl = preferenceManager.geFileDir()
 
+        if (defaultUrl != null) {
+            memoModel.imageUrlList.forEach { model ->
+                if (model.isSaved) {
+                    File(defaultUrl + "/" + model.name).delete()
+                }
+            }
+        }
 
         val memoFolder = memoDao.getFolder(memoModel.memoFolderId)
         memoDao.updateFolder(

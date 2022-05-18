@@ -111,7 +111,9 @@ class TimeTableMemoListFragment :
 
         sharedViewModel.memoUpdateLiveData.observe(viewLifecycleOwner){
             it?.let {
-                viewModel.updateMemo(it)
+                if(viewModel.timetableMemoListStateLiveData.value is TimeTableMemoListState.Success){
+                    viewModel.updateMemo(it)
+                }
             }
         }
     }

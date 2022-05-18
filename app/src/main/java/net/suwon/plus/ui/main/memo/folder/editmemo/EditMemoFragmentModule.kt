@@ -7,7 +7,7 @@ import dagger.multibindings.IntoMap
 import net.suwon.plus.di.ViewModelKey
 
 @Module
-interface EditMemoFragmentModule {
+abstract class EditMemoFragmentModule {
 
     @Binds
     @IntoMap

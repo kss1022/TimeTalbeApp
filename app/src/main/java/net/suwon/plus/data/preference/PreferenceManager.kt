@@ -18,7 +18,9 @@ class PreferenceManager(private val preferences: SharedPreferences) {
 
         const val KEY_THEME_TYPE = "THEME_TYPE"
 
-        private const val INVALID_STRING_VALUE = false
+        const val DEFAULT_DIRECTORY_PICTURES_DIR = "DEFAULT_DIRECTORY_PICTURES_DIR"
+
+        private const val INVALID_STRING_VALUE = ""
         private const val INVALID_BOOLEAN_VALUE = false
         private const val INVALID_LONG_VALUE = Long.MIN_VALUE
         private const val INVALID_INT_VALUE = Int.MIN_VALUE
@@ -163,6 +165,26 @@ class PreferenceManager(private val preferences: SharedPreferences) {
 
         return if(value == INVALID_LONG_VALUE){
              null
+        }else{
+            value
+        }
+    }
+
+
+    /**
+     * IMINAGE DIRECTORY
+     */
+
+    fun putFileDir(dir : String){
+        editor.putString(DEFAULT_DIRECTORY_PICTURES_DIR, dir)
+        editor.apply()
+    }
+
+    fun geFileDir() : String?{
+        val value = preferences.getString(DEFAULT_DIRECTORY_PICTURES_DIR, INVALID_STRING_VALUE)
+
+        return if(value == INVALID_STRING_VALUE){
+            null
         }else{
             value
         }

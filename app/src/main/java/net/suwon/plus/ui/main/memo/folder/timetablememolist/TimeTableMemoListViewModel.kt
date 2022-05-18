@@ -69,8 +69,6 @@ class TimeTableMemoListViewModel @Inject constructor(
                     val db = data.memoList.toMutableList().apply {
                         removeIf { it.id == memoId }
                     }
-
-
                     timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
                 }
 
@@ -79,7 +77,6 @@ class TimeTableMemoListViewModel @Inject constructor(
                     val db = data.memoList.toMutableList().apply {
                         removeIf { it.id == memoId }
                     }
-
                     timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
                 }
             }
@@ -94,8 +91,6 @@ class TimeTableMemoListViewModel @Inject constructor(
                     removeIf { it.id == memoId }
                     add(memo)
                 }
-
-
                 timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
             }
 
@@ -105,7 +100,6 @@ class TimeTableMemoListViewModel @Inject constructor(
                     removeIf { it.id == memoId }
                     add(memo)
                 }
-
                 timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
             }
         }

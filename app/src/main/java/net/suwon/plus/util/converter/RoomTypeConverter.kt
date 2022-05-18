@@ -3,6 +3,7 @@ package net.suwon.plus.util.converter
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import com.google.gson.Gson
+import net.suwon.plus.data.entity.memo.MemoImage
 import net.suwon.plus.data.entity.timetable.TimeTableLocationAndTime
 import javax.inject.Inject
 
@@ -23,11 +24,11 @@ class RoomTypeConverter @Inject constructor(
 
 
     @TypeConverter
-    fun urlListToString(value: List<String>?): String? = gson.toJson(value)
+    fun urlListToString(value: List<MemoImage>?): String? = gson.toJson(value)
 
 
     @TypeConverter
-    fun urlStringToList(value: String?): List<String>? =
-        gson.fromJson(value, Array<String>::class.java).toList()
+    fun urlStringToList(value: String?): List<MemoImage>? =
+        gson.fromJson(value, Array<MemoImage>::class.java).toList()
 
 }
