@@ -2,11 +2,9 @@ package net.suwon.plus.ui.main
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
+import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +42,6 @@ class MainActivitySharedViewModel @Inject constructor(
         deleteImageList: MutableList<String>
     ) = viewModelScope.launch {
         memoRepository.updateMemo(memoEntity)
-//        memoUpdateLiveData.value = MemoUpdateState.SAVE
 
         updateImage(
             memoEntity,
@@ -73,28 +70,29 @@ class MainActivitySharedViewModel @Inject constructor(
         }
 
 
-        val savedImageList =  memoEntity.imageUrlList.toMutableList()
+        val savedImageList = memoEntity.imageUrlList.toMutableList()
 
-        if(deleteImageList.isNullOrEmpty().not()){
+        if (deleteImageList.isNullOrEmpty().not()) {
             deleteImageList.forEach {
-                addImageList.forEach { add->
-                    if( add.name == it){
+                addImageList.forEach { add ->
+                    if (add.name == it) {
                         deleteImageList.remove(it)
                     }
                 }
             }
 
             deleteImageList.forEach {
-                File(file.absolutePath +"/"+ it).delete()
+                File(file.absolutePath + "/" + it).delete()
             }
         }
 
-        if(savedImageList.isNullOrEmpty().not()){
+        if (savedImageList.isNullOrEmpty().not()) {
             withContext(Dispatchers.IO) {
-                for(i in 0 until savedImageList.size){
-                    if(savedImageList[i].isSaved.not()){
-                        saveFile( Uri.parse("${savedImageList[i].url}"),  savedImageList[i].name)
-                        savedImageList[i] = MemoImage(savedImageList[i].name , savedImageList[i].url, true)
+                for (i in 0 until savedImageList.size) {
+                    if (savedImageList[i].isSaved.not()) {
+                        saveFile(Uri.parse("${savedImageList[i].url}"), savedImageList[i].name)
+                        savedImageList[i] =
+                            MemoImage(savedImageList[i].name, savedImageList[i].url, true)
                     }
                 }
             }
@@ -105,32 +103,41 @@ class MainActivitySharedViewModel @Inject constructor(
     }
 
 
-
-
     private fun saveFile(uri: Uri, name: String) {
-        var bitMap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            ImageDecoder.decodeBitmap(
-                ImageDecoder.createSource(
-                    app.contentResolver,
-                    uri
-                )
-            )
-        } else {
-            MediaStore.Images.Media.getBitmap(app.contentResolver, uri)
+//        var bitMap =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+//             ImageDecoder.decodeBitmap(
+//                ImageDecoder.createSource(
+//                    app.contentResolver,
+//                    uri
+//                )
+//            )
+//        } else {
+//            MediaStore.Images.Media.getBitmap(app.contentResolver, uri)
+//        }
+
+
+        val resizeOpts = BitmapFactory.Options()
+        resizeOpts.inJustDecodeBounds = true;
+
+        var tempBitmap =  BitmapFactory.decodeStream( app.contentResolver.openInputStream(uri), null,resizeOpts)
+        resizeOpts.inSampleSize = calculateInSampleSize(resizeOpts, 500, 500);
+        resizeOpts.inJustDecodeBounds = false
+
+        tempBitmap?.let {
+            tempBitmap!!.recycle()
+            tempBitmap = null
         }
 
-        Log.e("bitMap", "${name} ${bitMap.byteCount}")
+        var bitMap : Bitmap? = BitmapFactory.decodeStream( app.contentResolver.openInputStream(uri), null,resizeOpts)
 
-        if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
 
-            //Create folder if is not exists
+
+        if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED  && bitMap != null) {
             try {
                 val imageFile = File(file, name)
-
                 val stream = FileOutputStream(imageFile)
 
-
-                bitMap = scaleDown(bitMap)
+                bitMap = bitmapScaleDown(bitMap)
                 bitMap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
 
 
@@ -140,14 +147,13 @@ class MainActivitySharedViewModel @Inject constructor(
                 e.printStackTrace()
             } catch (e: IOException) {
                 e.printStackTrace()
-            } finally {
-                bitMap.recycle()
-                bitMap = null
             }
         } else {
             Log.e("Save Image", "Directory can't use")
         }
 
+        bitMap?.recycle()
+        bitMap = null
     }
 
 
@@ -168,17 +174,39 @@ class MainActivitySharedViewModel @Inject constructor(
         }
     }
 
-        fun scaleDown(bitmap : Bitmap): Bitmap {
-            val quality = if(bitmap.width > 2048 && bitmap.height > 2048) {
-                0.3
-            }else if(bitmap.width > 1024 && bitmap.height > 1024){
-                0.5
-            }else{
-                0.8
+    private fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
+        // Raw height and width of image
+        val (height: Int, width: Int) = options.run { outHeight to outWidth }
+        var inSampleSize = 1
+
+        if (height > reqHeight || width > reqWidth) {
+
+            val halfHeight: Int = height / 2
+            val halfWidth: Int = width / 2
+
+                  while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
+                inSampleSize *= 2
             }
-            val scaleDown = Bitmap.createScaledBitmap(bitmap, (bitmap.width*quality).toInt(), (bitmap.height*quality).toInt(), true)
-            return scaleDown
         }
+
+        return inSampleSize
+    }
+
+    private fun bitmapScaleDown(bitmap: Bitmap): Bitmap {
+        val quality = if (bitmap.width > 2048 && bitmap.height > 2048) {
+            0.3
+        } else if (bitmap.width > 1024 && bitmap.height > 1024) {
+            0.5
+        } else {
+            0.8
+        }
+        return Bitmap.createScaledBitmap(
+            bitmap,
+            (bitmap.width * quality).toInt(),
+            (bitmap.height * quality).toInt(),
+            true
+        )
+    }
 
     companion object {
         const val DEFAULT_MEMO_DIR = "/memo"

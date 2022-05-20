@@ -23,6 +23,7 @@ import net.suwon.plus.model.MemoModel
 import net.suwon.plus.ui.base.BaseFragment
 import net.suwon.plus.ui.main.MainActivitySharedViewModel
 import net.suwon.plus.ui.main.memo.folder.FolderSelectSheetFragment
+import net.suwon.plus.ui.main.memo.folder.MemoUpdateState
 import net.suwon.plus.util.SwipeHelperCallback
 import net.suwon.plus.util.provider.ResourceProvider
 import net.suwon.plus.widget.adapter.ModelRecyclerViewAdapter
@@ -89,8 +90,23 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
             }
         }
 
-        sharedViewModel.memoUpdateLiveData.observe(viewLifecycleOwner){
-            viewModel.fetchData()
+        sharedViewModel.memoUpdateLiveData.observe(viewLifecycleOwner) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                if ((viewModel.memoListStateLiveData.value is MemoListState.Success).not()) {
+                    delay(100)
+                }
+
+                when (it) {
+                    is MemoUpdateState.DELETE -> {
+                        viewModel.updateMemo(it.id, true)
+                    }
+
+                    is MemoUpdateState.FINISH -> {
+                        viewModel.updateMemo(it.id)
+                    }
+                    else -> Unit
+                }
+            }
         }
     }
 

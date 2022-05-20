@@ -23,10 +23,12 @@ class MemoListViewModel @Inject constructor(
 
         val memoList = memoRepository.getFolderWithMemo(folderId).memos.map { memo ->
             memo.toModel()
-        }.sortedByDescending { it.time }
+        }
 
-        memoListStateLiveData.value = MemoListState.Success(memoList)
+        memoListStateLiveData.value = MemoListState.Success(memoList.sortedByDescending { it.time })
     }
+
+
 
     fun deleteMemo(model: MemoModel) = viewModelScope.launch {
         memoRepository.deleteMemo(model)
@@ -43,7 +45,7 @@ class MemoListViewModel @Inject constructor(
     }
 
     fun changeFolder(model: MemoModel, folderId: Long) = viewModelScope.launch {
-        memoRepository.changeFolder( model , folderId)
+        memoRepository.changeFolder(model, folderId)
 
         when (val data = memoListStateLiveData.value) {
             is MemoListState.Success -> {
@@ -57,35 +59,39 @@ class MemoListViewModel @Inject constructor(
     }
 
 
-    fun updateMemo(memoId: Long ) = viewModelScope.launch {
-        if(memoId == -1L){
+
+    // SharedViewModel 의 값에 따른 변경  ( Adapter 의 값만 바꿔준다)
+    fun updateMemo(memoId: Long, isDelete: Boolean = false) = viewModelScope.launch {
+        if (memoId == -1L || isDelete) {
             when (val data = memoListStateLiveData.value) {
                 is MemoListState.Success -> {
-                    val db = data.memoList.toMutableList().apply {
-                        removeIf { it.id == memoId }
+                    val db = data.memoList.toMutableList()
+
+                    for (i in 0 until data.memoList.size) {
+                        if (db[i].id == memoId) {
+                            db.removeAt(i)
+                            memoListStateLiveData.value = MemoListState.Success(db)
+                            return@launch
+                        }
                     }
-
-
-                    memoListStateLiveData.value = MemoListState.Success(db)
                 }
             }
             return@launch
         }
 
-        val memo = memoRepository.getMemo(memoId).toModel()
+        val memo = memoRepository.getMemo(memoId)
 
         when (val data = memoListStateLiveData.value) {
             is MemoListState.Success -> {
-                val db = data.memoList.toMutableList().apply {
-                    removeIf { it.id == memoId }
-                    add(memo)
+                val db = data.memoList.toMutableList()
+                for (i in 0 until data.memoList.size) {
+                    if (db[i].id == memoId) {
+                        db[i] = memo.toModel()
+                        memoListStateLiveData.value = MemoListState.Success(db)
+                        return@launch
+                    }
                 }
-
-
-                memoListStateLiveData.value = MemoListState.Success(db)
             }
         }
     }
-
-
 }

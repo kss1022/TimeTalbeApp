@@ -37,7 +37,9 @@ class TimeTableMemoListViewModel @Inject constructor(
 
 
             timetableMemoListStateLiveData.value =
-                TimeTableMemoListState.Success(timeTableWithCell, memos)
+                TimeTableMemoListState.Success(
+                    timeTableWithCell,
+                    memos.sortedByDescending { it.time })
         } ?: kotlin.run {
             val timeTableList = timeTableRepository.getTimeTableList()
             timetableMemoListStateLiveData.value = TimeTableMemoListState.NoTimeTable(timeTableList)
@@ -62,22 +64,32 @@ class TimeTableMemoListViewModel @Inject constructor(
     }
 
 
-    fun updateMemo(memoId: Long ) = viewModelScope.launch {
-        if(memoId == -1L){
+    fun updateMemo(memoId: Long, isDelete: Boolean = false) = viewModelScope.launch {
+        if (memoId == -1L || isDelete) {
             when (val data = timetableMemoListStateLiveData.value) {
                 is TimeTableMemoListState.Success -> {
-                    val db = data.memoList.toMutableList().apply {
-                        removeIf { it.id == memoId }
+                    val db = data.memoList.toMutableList()
+                    for (i in 0 until data.memoList.size) {
+                        if (db[i].id == memoId) {
+                            db.removeAt(i)
+                            timetableMemoListStateLiveData.value =
+                                TimeTableMemoListState.EditMemo(db)
+                            return@launch
+                        }
                     }
-                    timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
                 }
 
 
                 is TimeTableMemoListState.EditMemo -> {
-                    val db = data.memoList.toMutableList().apply {
-                        removeIf { it.id == memoId }
+                    val db = data.memoList.toMutableList()
+                    for (i in 0 until data.memoList.size) {
+                        if (db[i].id == memoId) {
+                            db.removeAt(i)
+                            timetableMemoListStateLiveData.value =
+                                TimeTableMemoListState.EditMemo(db)
+                            return@launch
+                        }
                     }
-                    timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
                 }
             }
             return@launch
@@ -87,26 +99,31 @@ class TimeTableMemoListViewModel @Inject constructor(
 
         when (val data = timetableMemoListStateLiveData.value) {
             is TimeTableMemoListState.Success -> {
-                val db = data.memoList.toMutableList().apply {
-                    removeIf { it.id == memoId }
-                    add(memo)
+                val db = data.memoList.toMutableList()
+                for (i in 0 until data.memoList.size) {
+                    if (data.memoList[i].id == memoId) {
+                        db[i] = memo
+                    }
                 }
+
                 timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
             }
 
 
             is TimeTableMemoListState.EditMemo -> {
                 val db = data.memoList.toMutableList().apply {
-                    removeIf { it.id == memoId }
-                    add(memo)
+                    for (i in 0 until data.memoList.size) {
+                        if (data.memoList[i].id == memoId) {
+                            set(i, memo)
+                        }
+                    }
                 }
                 timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
             }
         }
     }
 
-
-
+    // SharedViewModel 의 값에 따른 변경  ( Adapter 의 값만 바꿔준다)
     fun replaceMemo(memoId: Long, timeTableCellId: Long?) = viewModelScope.launch {
         val memo = memoRepository.getMemo(memoId)
         val updateMemo = memo.copy(timeTableCellId = timeTableCellId)
@@ -114,27 +131,33 @@ class TimeTableMemoListViewModel @Inject constructor(
 
         when (val data = timetableMemoListStateLiveData.value) {
             is TimeTableMemoListState.Success -> {
-                val db = data.memoList.toMutableList().apply {
-                    remove(memo.toModel())
-                    add(updateMemo.toModel())
+                val db = data.memoList.toMutableList()
+
+                for (i in 0 until data.memoList.size) {
+                    if (db[i].id == memoId) {
+                        db[i] = updateMemo.toModel()
+                        timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
+                        return@launch
+                    }
                 }
 
-
-
-                timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
             }
 
 
             is TimeTableMemoListState.EditMemo -> {
-                val db = data.memoList.toMutableList().apply {
-                    remove(memo.toModel())
-                    add(updateMemo.toModel())
+                val db = data.memoList.toMutableList()
+                for (i in 0 until data.memoList.size) {
+                    if (db[i].id == memoId) {
+                        db[i] = updateMemo.toModel()
+                        timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
+                        return@launch
+                    }
                 }
-
-                timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
             }
         }
     }
+
+
 
 
     fun deleteMemo(model: MemoModel) = viewModelScope.launch {
@@ -157,7 +180,7 @@ class TimeTableMemoListViewModel @Inject constructor(
                 timetableMemoListStateLiveData.value = TimeTableMemoListState.EditMemo(db)
             }
 
-            else->Unit
+            else -> Unit
         }
     }
 

@@ -99,7 +99,7 @@ class TimeTableMemoListFragment :
                 }
 
                 is TimeTableMemoListState.EditMemo -> {
-                     handleEditState(it)
+                    handleEditState(it)
                 }
 
                 is TimeTableMemoListState.NoTimeTable -> {
@@ -111,26 +111,26 @@ class TimeTableMemoListFragment :
 
 
         sharedViewModel.memoUpdateLiveData.observe(viewLifecycleOwner) {
-            when (it) {
-                is MemoUpdateState.SAVE->{}
-
-
-                is MemoUpdateState.DELETE -> {
-                    if (viewModel.timetableMemoListStateLiveData.value is TimeTableMemoListState.Success) {
-                        viewModel.updateMemo(it.id)
-                    }
+            viewLifecycleOwner.lifecycleScope.launch {
+                while ((viewModel.timetableMemoListStateLiveData.value is TimeTableMemoListState.Success).not()) {
+                    delay(100)
                 }
 
-                is MemoUpdateState.FINISH -> {
-                    if (viewModel.timetableMemoListStateLiveData.value is TimeTableMemoListState.Success) {
+                when (it) {
+                    is MemoUpdateState.DELETE -> {
+                        viewModel.updateMemo(it.id, true)
+                    }
+
+                    is MemoUpdateState.FINISH -> {
                         viewModel.updateMemo(it.id)
                     }
-                }
 
-                else->Unit
+                    else -> Unit
+                }
             }
         }
     }
+
 
     private fun handleLoadingState() = with(binding) {
         progressBar.visibility = View.VISIBLE
@@ -146,7 +146,7 @@ class TimeTableMemoListFragment :
         linearLayout.visibility = View.VISIBLE
 
         createTimeTableCellList(state.timeTableWithCell.timeTableCellList)
-        submitMemoList(state.memoList.sortedByDescending { it.time })
+        submitMemoList(state.memoList)
     }
 
 
