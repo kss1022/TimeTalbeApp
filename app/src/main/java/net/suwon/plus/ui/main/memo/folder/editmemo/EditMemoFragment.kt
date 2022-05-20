@@ -9,6 +9,7 @@ import android.os.Environment
 import android.provider.Settings
 import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -149,6 +150,8 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         if (needSave) {
             updateMemo()
         }
+
+        hideKeyboard()
     }
 
 
@@ -366,6 +369,14 @@ class EditMemoFragment : BaseFragment<EditMemoViewModel, FragmentEditMemoBinding
         }else{
             dir
         }
+    }
+
+
+    private fun hideKeyboard() {
+        val inputManger =
+            context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+
+        inputManger.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
     }
 
     companion object {

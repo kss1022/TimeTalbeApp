@@ -187,7 +187,7 @@ class MemoListFragment : BaseFragment<MemoListViewModel, FragmentMemoListBinding
 
     private fun showDeleteAlertDialog(model: MemoModel) {
         AlertDialog.Builder(requireContext())
-            .setMessage("선택한 메모를 삭제하기겠습니까?")
+            .setMessage("선택한 메모를 삭제하시겠습니까?")
             .setPositiveButton("확인") { dialog, _ ->
                 viewModel.deleteMemo(model)
                 dialog.dismiss()

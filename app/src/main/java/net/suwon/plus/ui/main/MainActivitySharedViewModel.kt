@@ -18,6 +18,7 @@ import net.suwon.plus.data.entity.memo.MemoImage
 import net.suwon.plus.data.preference.PreferenceManager
 import net.suwon.plus.data.repository.memo.MemoRepository
 import net.suwon.plus.ui.base.BaseViewModel
+import net.suwon.plus.ui.main.memo.folder.MemoUpdateState
 import net.suwon.plus.util.lifecycle.SingleLiveEvent
 import java.io.File
 import java.io.FileNotFoundException
@@ -32,10 +33,10 @@ class MainActivitySharedViewModel @Inject constructor(
     private val preferenceManager: PreferenceManager
 ) : BaseViewModel() {
 
-
-    val memoUpdateLiveData = SingleLiveEvent<Long>()
+    val memoUpdateLiveData = SingleLiveEvent<MemoUpdateState>()
 
     private lateinit var file: File
+
 
     fun updateMemo(
         memoEntity: MemoEntity,
@@ -43,7 +44,7 @@ class MainActivitySharedViewModel @Inject constructor(
         deleteImageList: MutableList<String>
     ) = viewModelScope.launch {
         memoRepository.updateMemo(memoEntity)
-        memoUpdateLiveData.value = memoEntity.memoId
+//        memoUpdateLiveData.value = MemoUpdateState.SAVE
 
         updateImage(
             memoEntity,
@@ -55,7 +56,7 @@ class MainActivitySharedViewModel @Inject constructor(
 
     fun deleteMemo(id: Long) = viewModelScope.launch {
         memoRepository.deleteMemo(id)
-        memoUpdateLiveData.value = -1
+        memoUpdateLiveData.value = MemoUpdateState.DELETE(id)
     }
 
     private fun updateImage(
@@ -65,6 +66,7 @@ class MainActivitySharedViewModel @Inject constructor(
     ) = viewModelScope.launch {
         if (memoEntity.memoId == -1L) return@launch
         if (addImageList.isEmpty() && deleteImageList.isEmpty()) return@launch
+
 
         if (::file.isInitialized.not()) {
             file = createExternalFolder()
@@ -99,14 +101,14 @@ class MainActivitySharedViewModel @Inject constructor(
         }
 
         memoRepository.updateMemo(memoEntity.copy(imageUrlList = savedImageList))
-        memoUpdateLiveData.value = memoEntity.memoId
+        memoUpdateLiveData.value = MemoUpdateState.FINISH(memoEntity.memoId)
     }
 
 
 
 
     private fun saveFile(uri: Uri, name: String) {
-        val bimMap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        var bitMap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             ImageDecoder.decodeBitmap(
                 ImageDecoder.createSource(
                     app.contentResolver,
@@ -117,6 +119,7 @@ class MainActivitySharedViewModel @Inject constructor(
             MediaStore.Images.Media.getBitmap(app.contentResolver, uri)
         }
 
+        Log.e("bitMap", "${name} ${bitMap.byteCount}")
 
         if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
 
@@ -125,7 +128,11 @@ class MainActivitySharedViewModel @Inject constructor(
                 val imageFile = File(file, name)
 
                 val stream = FileOutputStream(imageFile)
-                bimMap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+
+
+                bitMap = scaleDown(bitMap)
+                bitMap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+
 
                 stream.flush()
                 stream.close()
@@ -133,6 +140,9 @@ class MainActivitySharedViewModel @Inject constructor(
                 e.printStackTrace()
             } catch (e: IOException) {
                 e.printStackTrace()
+            } finally {
+                bitMap.recycle()
+                bitMap = null
             }
         } else {
             Log.e("Save Image", "Directory can't use")
@@ -158,7 +168,17 @@ class MainActivitySharedViewModel @Inject constructor(
         }
     }
 
-
+        fun scaleDown(bitmap : Bitmap): Bitmap {
+            val quality = if(bitmap.width > 2048 && bitmap.height > 2048) {
+                0.3
+            }else if(bitmap.width > 1024 && bitmap.height > 1024){
+                0.5
+            }else{
+                0.8
+            }
+            val scaleDown = Bitmap.createScaledBitmap(bitmap, (bitmap.width*quality).toInt(), (bitmap.height*quality).toInt(), true)
+            return scaleDown
+        }
 
     companion object {
         const val DEFAULT_MEMO_DIR = "/memo"

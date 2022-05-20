@@ -34,6 +34,7 @@ import net.suwon.plus.model.MemoModel
 import net.suwon.plus.ui.base.BaseFragment
 import net.suwon.plus.ui.main.MainActivitySharedViewModel
 import net.suwon.plus.ui.main.memo.folder.FolderSelectSheetFragment
+import net.suwon.plus.ui.main.memo.folder.MemoUpdateState
 import net.suwon.plus.ui.main.memo.folder.memolist.MemoListFragmentArgs
 import net.suwon.plus.util.SwipeHelperCallback
 import net.suwon.plus.util.provider.ResourceProvider
@@ -98,7 +99,7 @@ class TimeTableMemoListFragment :
                 }
 
                 is TimeTableMemoListState.EditMemo -> {
-                    handleEditState(it)
+                     handleEditState(it)
                 }
 
                 is TimeTableMemoListState.NoTimeTable -> {
@@ -109,11 +110,24 @@ class TimeTableMemoListFragment :
         }
 
 
-        sharedViewModel.memoUpdateLiveData.observe(viewLifecycleOwner){
-            it?.let {
-                if(viewModel.timetableMemoListStateLiveData.value is TimeTableMemoListState.Success){
-                    viewModel.updateMemo(it)
+        sharedViewModel.memoUpdateLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+                is MemoUpdateState.SAVE->{}
+
+
+                is MemoUpdateState.DELETE -> {
+                    if (viewModel.timetableMemoListStateLiveData.value is TimeTableMemoListState.Success) {
+                        viewModel.updateMemo(it.id)
+                    }
                 }
+
+                is MemoUpdateState.FINISH -> {
+                    if (viewModel.timetableMemoListStateLiveData.value is TimeTableMemoListState.Success) {
+                        viewModel.updateMemo(it.id)
+                    }
+                }
+
+                else->Unit
             }
         }
     }
@@ -541,7 +555,7 @@ class TimeTableMemoListFragment :
 
     private fun showDeleteAlertDialog(model: MemoModel) {
         AlertDialog.Builder(requireContext())
-            .setMessage("선택한 메모를 삭제하기겠습니까?")
+            .setMessage("선택한 메모를 삭제하기시겠습니까?")
             .setPositiveButton("확인") { dialog, _ ->
                 viewModel.deleteMemo(model)
                 dialog.dismiss()
